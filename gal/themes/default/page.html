@@ -1,0 +1,13 @@
+{% if previous %}
+    <a href={{previous}}>Back</a>
+{% endif %}
+<div class="image-container">
+    <ul>
+    {% for album in albums %}
+        <li><a href={{album}}> {{album}}</a></li>
+    {% endfor %}
+    </ul>
+    {% for image in images %}
+        <img class="picture" src={{image}}>
+    {% endfor %}
+</div>

@@ -11,4 +11,4 @@ parser.add_argument("--output",
                     required=True)
 args = parser.parse_args()
 
-build_from(args.input)
+build_from(args.input, args.output)
