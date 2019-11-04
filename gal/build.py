@@ -15,10 +15,23 @@ def extension(file):
     return ext[1:]
 
 
+def create(directory):
+    if not os.path.isdir(directory):
+        os.mkdir(directory)
+
+
 def create_directories(parsed, output_directory):
+    create(output_directory)
+    assets_dir = os.path.join(output_directory, "assets")
+    create(assets_dir)
+    images_dir = os.path.join(assets_dir, "images")
+    create(images_dir)
+    thumbnails_dir = os.path.join(images_dir, "thumbnails")
+    create(thumbnails_dir)
+    styles_dir = os.path.join(assets_dir, "styles")
+    create(styles_dir)
+
     destination = list()
-    if not os.path.isdir(output_directory):
-        os.mkdir(output_directory)
     root_directory = parsed[0][0]
     for parent, subdirs, files in parsed:
         rerooted = parent.replace(root_directory, output_directory)
