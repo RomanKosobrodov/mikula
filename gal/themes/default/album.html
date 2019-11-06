@@ -1,13 +1,17 @@
 {% if previous %}
     <a href={{previous}}>Back</a>
 {% endif %}
-<div class="image-container">
+<div class="gallery-container">
     <ul>
     {% for album in albums %}
         <li><a href={{album}}> {{album}}</a></li>
     {% endfor %}
     </ul>
-    {% for image in images %}
-        <img class="picture" src={{image}}>
+</div>
+<div class="thumbnail-container">
+    {% for url, thumbnail in thumbnails %}
+    <a href={{url}}>
+        <img class="picture" src={{thumbnail}}>
+    </a>
     {% endfor %}
 </div>

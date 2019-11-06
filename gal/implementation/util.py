@@ -1,4 +1,5 @@
 import os
+import shutil
 
 
 def extension(file):
@@ -8,6 +9,8 @@ def extension(file):
 
 
 def create(directory):
+    if os.path.isdir(directory):
+        shutil.rmtree(directory)
     if not os.path.isdir(directory):
         os.mkdir(directory)
 
@@ -32,4 +35,4 @@ def create_directories(parsed, output_directory):
             new_path = os.path.join(rerooted, subdir)
             if not os.path.isdir(new_path):
                 os.mkdir(new_path)
-    return destination
+    return destination, assets_dir
