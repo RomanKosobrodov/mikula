@@ -2,6 +2,8 @@ import markdown
 import io
 import os
 
+IMAGES_TOKEN = "<p><code>images</code></p>"
+
 
 def render_markdown(md):
     buffer = io.BytesIO()
@@ -16,8 +18,7 @@ def get_links(page_list, index):
     return page_list[index]
 
 
-def render_page(index_file, destination_node, image_list, album_template, image_template, top_level):
-    div_token = "<p><code>images</code></p>"
+def render_album(index_file, destination_node, image_list, album_template, image_template, top_level):
     html = render_markdown(index_file)
     current, subdirs, _ = destination_node
     if top_level:
@@ -45,7 +46,10 @@ def render_page(index_file, destination_node, image_list, album_template, image_
         thumbnails.append((image_page, thumbnail_url))
 
     image_div = album_template.render(previous=previous, albums=albums, thumbnails=thumbnails)
-    html = html.replace(div_token, image_div)
+    if IMAGES_TOKEN not in html:
+        html += "\n" + IMAGES_TOKEN
+    html = html.replace(IMAGES_TOKEN, image_div)
+
     filename = os.path.join(current, "index.html")
     with open(filename, "w") as fid:
         fid.write(html)

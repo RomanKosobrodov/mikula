@@ -3,7 +3,7 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 from gal.implementation.images import process_images
 from gal.implementation.util import create_directories
-from gal.implementation.rendering import render_page
+from gal.implementation.rendering import render_album
 
 
 def build_from(directory, output):
@@ -28,7 +28,7 @@ def build_from(directory, output):
         image_template = env.get_template("image.html")
         top_level = (index == 0)
 
-        render_page(index_file=filepath,
+        render_album(index_file=filepath,
                     destination_node=destination_nodes[index],
                     image_list=image_list,
                     album_template=album_template,
