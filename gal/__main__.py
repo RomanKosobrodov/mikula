@@ -9,6 +9,11 @@ parser.add_argument("--input",
 parser.add_argument("--output",
                     help="Output directory",
                     required=True)
+parser.add_argument("--theme",
+                    help="theme directory",
+                    default="./themes/default",
+                    required=False)
+
 args = parser.parse_args()
 
-build_from(args.input, args.output)
+build_from(args.input, args.output, args.theme)
