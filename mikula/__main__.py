@@ -1,5 +1,5 @@
 import argparse
-from gal.build import build_from
+from mikula.build import build_from
 
 
 parser = argparse.ArgumentParser(description="Static Image Gallery")

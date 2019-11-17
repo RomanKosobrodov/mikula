@@ -27,11 +27,11 @@ def parse_subdirectories(album, keys, index, destination):
 def parse_images(album, keys, index, destination, image_format="png"):
     output = list()
     _, filelist, *rest = album[keys[index]]
-    for filename, image_id, image_meta, _ in filelist:
+    for filename, image_file, image_meta, _ in filelist:
         basename, _ = os.path.splitext(filename)
         image_name = image_meta.get("title", basename)
         image_url = f"{image_name}.html"
-        thumbnail_url = os.path.join(destination, "assets", "images", "thumbnails", f"{image_id}.{image_format}")
+        thumbnail_url = os.path.join(destination, "assets", "images", "thumbnails", image_file)
         output.append((image_url, os.path.normpath(thumbnail_url)))
     return output
 
@@ -56,8 +56,30 @@ def render_album_page(album, keys, index, template, destination):
     return html, filename
 
 
-def render_image_page(album, directory, image, template):
-    pass
+def get_image_name(source, meta):
+    if "title" in meta:
+        basename = meta["title"]
+    else:
+        basename, _ = os.path.splitext(source)
+    return f"{basename}.html"
+
+
+def get_image_page(image_list, index):
+    if index < 0 or index >= len(image_list):
+        return None
+    source, _, meta, _ = image_list[index]
+    return get_image_name(source, meta)
+
+
+def render_image_page(image_list, image_index, image_template, album_url, images_directory):
+    source, image_file, meta, user_template = image_list[image_index]
+    user_generated = Template(user_template)
+    html = user_generated.render(auto_generated=image_template,
+                                 album_url=album_url,
+                                 image=os.path.join(images_directory, image_file),
+                                 previous=get_image_page(image_list, image_index - 1),
+                                 next=get_image_page(image_list, image_index + 1))
+    return html, get_image_name(source, meta)
 
 
 def render(album, output_directory, theme):
@@ -68,27 +90,21 @@ def render(album, output_directory, theme):
     album_template = env.get_template("album.html")
     image_template = env.get_template("image.html")
 
+    images_directory = os.path.join(output_directory, "assets", "images")
     keys = tuple(album.keys())
     for index in range(len(keys)):
-        album_page, filename = render_album_page(album, keys, index, album_template, output_directory)
-        with open(filename, 'w') as fid:
+        album_page, album_filename = render_album_page(album, keys, index, album_template, output_directory)
+        with open(album_filename, 'w') as fid:
             fid.write(album_page)
 
-#     page_names = [f"{basename}.html" for basename, _, _ in image_list]
-#     thumbnails = list()
-#     for index, element in enumerate(image_list):
-#         basename, thumbnail, path = element
-#         previous_page = get_links(page_names, index - 1)
-#         next_page = get_links(page_names, index + 1)
-#         filename = os.path.join(current, page_names[index])
-#         this_album = "index.html"
-#         image_page = image_template.render(image=path,
-#                                            album=this_album,
-#                                            previous=previous_page,
-#                                            next=next_page)
-#         with open(filename, "w") as fid:
-#             fid.write(image_page)
-#         thumbnail_url = os.path.relpath(thumbnail, current)
-#         image_page = os.path.relpath(filename, current)
-#         thumbnails.append((image_page, thumbnail_url))
-#
+        _, file_list, _, _ = album[keys[index]]
+        directory = os.path.dirname(album_filename)
+        for k in range(len(file_list)):
+            image_page, filename = render_image_page(image_list=file_list,
+                                                     image_index=k,
+                                                     image_template=image_template,
+                                                     album_url=album_filename,
+                                                     images_directory=images_directory)
+            fn = os.path.join(directory, filename)
+            with open(fn, "w") as fid:
+                fid.write(image_page)

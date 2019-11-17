@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block body %}
+<a href="{{album_url}}">back to album</a>
+{% if previous %}
+    <a href="{{previous}}">previous</a>
+{% endif %}
+{% if next %}
+    <a href="{{next}}">next</a>
+{% endif %}
+<div class="image-container">
+    <img class="picture" src="{{image}}">
+</div>
+{% endblock body %}

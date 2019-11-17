@@ -1,11 +1,11 @@
 import os
 import uuid
 from collections import OrderedDict
-from gal.implementation.images import is_image
-from gal.implementation.md import render_markdown
+from mikula.implementation.images import is_image
+from mikula.implementation.md import render_markdown, INCLUDE_TEMPLATE
 
 
-def discover(directory):
+def discover(directory, image_format="png"):
     nodes = tuple(os.walk(directory, topdown=False))
     parsed = OrderedDict()
     for source_dir, subdirs, files in nodes:
@@ -19,13 +19,14 @@ def discover(directory):
                 continue
             if is_image(fn):
                 image_id = str(uuid.uuid4())
+                image_file = f"{image_id}.{image_format.lower()}"
                 basename, ext = os.path.splitext(file)
                 markdown_fn = os.path.join(source_dir, f"{basename}.md")
                 if os.path.isfile(markdown_fn):
                     meta, html = render_markdown(markdown_fn)
-                    filelist.append((file, image_id, meta, html))
                 else:
-                    filelist.append((file, image_id, dict(), ""))
-
+                    meta = dict()
+                    html = INCLUDE_TEMPLATE
+                filelist.append((file, image_file, meta, html))
         parsed[source_dir] = (subdirs, filelist, index_meta, index_content)
     return parsed

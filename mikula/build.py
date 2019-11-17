@@ -1,9 +1,9 @@
 import os
 
-from gal.implementation.images import process_images
-from gal.implementation.discovery import discover
-from gal.implementation.util import create_directories
-from gal.implementation.rendering import render
+from mikula.implementation.images import process_images
+from mikula.implementation.discovery import discover
+from mikula.implementation.util import create_directories
+from mikula.implementation.rendering import render
 
 
 def build_from(directory, output, theme):

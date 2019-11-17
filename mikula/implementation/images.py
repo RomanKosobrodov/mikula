@@ -16,7 +16,7 @@ def is_image(filename):
 def process_images(parsed, assets_dir, height=600, image_format="png", thumbnail_height=200):
     for directory, content in parsed.items():
         subdirs, filelist, index_meta, index_content = content
-        for file, image_id, _, _ in filelist:
+        for file, image_file, _, _ in filelist:
             file_path = os.path.join(directory, file)
             img = Image.open(file_path)
             exif = img._getexif()
@@ -29,11 +29,11 @@ def process_images(parsed, assets_dir, height=600, image_format="png", thumbnail
             width = int(height / aspect)
             img = img.resize((width, height), Image.ANTIALIAS)
 
-            image_dst = os.path.join(assets_dir, "images", f"{image_id}.{image_format}")
+            image_dst = os.path.join(assets_dir, "images", image_file)
             img.save(image_dst, format=image_format)
 
             thumbnail_width = int(thumbnail_height / aspect)
             img.thumbnail((thumbnail_width, thumbnail_height))
-            thumbnail_dst = os.path.join(assets_dir, "images", "thumbnails", f"{image_id}.{image_format}")
+            thumbnail_dst = os.path.join(assets_dir, "images", "thumbnails", image_file)
             img.save(thumbnail_dst, format=image_format)
             img.close()
