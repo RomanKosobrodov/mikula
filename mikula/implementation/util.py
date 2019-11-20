@@ -15,33 +15,23 @@ def create(directory):
         os.mkdir(directory)
 
 
-def create_directories(parsed, output_directory):
+def create_directories(parsed, theme, output_directory):
     create(output_directory)
 
-    assets_dir = os.path.join(output_directory, "assets")
-    create(assets_dir)
+    gallery_dir = os.path.join(output_directory, "gallery")
+    create(gallery_dir)
 
-    images_dir = os.path.join(assets_dir, "images")
+    images_dir = os.path.join(gallery_dir, "images")
     create(images_dir)
 
     thumbnails_dir = os.path.join(images_dir, "thumbnails")
     create(thumbnails_dir)
 
-    styles_dir = os.path.join(assets_dir, "styles")
-    create(styles_dir)
+    assets_dir = os.path.join(theme, "assets")
+    dst = os.path.join(output_directory, "assets")
+    shutil.copytree(assets_dir, dst)
 
-    destination = dict()
-    source_directory = None
     for directory in reversed(parsed.keys()):
-        if source_directory is None:
-            source_directory = directory
-            destination[directory] = output_directory
-            continue
-
-        rerooted = directory.replace(source_directory, output_directory)
-        if not os.path.isdir(rerooted):
-            os.mkdir(rerooted)
-        destination[directory] = rerooted
-
-    return destination, assets_dir
-
+        absolute = os.path.join(output_directory, directory)
+        if not os.path.isdir(absolute):
+            os.mkdir(absolute)

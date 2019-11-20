@@ -7,8 +7,8 @@ from mikula.implementation.rendering import render
 
 
 def build_from(directory, output, theme):
-    album = discover(directory)
-    destination, assets_dir = create_directories(album, output)
-    process_images(album, assets_dir)
-    render(album, output, theme)
+    album, excluded = discover(directory)
+    create_directories(album, theme, output)
+    process_images(directory, album, excluded, output)
+    render(album, excluded, output, theme)
 

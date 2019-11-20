@@ -2,87 +2,78 @@ import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape, Template
 
 
-def parse_subdirectories(album, keys, index, destination):
-    album_root = keys[-1]
-
-    def form_path(dir_path):
-        index_url = dir_path.replace(album_root, destination)
-        index_url = os.path.join(index_url, "index.html")
-        return os.path.normpath(index_url)
-
+def parse_subdirectories(album, keys, index):
+    output = list()
     current = keys[index]
-    subdirectories, _, album_meta, album_md = album[current]
-    output = list()
-
+    relative, subdirectories, _, album_meta, album_md = album[current]
     for directory in subdirectories:
-        source_full_path = os.path.join(current, directory)
-        url = form_path(source_full_path)
-        _, _, meta, _ = album[source_full_path]
+        key = os.path.normpath(os.path.join(current, directory))
+        _, _, _, meta, _ = album[key]
         title = meta.get("title", directory)
-        output.append((title, url))
+        url = os.path.join(directory, "index.html")
+        thumbnail_filename = meta.get("thumbnail", None)
+        if thumbnail_filename is not None:
+            thumbnail_url = os.path.join(relative, "gallery", "images", "thumbnails", thumbnail_filename)
+        else:
+            thumbnail_url = None
+        output.append((title, url, thumbnail_url))
+    return relative, output, album_meta, album_md
 
-    return output, form_path(current), album_meta, album_md
 
-
-def parse_images(album, keys, index, destination, image_format="png"):
+def parse_images(album, keys, index, destination):
     output = list()
-    _, filelist, *rest = album[keys[index]]
-    for filename, image_file, image_meta, _ in filelist:
-        basename, _ = os.path.splitext(filename)
+    current = keys[index]
+    relative, _, image_files, *rest = album[keys[index]]
+
+    for original, (image_file, image_meta, _) in image_files.items():
+        basename, _ = os.path.splitext(original)
         image_name = image_meta.get("title", basename)
         image_url = f"{image_name}.html"
-        thumbnail_url = os.path.join(destination, "assets", "images", "thumbnails", image_file)
-        output.append((image_url, os.path.normpath(thumbnail_url)))
+        thumbnail_url = os.path.join(relative, "gallery", "images", "thumbnails", image_file)
+        output.append((image_name, image_url, os.path.normpath(thumbnail_url)))
     return output
 
 
-def parent_album(keys, index, destination):
-    parent = os.path.dirname(keys[index])
-    if parent in keys:
-        root = keys[-1]
-        path = parent.replace(root, destination)
-        url = os.path.join(path, "index.html")
-        return url
+def parent_album(index, length):
+    if index < length - 1:
+        return "../index.html"
+    return None
 
 
 def render_album_page(album, keys, index, template, destination):
-    albums, filename, meta, user_template = parse_subdirectories(album, keys, index, destination)
+    gallery_root, child_albums, meta, user_template = parse_subdirectories(album, keys, index)
     thumbnails = parse_images(album, keys, index, destination)
     user_generated = Template(user_template)
-    html = user_generated.render(auto_generated=template,
-                                 back=parent_album(keys, index, destination),
-                                 albums=albums,
+    html = user_generated.render(gallery_root=gallery_root,
+                                 auto_generated=template,
+                                 back=parent_album(index, len(keys)),
+                                 albums=child_albums,
                                  thumbnails=thumbnails)
-    return html, filename
+    return html
 
 
-def get_image_name(source, meta):
-    if "title" in meta:
-        basename = meta["title"]
-    else:
-        basename, _ = os.path.splitext(source)
-    return f"{basename}.html"
-
-
-def get_image_page(image_list, index):
-    if index < 0 or index >= len(image_list):
+def get_image_page(image_files, image_keys, index):
+    if index < 0 or index >= len(image_keys):
         return None
-    source, _, meta, _ = image_list[index]
-    return get_image_name(source, meta)
+    original = image_keys[index]
+    _, meta, _ = image_files[original]
+    return f"{meta['title']}.html"
 
 
-def render_image_page(image_list, image_index, image_template, album_url, images_directory):
-    source, image_file, meta, user_template = image_list[image_index]
+def render_image_page(gallery_root, image_files, image_keys, image_index,
+                      image_template, album_url, relative_path):
+    image_file, meta, user_template = image_files[image_keys[image_index]]
     user_generated = Template(user_template)
-    html = user_generated.render(auto_generated=image_template,
+    html = user_generated.render(gallery_root=gallery_root,
+                                 auto_generated=image_template,
                                  album_url=album_url,
-                                 image=os.path.join(images_directory, image_file),
-                                 previous=get_image_page(image_list, image_index - 1),
-                                 next=get_image_page(image_list, image_index + 1))
-    return html, get_image_name(source, meta)
+                                 image=os.path.join(relative_path, image_file),
+                                 previous=get_image_page(image_files, image_keys, image_index - 1),
+                                 next=get_image_page(image_files, image_keys, image_index + 1))
+    return html, f"{meta['title']}.html"
 
 
-def render(album, output_directory, theme):
+def render(album, excluded, output_directory, theme):
     env = Environment(
         loader=FileSystemLoader(theme),
         autoescape=select_autoescape(['html', 'xml'])
@@ -90,21 +81,25 @@ def render(album, output_directory, theme):
     album_template = env.get_template("album.html")
     image_template = env.get_template("image.html")
 
-    images_directory = os.path.join(output_directory, "assets", "images")
     keys = tuple(album.keys())
     for index in range(len(keys)):
-        album_page, album_filename = render_album_page(album, keys, index, album_template, output_directory)
+        album_page = render_album_page(album, keys, index, album_template, output_directory)
+        dst_directory = os.path.join(output_directory, keys[index])
+        album_filename = os.path.join(dst_directory, "index.html")
         with open(album_filename, 'w') as fid:
             fid.write(album_page)
 
-        _, file_list, _, _ = album[keys[index]]
-        directory = os.path.dirname(album_filename)
-        for k in range(len(file_list)):
-            image_page, filename = render_image_page(image_list=file_list,
+        relative, _, image_files, _, _ = album[keys[index]]
+        image_keys = tuple(image_files.keys())
+        relative_path = os.path.join(relative, "gallery", "images")
+        for k in range(len(image_keys)):
+            image_page, filename = render_image_page(gallery_root=relative,
+                                                     image_files=image_files,
+                                                     image_keys=image_keys,
                                                      image_index=k,
                                                      image_template=image_template,
                                                      album_url=album_filename,
-                                                     images_directory=images_directory)
-            fn = os.path.join(directory, filename)
+                                                     relative_path=relative_path)
+            fn = os.path.join(dst_directory, filename)
             with open(fn, "w") as fid:
                 fid.write(image_page)
