@@ -1,5 +1,6 @@
 import os
 from PIL import Image, ExifTags
+from mikula.implementation.exif import nominal_shutter_speed, nominal_f_number, nominal_aperture
 
 EXIF_ORIENTATION = 0x0112
 ROTATION = {3: 180, 6: 270, 8: 90}
@@ -45,7 +46,21 @@ def extract_exif_meta(meta, exif, album_meta):
         output = dict()
         for tag in tags:
             if tag in TAG_CODE.keys():
-                #  Convert ShutterSpeedValue, AppertureValue and FNumber to conventional units
+                if tag == "ShutterSpeedValue":
+                    value = exif.get(TAG_CODE[tag], None)
+                    if value is not None:
+                        output[tag] = nominal_shutter_speed(*value)
+                    continue
+                if tag == "FNumber":
+                    value = exif.get(TAG_CODE[tag], None)
+                    if value is not None:
+                        output[tag] = nominal_f_number(*value)
+                    continue
+                if tag == "ApertureValue":
+                    value = exif.get(TAG_CODE[tag], None)
+                    if value is not None:
+                        output[tag] = nominal_aperture(*value)
+                    continue
                 output[tag] = exif.get(TAG_CODE[tag], None)
         return output
 
