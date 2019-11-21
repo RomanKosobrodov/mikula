@@ -1,8 +1,9 @@
 import os
-from PIL import Image
+from PIL import Image, ExifTags
 
 EXIF_ORIENTATION = 0x0112
 ROTATION = {3: 180, 6: 270, 8: 90}
+TAG_CODE = {key: value for key, value in zip(ExifTags.TAGS.values(), ExifTags.TAGS.keys())}
 
 
 def is_image(filename):
@@ -36,6 +37,25 @@ def convert_image(original, converted, directory, images_dst, thumbnails_dst,
     thumbnail_dst = os.path.join(thumbnails_dst, converted)
     img.save(thumbnail_dst, format=image_format)
     img.close()
+    return exif
+
+
+def extract_exif_meta(meta, exif, album_meta):
+    def get_exif_values(tags):
+        output = dict()
+        for tag in tags:
+            if tag in TAG_CODE.keys():
+                #  Convert ShutterSpeedValue, AppertureValue and FNumber to conventional units
+                output[tag] = exif.get(TAG_CODE[tag], None)
+        return output
+
+    if exif is None:
+        return meta
+
+    all_tags = set(meta.get("exif", tuple()))
+    all_tags.update(album_meta.get("exif", tuple()))
+    extracted = get_exif_values(all_tags)
+    return meta.update(extracted)
 
 
 def process_images(source_directory, parsed, excluded, output, height=600, image_format="png", thumbnail_height=200):
@@ -49,6 +69,7 @@ def process_images(source_directory, parsed, excluded, output, height=600, image
                           source_directory, height,
                           image_format, thumbnail_height)
         for original, record in images.items():
-            converted, _, _ = record
-            convert_image(original, converted, directory, images_dst, thumbnails_dst, source_directory, height,
-                          image_format, thumbnail_height)
+            converted, meta, _ = record
+            exif = convert_image(original, converted, directory, images_dst, thumbnails_dst, source_directory, height,
+                                 image_format, thumbnail_height)
+            meta = extract_exif_meta(meta, exif, index_meta)

@@ -10,4 +10,9 @@
 <div class="image-container">
     <img class="picture" src="{{image}}">
 </div>
+<div class="image-metadata">
+    <p>Camera: {{meta["Model"]}}</p>
+    <p>Date: {{meta["DateTime"]}}</p>
+    <p>{{meta["ISOSpeedRatings"]}} ISO, {{meta["ShutterSpeedValue"]}}s, f{{meta["ApertureValue"]}}</p>
+</div>
 {% endblock body %}

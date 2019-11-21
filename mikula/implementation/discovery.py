@@ -26,6 +26,7 @@ def discover(directory, image_format="png"):
                 markdown_fn = os.path.join(source_dir, f"{basename}.md")
                 if os.path.isfile(markdown_fn):
                     meta, html = render_markdown(markdown_fn)
+                    meta["title"] = meta.get("title", basename)
                 else:
                     meta = {"title": basename}
                     html = INCLUDE_TEMPLATE

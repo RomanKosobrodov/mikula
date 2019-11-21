@@ -2,7 +2,7 @@ import argparse
 from mikula.build import build_from
 
 
-parser = argparse.ArgumentParser(description="Static Image Gallery")
+parser = argparse.ArgumentParser(description="Static Image Gallery Generator")
 parser.add_argument("--input",
                     help="Input directory containing images, metadata and settings",
                     required=True)

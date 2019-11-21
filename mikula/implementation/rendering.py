@@ -20,9 +20,8 @@ def parse_subdirectories(album, keys, index):
     return relative, output, album_meta, album_md
 
 
-def parse_images(album, keys, index, destination):
+def parse_images(album, keys, index):
     output = list()
-    current = keys[index]
     relative, _, image_files, *rest = album[keys[index]]
 
     for original, (image_file, image_meta, _) in image_files.items():
@@ -40,9 +39,9 @@ def parent_album(index, length):
     return None
 
 
-def render_album_page(album, keys, index, template, destination):
+def render_album_page(album, keys, index, template):
     gallery_root, child_albums, meta, user_template = parse_subdirectories(album, keys, index)
-    thumbnails = parse_images(album, keys, index, destination)
+    thumbnails = parse_images(album, keys, index)
     user_generated = Template(user_template)
     html = user_generated.render(gallery_root=gallery_root,
                                  auto_generated=template,
@@ -68,12 +67,13 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
                                  auto_generated=image_template,
                                  album_url=album_url,
                                  image=os.path.join(relative_path, image_file),
+                                 meta=meta,
                                  previous=get_image_page(image_files, image_keys, image_index - 1),
                                  next=get_image_page(image_files, image_keys, image_index + 1))
     return html, f"{meta['title']}.html"
 
 
-def render(album, excluded, output_directory, theme):
+def render(album, output_directory, theme):
     env = Environment(
         loader=FileSystemLoader(theme),
         autoescape=select_autoescape(['html', 'xml'])
@@ -83,7 +83,7 @@ def render(album, excluded, output_directory, theme):
 
     keys = tuple(album.keys())
     for index in range(len(keys)):
-        album_page = render_album_page(album, keys, index, album_template, output_directory)
+        album_page = render_album_page(album, keys, index, album_template)
         dst_directory = os.path.join(output_directory, keys[index])
         album_filename = os.path.join(dst_directory, "index.html")
         with open(album_filename, 'w') as fid:
