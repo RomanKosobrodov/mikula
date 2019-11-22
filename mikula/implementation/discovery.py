@@ -5,7 +5,7 @@ from mikula.implementation.images import is_image
 from mikula.implementation.md import render_markdown, INCLUDE_TEMPLATE
 
 
-def discover(directory, image_format="png"):
+def discover(directory, image_format):
     nodes = tuple(os.walk(directory, topdown=False))
     parsed = OrderedDict()
     excluded = dict()

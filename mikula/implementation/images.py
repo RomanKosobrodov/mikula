@@ -65,15 +65,20 @@ def extract_exif_meta(meta, exif, album_meta):
         return output
 
     if exif is None:
+        if "exif" in meta:
+            del meta["exif"]
         return meta
 
     all_tags = set(meta.get("exif", tuple()))
     all_tags.update(album_meta.get("exif", tuple()))
-    extracted = get_exif_values(all_tags)
-    return meta.update(extracted)
+    meta["exif"] = get_exif_values(all_tags)
+    return meta
 
 
-def process_images(source_directory, parsed, excluded, output, height=600, image_format="png", thumbnail_height=200):
+def process_images(source_directory, parsed, excluded, output, config):
+    image_format = config["image_format"]
+    height = config["image_height"]
+    thumbnail_height = config["thumbnail_height"]
     images_dst = os.path.join(output, "gallery", "images")
     thumbnails_dst = os.path.join(images_dst, "thumbnails")
     for directory, content in parsed.items():

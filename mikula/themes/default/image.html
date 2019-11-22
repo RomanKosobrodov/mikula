@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
-<a href="{{album_url}}">back to album</a>
+<a href="index.html">back to album</a>
 {% if previous %}
     <a href="{{previous}}">previous</a>
 {% endif %}
@@ -11,8 +11,8 @@
     <img class="picture" src="{{image}}">
 </div>
 <div class="image-metadata">
-    <p>Camera: {{meta["Model"]}}</p>
-    <p>Date: {{meta["DateTime"]}}</p>
-    <p>{{meta["ISOSpeedRatings"]}} ISO, {{meta["ShutterSpeedValue"]}}s, {{meta["FNumber"]}}</p>
+    <p>Camera: {{exif["Model"]}}</p>
+    <p>Date: {{exif["DateTime"]}}</p>
+    <p>{{exif["ISOSpeedRatings"]}} ISO, {{exif["ShutterSpeedValue"]}}s, {{exif["FNumber"]}}</p>
 </div>
 {% endblock body %}

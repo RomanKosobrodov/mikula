@@ -60,14 +60,13 @@ def get_image_page(image_files, image_keys, index):
 
 
 def render_image_page(gallery_root, image_files, image_keys, image_index,
-                      image_template, album_url, relative_path):
+                      image_template, relative_path):
     image_file, meta, user_template = image_files[image_keys[image_index]]
     user_generated = Template(user_template)
     html = user_generated.render(gallery_root=gallery_root,
                                  auto_generated=image_template,
-                                 album_url=album_url,
                                  image=os.path.join(relative_path, image_file),
-                                 meta=meta,
+                                 exif=meta.get("exif", None),
                                  previous=get_image_page(image_files, image_keys, image_index - 1),
                                  next=get_image_page(image_files, image_keys, image_index + 1))
     return html, f"{meta['title']}.html"
@@ -98,7 +97,6 @@ def render(album, output_directory, theme):
                                                      image_keys=image_keys,
                                                      image_index=k,
                                                      image_template=image_template,
-                                                     album_url=album_filename,
                                                      relative_path=relative_path)
             fn = os.path.join(dst_directory, filename)
             with open(fn, "w") as fid:
