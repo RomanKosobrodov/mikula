@@ -2,6 +2,13 @@ import os
 import shutil
 
 
+def input_yes_no(question):
+    reply = None
+    while reply not in ("y", "n"):
+        reply = str(input(question+' (y/n): ')).lower().strip()
+    return True if reply == "y" else False
+
+
 def extension(file):
     _, ext = os.path.splitext(file)
     ext = ext.upper()
@@ -35,3 +42,4 @@ def create_directories(parsed, theme, output_directory):
         absolute = os.path.join(output_directory, directory)
         if not os.path.isdir(absolute):
             os.mkdir(absolute)
+
