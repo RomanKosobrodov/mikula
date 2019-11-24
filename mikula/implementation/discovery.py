@@ -44,4 +44,5 @@ def discover(directory, image_format):
                     excluded[relative] = (fn, images[fn][0])
                     del images[fn]
         parsed[relative] = (path, subdirs, images, index_meta, index_content)
+    # TODO: Add rendering of error.html template
     return parsed, excluded

@@ -43,7 +43,8 @@ def render_album_page(album, keys, index, template):
     gallery_root, child_albums, meta, user_template = parse_subdirectories(album, keys, index)
     thumbnails = parse_images(album, keys, index)
     user_generated = Template(user_template)
-    html = user_generated.render(gallery_root=gallery_root,
+    html = user_generated.render(page_title=meta.get("title", keys[index]),
+                                 gallery_root=gallery_root,
                                  auto_generated=template,
                                  back=parent_album(index, len(keys)),
                                  albums=child_albums,
@@ -63,7 +64,8 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
                       image_template, relative_path):
     image_file, meta, user_template = image_files[image_keys[image_index]]
     user_generated = Template(user_template)
-    html = user_generated.render(gallery_root=gallery_root,
+    html = user_generated.render(page_title=meta["title"],
+                                 gallery_root=gallery_root,
                                  auto_generated=image_template,
                                  image=os.path.join(relative_path, image_file),
                                  exif=meta.get("exif", None),

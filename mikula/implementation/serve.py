@@ -9,4 +9,9 @@ def serve(gallery, port):
             super().__init__(*args, directory=gallery, **kwargs)
 
     with socketserver.TCPServer(("", port), Handler) as httpd:
-        httpd.serve_forever()
+        print(f"Serving on 'http:/localhost:{port}'")
+        print("Ctrl + C to exit")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("done")

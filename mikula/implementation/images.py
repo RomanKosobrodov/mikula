@@ -69,9 +69,11 @@ def extract_exif_meta(meta, exif, album_meta):
             del meta["exif"]
         return meta
 
-    all_tags = set(meta.get("exif", tuple()))
-    all_tags.update(album_meta.get("exif", tuple()))
-    meta["exif"] = get_exif_values(all_tags)
+    if "exif" in meta:
+        exif_tags = meta["exif"]
+    else:
+        exif_tags = album_meta.get("exif", tuple())
+    meta["exif"] = get_exif_values(exif_tags)
     return meta
 
 

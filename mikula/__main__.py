@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description="Static Image Gallery Generator")
 subparsers = parser.add_subparsers()
 
 serve_parser = subparsers.add_parser("configure")
-serve_parser.add_argument("--directory",
+serve_parser.add_argument("--source",
                           help="Path to the gallery source files",
                           required=False,
                           default=os.getcwd())
@@ -22,8 +22,8 @@ serve_parser.set_defaults(function=configure)
 
 
 build_parser = subparsers.add_parser("build")
-build_parser.add_argument("--directory",
-                          help="Input directory containing images, metadata and settings",
+build_parser.add_argument("--source",
+                          help="Gallery source directory containing images, metadata and settings",
                           required=True)
 build_parser.add_argument("--output",
                           help="Output directory",

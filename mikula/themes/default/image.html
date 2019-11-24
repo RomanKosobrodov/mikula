@@ -11,8 +11,14 @@
     <img class="picture" src="{{image}}">
 </div>
 <div class="image-metadata">
-    <p>Camera: {{exif["Model"]}}</p>
-    <p>Date: {{exif["DateTime"]}}</p>
-    <p>{{exif["ISOSpeedRatings"]}} ISO, {{exif["ShutterSpeedValue"]}}s, {{exif["FNumber"]}}</p>
+    {% if exif["Model"] %}
+        <p>Camera: {{exif["Model"]}}</p>
+    {% endif %}
+    {% if exif["DateTime"] %}
+        <p>Date: {{exif["DateTime"]}}</p>
+    {% endif %}
+    {% if exif["ISOSpeedRatings"] and exif["ShutterSpeedValue"] and exif["FNumber"] %}
+        <p>{{exif["ISOSpeedRatings"]}} ISO, {{exif["ShutterSpeedValue"]}}s, {{exif["FNumber"]}}</p>
+    {% endif %}
 </div>
 {% endblock body %}

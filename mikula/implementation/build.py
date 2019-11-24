@@ -5,9 +5,9 @@ from mikula.implementation.util import create_directories
 from mikula.implementation.rendering import render
 
 
-def build(directory, output, theme):
-    config = read_configuration(directory=directory, filename="configuration.yaml")
-    album, excluded = discover(directory, config["image_format"])
+def build(source, output, theme):
+    config = read_configuration(directory=source, filename="configuration.yaml")
+    album, excluded = discover(source, config["image_format"])
     create_directories(album, theme, output)
-    process_images(directory, album, excluded, output, config)
+    process_images(source, album, excluded, output, config)
     render(album, output, theme)
