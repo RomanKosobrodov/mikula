@@ -7,7 +7,7 @@ from mikula.implementation.rendering import render
 
 def build(source, output, theme):
     config = read_configuration(directory=source, filename="configuration.yaml")
-    album, excluded = discover(source, config["image_format"])
+    album, excluded, error_page = discover(source, config["image_format"])
     create_directories(album, theme, output)
     process_images(source, album, excluded, output, config)
-    render(album, output, theme)
+    render(album, error_page, output, theme)

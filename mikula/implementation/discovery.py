@@ -2,7 +2,7 @@ import os
 import uuid
 from collections import OrderedDict
 from mikula.implementation.images import is_image
-from mikula.implementation.md import render_markdown, INCLUDE_TEMPLATE
+from mikula.implementation.md import render_markdown, INCLUDE_TEMPLATE, DEFAULT_ERROR
 
 
 def discover(directory, image_format):
@@ -44,5 +44,12 @@ def discover(directory, image_format):
                     excluded[relative] = (fn, images[fn][0])
                     del images[fn]
         parsed[relative] = (path, subdirs, images, index_meta, index_content)
-    # TODO: Add rendering of error.html template
-    return parsed, excluded
+
+    top_dir, _, files = nodes[-1]
+    if "error.md" in files:
+        fn = os.path.join(top_dir, "error.md")
+        error_meta, error_content = render_markdown(fn, add_default_template=False)
+    else:
+        error_meta = {"title": "Server Error", "page_title": "Server Error"}
+        error_content = DEFAULT_ERROR
+    return parsed, excluded, (error_meta, error_content)

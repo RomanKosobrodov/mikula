@@ -74,13 +74,25 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
     return html, f"{meta['title']}.html"
 
 
-def render(album, output_directory, theme):
+def create_error_page(page, destination, template):
+    meta, content = page
+    custom_error = Template(content)
+    html = template.render(custom_error=custom_error, **meta)
+    fn = os.path.join(destination, "error.html")
+    with open(fn, "w") as fid:
+        fid.write(html)
+
+
+def render(album, error_page, output_directory, theme):
     env = Environment(
         loader=FileSystemLoader(theme),
         autoescape=select_autoescape(['html', 'xml'])
     )
     album_template = env.get_template("album.html")
     image_template = env.get_template("image.html")
+    error_template = env.get_template("error.html")
+
+    create_error_page(error_page, output_directory, error_template)
 
     keys = tuple(album.keys())
     for index in range(len(keys)):
