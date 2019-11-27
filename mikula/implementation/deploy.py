@@ -75,7 +75,8 @@ def deploy(gallery, bucket, region):
                       aws_secret_access_key=credentials["aws_secret_access_key"])
 
     if bucket_exists(s3, bucket):
-        confirmed = input_yes_no(f"Bucket {bucket} already exists and will be deleted with all its content. Is this OK?")
+        confirmed = input_yes_no(f"Bucket {bucket} already exists and will be deleted with all its content. "
+                                 f"Is this OK?")
         if not confirmed:
             return
         delete_bucket(s3, bucket)
@@ -85,4 +86,4 @@ def deploy(gallery, bucket, region):
 
 
 if __name__ == "__main__":
-    deploy(None, None)
+    deploy("sample", "target.bucket", "unknown")

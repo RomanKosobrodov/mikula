@@ -39,16 +39,17 @@ def parent_album(index, length):
     return None
 
 
-def render_album_page(album, keys, index, template):
-    gallery_root, child_albums, meta, user_template = parse_subdirectories(album, keys, index)
+def render_album_page(album, keys, index, template, page_list):
+    gallery_root, child_albums, meta, content = parse_subdirectories(album, keys, index)
     thumbnails = parse_images(album, keys, index)
-    user_generated = Template(user_template)
-    html = user_generated.render(page_title=meta.get("title", keys[index]),
-                                 gallery_root=gallery_root,
-                                 auto_generated=template,
-                                 back=parent_album(index, len(keys)),
-                                 albums=child_albums,
-                                 thumbnails=thumbnails)
+    user_content = Template(content)
+    html = template.render(page_title=meta.get("title", keys[index]),
+                           page_list=page_list,
+                           gallery_root=gallery_root,
+                           user_content=user_content,
+                           back=parent_album(index, len(keys)),
+                           albums=child_albums,
+                           thumbnails=thumbnails)
     return html
 
 
@@ -61,12 +62,13 @@ def get_image_page(image_files, image_keys, index):
 
 
 def render_image_page(gallery_root, image_files, image_keys, image_index,
-                      image_template, relative_path):
-    image_file, meta, user_template = image_files[image_keys[image_index]]
-    user_generated = Template(user_template)
-    html = user_generated.render(page_title=meta["title"],
+                      image_template, relative_path, page_list):
+    image_file, meta, content = image_files[image_keys[image_index]]
+    user_content = Template(content)
+    html = image_template.render(page_title=meta["title"],
+                                 page_list=page_list,
                                  gallery_root=gallery_root,
-                                 auto_generated=image_template,
+                                 user_content=user_content,
                                  image=os.path.join(relative_path, image_file),
                                  exif=meta.get("exif", None),
                                  previous=get_image_page(image_files, image_keys, image_index - 1),
@@ -74,16 +76,37 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
     return html, f"{meta['title']}.html"
 
 
-def create_error_page(page, destination, template):
+def create_page(page, page_list, destination_directory, filename, template):
     meta, content = page
-    custom_error = Template(content)
-    html = template.render(custom_error=custom_error, **meta)
-    fn = os.path.join(destination, "error.html")
+    user_content = Template(content)
+    html = template.render(user_content=user_content,
+                           page_list=page_list,
+                           **meta)
+    fn = os.path.join(destination_directory, filename)
     with open(fn, "w") as fid:
         fid.write(html)
 
 
-def render(album, error_page, output_directory, theme):
+def render_pages(pages, destination_directory, template):
+    page_list = list()
+    render_list = list()
+    for basename, page in pages.items():
+        fn = f"{basename}.html"
+        meta, _ = page
+        home_page = meta.get("render_gallery_here", False)
+        if home_page:
+            fn = "index.html"
+        else:
+            render_list.append((page, fn))
+        page_list.append((meta["title"], fn))
+
+    for content, fn in render_list:
+        create_page(content, page_list, destination_directory, fn, template)
+
+    return page_list
+
+
+def render(album, error_page, pages, output_directory, theme):
     env = Environment(
         loader=FileSystemLoader(theme),
         autoescape=select_autoescape(['html', 'xml'])
@@ -92,11 +115,16 @@ def render(album, error_page, output_directory, theme):
     image_template = env.get_template("image.html")
     error_template = env.get_template("error.html")
 
-    create_error_page(error_page, output_directory, error_template)
+    page_list = list()
+    if len(pages) > 0:
+        pages_template = env.get_template("pages.html")
+        page_list = render_pages(pages, output_directory, pages_template)
+
+    create_page(error_page, page_list, output_directory, "error.html", error_template)
 
     keys = tuple(album.keys())
     for index in range(len(keys)):
-        album_page = render_album_page(album, keys, index, album_template)
+        album_page = render_album_page(album, keys, index, album_template, page_list)
         dst_directory = os.path.join(output_directory, keys[index])
         album_filename = os.path.join(dst_directory, "index.html")
         with open(album_filename, 'w') as fid:
@@ -111,7 +139,8 @@ def render(album, error_page, output_directory, theme):
                                                      image_keys=image_keys,
                                                      image_index=k,
                                                      image_template=image_template,
-                                                     relative_path=relative_path)
+                                                     relative_path=relative_path,
+                                                     page_list=page_list)
             fn = os.path.join(dst_directory, filename)
             with open(fn, "w") as fid:
                 fid.write(image_page)

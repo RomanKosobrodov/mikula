@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% block body %}
+{% include "navigation.html" %}
 {% if back %}
 <a href="{{ back }}">Back</a>
+{% endif %}
+{% if place_before %}
+    {% include user_content %}
 {% endif %}
 <div class="album-container">
     <ul class="child-albums-list">
@@ -31,4 +35,7 @@
         {% endfor %}
     </ul>
 </div>
+{% if not place_before %}
+    {% include user_content %}
+{% endif %}
 {% endblock body %}

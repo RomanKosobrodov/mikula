@@ -1,0 +1,9 @@
+<nav class="navigation-bar">
+    <ul class="page-list">
+        {% for title, link in page_list %}
+        <li>
+            <a href="{{gallery_root}}/{{link}}">{{title}}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</nav>
