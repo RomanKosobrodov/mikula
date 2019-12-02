@@ -25,9 +25,8 @@ def parse_images(album, keys, index):
     relative, _, image_files, *rest = album[keys[index]]
 
     for original, (image_file, image_meta, _) in image_files.items():
-        basename, _ = os.path.splitext(original)
-        image_name = image_meta.get("title", basename)
-        image_url = f"{image_name}.html"
+        image_name = image_meta["title"]
+        image_url = f"{image_meta['basename']}.html"
         thumbnail_url = os.path.join(relative, "gallery", "images", "thumbnails", image_file)
         output.append((image_name, image_url, os.path.normpath(thumbnail_url)))
     return output
@@ -43,7 +42,7 @@ def render_album_page(album, keys, index, template, page_list):
     gallery_root, child_albums, meta, content = parse_subdirectories(album, keys, index)
     thumbnails = parse_images(album, keys, index)
     user_content = Template(content)
-    html = template.render(page_title=meta.get("title", keys[index]),
+    html = template.render(page_title=meta.get("page_title", meta.get("title", None)),
                            page_list=page_list,
                            gallery_root=gallery_root,
                            user_content=user_content,
@@ -58,14 +57,14 @@ def get_image_page(image_files, image_keys, index):
         return None
     original = image_keys[index]
     _, meta, _ = image_files[original]
-    return f"{meta['title']}.html"
+    return f"{meta['basename']}.html"
 
 
 def render_image_page(gallery_root, image_files, image_keys, image_index,
                       image_template, relative_path, page_list):
     image_file, meta, content = image_files[image_keys[image_index]]
     user_content = Template(content)
-    html = image_template.render(page_title=meta["title"],
+    html = image_template.render(page_title=meta.get("page_title", meta["title"]),
                                  page_list=page_list,
                                  gallery_root=gallery_root,
                                  user_content=user_content,
@@ -73,7 +72,7 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
                                  exif=meta.get("exif", None),
                                  previous=get_image_page(image_files, image_keys, image_index - 1),
                                  next=get_image_page(image_files, image_keys, image_index + 1))
-    return html, f"{meta['title']}.html"
+    return html, f"{meta['basename']}.html"
 
 
 def create_page(page, page_list, destination_directory, filename, template):

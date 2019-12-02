@@ -15,7 +15,7 @@
                 {% if thumbnail %}
                 <img class="album-thumbnail" src="{{ thumbnail }}"/>
                 {% else %}
-                <img class="album-thumbnail" src="{{gallery_root}}/assets/images/folder.svg"/>
+                <div class="album-default-thumbnail"></div>
                 {% endif %}
             </a>
             <p class="child-album-title">{{ title }}</p>

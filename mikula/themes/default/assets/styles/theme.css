@@ -1,7 +1,30 @@
+.navigation-page-list{
+ display: flex;
+ flex-direction: row;
+}
+
+.navigation-page-list li{
+    list-style-type: none;
+}
+
 .child-albums-list {
     list-style-type: none;
 }
 
 .thumbnails-list {
     list-style-type: none;
+}
+
+.child-albums-list {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+}
+
+.album-default-thumbnail{
+    background-image: url("../images/folder.svg");
+    background-position: centre;
+    background-repeat: no-repeat;
+    height: 200px;
+    width: auto;
+    align-content: centre;
 }

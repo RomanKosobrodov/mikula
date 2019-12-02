@@ -2,7 +2,7 @@ import os
 import uuid
 from collections import OrderedDict
 from mikula.implementation.images import is_image
-from mikula.implementation.md import render_markdown, DEFAULT_ERROR
+from mikula.implementation.md import render_markdown, DEFAULT_ERROR, DEFAULT_PAGE_META
 
 
 PAGES_DIR = "__pages__"
@@ -12,7 +12,7 @@ def parse_pages(directory, files):
     parsed = OrderedDict()
     for file in files:
         fn = os.path.join(directory, file)
-        meta, content = render_markdown(fn)
+        meta, content = render_markdown(fn, DEFAULT_PAGE_META)
         basename, _ = os.path.splitext(file)
         if "title" not in meta:
             meta["title"] = basename
@@ -49,7 +49,7 @@ def discover(directory, image_format):
         for file in files:
             fn = os.path.join(source_dir, file)
             if "index.md" in file.lower():
-                index_meta, index_content = render_markdown(fn)
+                index_meta, index_content = render_markdown(fn, DEFAULT_PAGE_META)
                 continue
             if is_image(fn):
                 image_id = str(uuid.uuid4())
@@ -62,6 +62,7 @@ def discover(directory, image_format):
                 else:
                     meta = {"title": basename}
                     html = ""
+                meta["basename"] = basename
                 images[file] = (image_file, meta, html)
 
         relative = os.path.relpath(source_dir, directory)
