@@ -1,6 +1,6 @@
 import argparse
 import os
-from mikula.implementation.configure import configure
+from mikula.implementation.configure import configure, read_configuration, DEFAULTS
 from mikula.implementation.build import build
 from mikula.implementation.serve import serve
 from mikula.implementation.deploy import deploy
@@ -51,11 +51,10 @@ deploy_parser.add_argument("--gallery",
                            required=False)
 deploy_parser.add_argument("--bucket",
                            help="Name of AWS S3 bucket",
-                           default=None,
-                           required=False)
+                           required=True)
 deploy_parser.add_argument("--region",
                            help="Name of AWS S3 region",
-                           default=None,
+                           default=read_configuration().get("region", DEFAULTS["region"]),
                            required=False)
 deploy_parser.set_defaults(function=deploy)
 

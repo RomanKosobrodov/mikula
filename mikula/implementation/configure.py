@@ -4,7 +4,8 @@ import os
 DEFAULTS = {
     "image_format": "png",
     "image_height": 600,
-    "thumbnail_height": 200
+    "thumbnail_height": 200,
+    "region": ""
 }
 
 AWS_REGIONS = ("us-east-2", "us-east-1", "us-west-1", "us-west-2",
@@ -73,4 +74,3 @@ def read_credentials(filename="credentials"):
                 k, v = parse_credentials(line)
                 credentials[k] = v
     return credentials
-
