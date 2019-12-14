@@ -1,25 +1,33 @@
 {% extends "base.html" %}
 {% block body %}
 <a href="index.html">back to album</a>
-{% if previous %}
-    <a href="{{previous}}">previous</a>
+{% if previous_ %}
+    <a href="{{previous_}}">previous</a>
 {% endif %}
-{% if next %}
-    <a href="{{next}}">next</a>
+{% if next_ %}
+    <a href="{{next_}}">next</a>
 {% endif %}
-{% include user_content %}
+{% if place_before %}
+    {% include user_content_ %}
+{% endif %}
 <div class="image-container">
-    <img class="picture" src="{{image}}">
+    <img class="picture" src="{{image_}}">
 </div>
 <div class="image-metadata">
-    {% if exif["Model"] %}
-        <p>Camera: {{exif["Model"]}}</p>
-    {% endif %}
-    {% if exif["DateTime"] %}
-        <p>Date: {{exif["DateTime"]}}</p>
-    {% endif %}
-    {% if exif["ISOSpeedRatings"] and exif["ShutterSpeedValue"] and exif["FNumber"] %}
-        <p>{{exif["ISOSpeedRatings"]}} ISO, {{exif["ShutterSpeedValue"]}}s, {{exif["FNumber"]}}</p>
+    {% if exif %}
+        {% if exif["Model"] %}
+            <p>Camera: {{exif["Model"]}}</p>
+        {% endif %}
+        {% if exif["DateTime"] %}
+            <p>Date: {{exif["DateTime"]}}</p>
+        {% endif %}
+        {% if exif["ISOSpeedRatings"] and exif["ShutterSpeedValue"] and exif["FNumber"] %}
+            <p>{{exif["ISOSpeedRatings"]}} ISO, {{exif["ShutterSpeedValue"]}}s, {{exif["FNumber"]}}</p>
+        {% endif %}
     {% endif %}
 </div>
+{% if not place_before %}
+    {% include user_content_ %}
+{% endif %}
+
 {% endblock body %}

@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
 {% include "navigation.html" %}
-{% if back %}
-<a href="{{ back }}">Back</a>
+{% if back_ %}
+<a href="{{ back_ }}">Back</a>
 {% endif %}
 {% if place_before %}
-    {% include user_content %}
+    {% include user_content_ %}
 {% endif %}
 <div class="album-container">
     <ul class="child-albums-list">
-        {% for title, url, thumbnail in albums %}
+        {% for title, url, thumbnail in albums_ %}
         <li>
             <a href="{{ url }}">
                 {% if thumbnail %}
@@ -25,7 +25,7 @@
 </div>
 <div class="thumbnail-container">
     <ul class="thumbnails-list">
-        {% for title, url, thumbnail in thumbnails %}
+        {% for title, url, thumbnail in thumbnails_ %}
         <li class="thumbnail-item">
             <a href="{{ url }}">
                 <img class="picture" src="{{ thumbnail }}"/>
@@ -36,6 +36,6 @@
     </ul>
 </div>
 {% if not place_before %}
-    {% include user_content %}
+    {% include user_content_ %}
 {% endif %}
 {% endblock body %}

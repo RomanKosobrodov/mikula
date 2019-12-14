@@ -42,13 +42,15 @@ def render_album_page(album, keys, index, template, page_list):
     gallery_root, child_albums, meta, content = parse_subdirectories(album, keys, index)
     thumbnails = parse_images(album, keys, index)
     user_content = Template(content)
-    html = template.render(page_title=meta.get("page_title", meta.get("title", None)),
-                           page_list=page_list,
-                           gallery_root=gallery_root,
-                           user_content=user_content,
-                           back=parent_album(index, len(keys)),
-                           albums=child_albums,
-                           thumbnails=thumbnails)
+    if "page_title" not in meta.keys():
+        meta["page_title"] = meta["title"]
+    html = template.render(page_list_=page_list,
+                           gallery_root_=gallery_root,
+                           user_content_=user_content,
+                           back_=parent_album(index, len(keys)),
+                           albums_=child_albums,
+                           thumbnails_=thumbnails,
+                           **meta)
     return html
 
 
@@ -64,14 +66,15 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
                       image_template, relative_path, page_list):
     image_file, meta, content = image_files[image_keys[image_index]]
     user_content = Template(content)
-    html = image_template.render(page_title=meta.get("page_title", meta["title"]),
-                                 page_list=page_list,
-                                 gallery_root=gallery_root,
-                                 user_content=user_content,
-                                 image=os.path.join(relative_path, image_file),
-                                 exif=meta.get("exif", None),
-                                 previous=get_image_page(image_files, image_keys, image_index - 1),
-                                 next=get_image_page(image_files, image_keys, image_index + 1))
+    if "page_title" not in meta.keys():
+        meta["page_title"] = meta["title"]
+    html = image_template.render(page_list_=page_list,
+                                 gallery_root_=gallery_root,
+                                 user_content_=user_content,
+                                 image_=os.path.join(relative_path, image_file),
+                                 previous_=get_image_page(image_files, image_keys, image_index - 1),
+                                 next_=get_image_page(image_files, image_keys, image_index + 1),
+                                 **meta)
     return html, f"{meta['basename']}.html"
 
 

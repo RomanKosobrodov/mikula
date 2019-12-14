@@ -1,21 +1,18 @@
 .navigation-page-list{
  display: flex;
  flex-direction: row;
+ justify-content: centre;
 }
 
 .navigation-page-list li{
     list-style-type: none;
+    margin: 10px;
 }
 
-.child-albums-list {
+.child-albums-list,
+.thumbnails-list
+ {
     list-style-type: none;
-}
-
-.thumbnails-list {
-    list-style-type: none;
-}
-
-.child-albums-list {
     display: grid;
     grid-template-columns: repeat(4, auto);
 }
