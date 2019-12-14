@@ -82,7 +82,7 @@ def create_page(page, page_list, destination_directory, filename, template):
     meta, content = page
     user_content = Template(content)
     html = template.render(user_content_=user_content,
-                           page_list=page_list,
+                           page_list_=page_list,
                            **meta)
     fn = os.path.join(destination_directory, filename)
     with open(fn, "w") as fid:
