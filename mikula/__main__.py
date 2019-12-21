@@ -20,27 +20,29 @@ serve_parser.add_argument("--reset",
                           default=False)
 serve_parser.set_defaults(function=configure)
 
-
 build_parser = subparsers.add_parser("build")
 build_parser.add_argument("--source",
                           help="Gallery source directory containing images, metadata and settings",
-                          required=True)
+                          default=os.getcwd(),
+                          required=False)
 build_parser.add_argument("--output",
                           help="Output directory",
                           required=True)
 build_parser.add_argument("--theme",
-                          help="theme directory",
-                          default="./themes/default",
+                          help="theme",
+                          default="default",
                           required=False)
 build_parser.set_defaults(function=build)
 
 serve_parser = subparsers.add_parser("serve")
 serve_parser.add_argument("--gallery",
-                          help="path to the gallery")
+                          help="path to the gallery",
+                          default=os.getcwd(),
+                          required=False)
 serve_parser.add_argument("--port",
                           help="Output directory",
                           type=int,
-                          default=4200,
+                          default=5000,
                           required=False)
 serve_parser.set_defaults(function=serve)
 

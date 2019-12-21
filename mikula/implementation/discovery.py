@@ -1,47 +1,33 @@
 import os
 import uuid
+import glob
 from collections import OrderedDict
 from mikula.implementation.images import is_image
 from mikula.implementation.md import render_markdown, DEFAULT_ERROR, DEFAULT_PAGE_META
+from mikula.implementation import settings
+from mikula.implementation.util import walk
+
+PAGES_DIR = settings.pages_source
+IGNORED = settings.ignored
 
 
-PAGES_DIR = "__pages__"
-
-
-def parse_pages(directory, files):
+def parse_pages(source_directory):
     parsed = OrderedDict()
-    for file in files:
-        fn = os.path.join(directory, file)
+    pattern = os.path.join(source_directory, PAGES_DIR, "*.md")
+    for fn in glob.glob(pattern):
         meta, content = render_markdown(fn, DEFAULT_PAGE_META)
-        basename, _ = os.path.splitext(file)
+        basename, _ = os.path.splitext(os.path.basename(fn))
         if "title" not in meta:
             meta["title"] = basename
         parsed[basename] = (meta, content)
     return parsed
 
 
-def remove_item(a_list, element):
-    index = -1
-    for k, e in enumerate(a_list):
-        if e == element:
-            index = k
-            break
-    if index >= 0:
-        del a_list[index]
-
-
 def discover(directory, image_format):
-    nodes = tuple(os.walk(directory, topdown=False))
+    nodes = walk(directory, exclude=IGNORED, topdown=False)
     parsed = OrderedDict()
-    pages = OrderedDict()
     excluded = dict()
     for source_dir, subdirs, files in nodes:
-        if PAGES_DIR in source_dir.lower():
-            pages = parse_pages(source_dir, files)
-            continue
-
-        remove_item(subdirs, PAGES_DIR)
-
         images = OrderedDict()
         index_content = ""
         index_meta = dict()
@@ -86,4 +72,4 @@ def discover(directory, image_format):
         error_meta = {"title": "Server Error", "page_title": "Server Error"}
         error_content = DEFAULT_ERROR
 
-    return parsed, excluded, (error_meta, error_content), pages
+    return parsed, excluded, (error_meta, error_content)

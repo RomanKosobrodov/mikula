@@ -93,3 +93,6 @@ def deploy(gallery, bucket, region):
 
     configure_website_bucket(s3, bucket_name=bucket)
     upload_gallery(gallery, s3, bucket_name=bucket)
+    url = f"http://{bucket}.s3-website-{region}.amazonaws.com"
+    print("\nWebsite deployed successfully")
+    print(f"It is available at {url}")

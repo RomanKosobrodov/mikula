@@ -17,7 +17,7 @@ def include_themes(themes_directory):
 
 setuptools.setup(
     name="mikula",
-    version="0.0.1",
+    version="0.0.2",
     author="Roman Kosobrodov",
     author_email="mikula@kosobrodov.net",
     description="Static web gallery generator",

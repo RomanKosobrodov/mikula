@@ -1,11 +1,14 @@
 import os
 from PIL import Image, ExifTags
 from mikula.implementation.exif import nominal_shutter_speed, nominal_f_number, nominal_aperture
+from mikula.implementation.settings import gallery_dir, images_dir, thumbnails_dir
 
 EXIF_ORIENTATION = 0x0112
 ROTATION = {3: 180, 6: 270, 8: 90}
 TAG_CODE = {key: value for key, value in zip(ExifTags.TAGS.values(), ExifTags.TAGS.keys())}
-
+GALLERY = gallery_dir
+IMAGES = images_dir
+THUMBNAILS = thumbnails_dir
 
 def is_image(filename):
     try:
@@ -81,8 +84,8 @@ def process_images(source_directory, parsed, excluded, output, config):
     image_format = config["image_format"]
     height = config["image_height"]
     thumbnail_height = config["thumbnail_height"]
-    images_dst = os.path.join(output, "gallery", "images")
-    thumbnails_dst = os.path.join(images_dst, "thumbnails")
+    images_dst = os.path.join(output, GALLERY, IMAGES)
+    thumbnails_dst = os.path.join(images_dst, THUMBNAILS)
     for directory, content in parsed.items():
         relative, subdirs, images, index_meta, index_content = content
         if directory in excluded.keys():

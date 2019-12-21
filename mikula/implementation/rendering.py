@@ -1,5 +1,10 @@
 import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape, Template
+from mikula.implementation import settings
+
+GALLERY = settings.gallery_dir
+IMAGES = settings.images_dir
+THUMBNAILS = settings.thumbnails_dir
 
 
 def parse_subdirectories(album, keys, index):
@@ -13,7 +18,7 @@ def parse_subdirectories(album, keys, index):
         url = os.path.join(directory, "index.html")
         thumbnail_filename = meta.get("thumbnail", None)
         if thumbnail_filename is not None:
-            thumbnail_url = os.path.join(relative, "gallery", "images", "thumbnails", thumbnail_filename)
+            thumbnail_url = os.path.join(relative, GALLERY, IMAGES, THUMBNAILS, thumbnail_filename)
         else:
             thumbnail_url = None
         output.append((title, url, thumbnail_url))
@@ -27,7 +32,7 @@ def parse_images(album, keys, index):
     for original, (image_file, image_meta, _) in image_files.items():
         image_name = image_meta["title"]
         image_url = f"{image_meta['basename']}.html"
-        thumbnail_url = os.path.join(relative, "gallery", "images", "thumbnails", image_file)
+        thumbnail_url = os.path.join(relative, GALLERY, IMAGES, THUMBNAILS, image_file)
         output.append((image_name, image_url, os.path.normpath(thumbnail_url)))
     return output
 
@@ -45,7 +50,7 @@ def render_album_page(album, keys, index, template, page_list):
     if "page_title" not in meta.keys():
         meta["page_title"] = meta["title"]
     html = template.render(page_list_=page_list,
-                           gallery_root_=gallery_root,
+                           root_=gallery_root,
                            user_content_=user_content,
                            back_=parent_album(index, len(keys)),
                            albums_=child_albums,
@@ -69,7 +74,7 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
     if "page_title" not in meta.keys():
         meta["page_title"] = meta["title"]
     html = image_template.render(page_list_=page_list,
-                                 gallery_root_=gallery_root,
+                                 root_=gallery_root,
                                  user_content_=user_content,
                                  image_=os.path.join(relative_path, image_file),
                                  previous_=get_image_page(image_files, image_keys, image_index - 1),
@@ -134,7 +139,7 @@ def render(album, error_page, pages, output_directory, theme):
 
         relative, _, image_files, _, _ = album[keys[index]]
         image_keys = tuple(image_files.keys())
-        relative_path = os.path.join(relative, "gallery", "images")
+        relative_path = os.path.join(relative, GALLERY, IMAGES)
         for k in range(len(image_keys)):
             image_page, filename = render_image_page(gallery_root=relative,
                                                      image_files=image_files,
