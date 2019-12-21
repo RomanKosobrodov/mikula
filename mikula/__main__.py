@@ -6,7 +6,8 @@ from mikula.implementation.serve import serve
 from mikula.implementation.deploy import deploy
 
 
-parser = argparse.ArgumentParser(description="Static Image Gallery Generator")
+parser = argparse.ArgumentParser(description="Static Image Gallery Generator",
+                                 usage="mikula [-h] {configure,build,serve,deploy} ...")
 subparsers = parser.add_subparsers()
 
 serve_parser = subparsers.add_parser("configure")
@@ -62,8 +63,8 @@ deploy_parser.set_defaults(function=deploy)
 
 args = parser.parse_args()
 
-command = args.function
-delattr(args, "function")
-kwargs = vars(args)
-
-command(**kwargs)
+if "function" in args:
+    command = args.function
+    delattr(args, "function")
+    kwargs = vars(args)
+    command(**kwargs)
