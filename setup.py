@@ -17,7 +17,7 @@ def include_themes(themes_directory):
 
 setuptools.setup(
     name="mikula",
-    version="0.0.2",
+    version="0.0.3",
     author="Roman Kosobrodov",
     author_email="mikula@kosobrodov.net",
     description="Static web gallery generator",
@@ -29,6 +29,7 @@ setuptools.setup(
     package_data={
         'mikula': include_themes("mikula/themes")
     },
+    scripts=['bin/mikula'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent"
