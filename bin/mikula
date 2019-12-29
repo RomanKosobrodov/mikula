@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from mikula.implementation.cli import create_parser()
+from mikula.implementation.cli import create_parser
 from mikula import __version__
 
 parser = create_parser()
