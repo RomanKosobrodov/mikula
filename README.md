@@ -68,6 +68,8 @@ The url has the following format:
 ## Packaging
 Run `setup.py` to build the package and `twine` to upload it to PyPI:
 ```bash
+rm dist/*
+rm -rf build/*
 python3.7 setup.py sdist bdist_wheel
 twine upload dist/* 
 ```

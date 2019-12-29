@@ -14,4 +14,4 @@ def serve(gallery, port):
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("done")
+            print("\ndone")

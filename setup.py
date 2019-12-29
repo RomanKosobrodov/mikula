@@ -6,18 +6,32 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
-def include_themes(themes_directory):
-    wildcards = list()
+PATH = os.path.dirname(__file__)
+
+
+def include_data(themes_directory, *extra):
+    content = list()
     path = pathlib.Path(themes_directory)
     for current, _, _ in os.walk(themes_directory):
         relative = os.path.relpath(current, path.parent)
-        wildcards.append(os.path.join(relative, "*"))
-    return wildcards
+        content.append(os.path.join(relative, "*"))
+    content.extend(extra)
+    return content
 
+
+def get_version():
+    with open(os.path.join(PATH, "mikula", "VERSION")) as version_file:
+        version = version_file.read().strip()
+    return version
+
+
+print(include_data(os.path.join("mikula", "themes"),
+                   "VERSION",
+                    "LICENSE"))
 
 setuptools.setup(
     name="mikula",
-    version="0.0.3",
+    version=get_version(),
     author="Roman Kosobrodov",
     author_email="mikula@kosobrodov.net",
     description="Static web gallery generator",
@@ -27,7 +41,7 @@ setuptools.setup(
     url="https://github.com/RomanKosobrodov/mikula",
     packages=setuptools.find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_data={
-        'mikula': include_themes("mikula/themes")
+        'mikula': include_data(os.path.join("mikula", "themes"), "VERSION")
     },
     scripts=['bin/mikula'],
     classifiers=[

@@ -9,6 +9,11 @@ from mikula.implementation.deploy import deploy
 def create_parser():
     parser = argparse.ArgumentParser(description="Static Image Gallery Generator",
                                      usage="mikula [-h] {configure,build,serve,deploy} ...")
+    parser.add_argument("--version",
+                        help="Print version number",
+                        action="store_true",
+                        default=False)
+
     subparsers = parser.add_subparsers()
 
     serve_parser = subparsers.add_parser("configure")
