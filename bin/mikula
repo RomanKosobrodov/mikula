@@ -14,6 +14,7 @@ if args.version:
 if "function" in args:
     command = args.function
     delattr(args, "function")
+    delattr(args, "version")
     kwargs = vars(args)
     command(**kwargs)
 
