@@ -50,7 +50,7 @@ cd mikula-sample-gallery
 ```bash
 mikula configure
 ```
-If you have a AWS S3 account you can provide your access key id, access key and region.
+If you have a AWS S3 account you can provide your access key, secret and region.
 Otherwise, skip these settings.
 
 ### Build sample gallery
@@ -111,7 +111,7 @@ python -m mikula -h
 to get a list of all supported commands and arguments.
 
 
-### Package and upload
+### Package and upload to PyPI
 Run `setup.py` to build the package and `twine` to upload it to PyPI:
 ```bash
 rm dist/*
