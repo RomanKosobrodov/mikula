@@ -23,7 +23,7 @@ def save_credentials(filename, credentials):
             fid.write(f"{key}={value}\n")
 
 
-def configure(source, filename="configuration.yaml", reset=False):
+def configure(reset=False):
     user_dir = os.path.expanduser("~")
     mikula_dir = os.path.join(user_dir, ".mikula")
     if not os.path.isdir(mikula_dir):
@@ -42,9 +42,6 @@ def configure(source, filename="configuration.yaml", reset=False):
                 print(f"Unsupported region '{region}'. Please select one of the regions: {AWS_REGIONS}")
                 return
         save_credentials(credentials_fn, credentials)
-    fn = os.path.join(source, filename)
-    with open(fn, "w") as fid:
-        yaml.dump(DEFAULTS, fid)
 
 
 def read_configuration(directory=".", filename="configuration.yaml"):
