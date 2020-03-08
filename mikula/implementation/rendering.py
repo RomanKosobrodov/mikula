@@ -5,6 +5,7 @@ from mikula.implementation import settings
 GALLERY = settings.gallery_dir
 IMAGES = settings.images_dir
 THUMBNAILS = settings.thumbnails_dir
+USER_ASSETS = settings.user_assets_dir
 
 
 def parse_subdirectories(album, keys, index):
@@ -49,6 +50,7 @@ def render_album_page(album, keys, index, template, page_list):
     user_content = Template(content)
     if "page_title" not in meta.keys():
         meta["page_title"] = meta["title"]
+    meta["assets"] = os.path.join(gallery_root, USER_ASSETS)
     html = template.render(page_list_=page_list,
                            root_=gallery_root,
                            user_content_=user_content,
@@ -73,6 +75,7 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
     user_content = Template(content)
     if "page_title" not in meta.keys():
         meta["page_title"] = meta["title"]
+    meta["assets"] = os.path.join(gallery_root, USER_ASSETS)
     html = image_template.render(page_list_=page_list,
                                  root_=gallery_root,
                                  user_content_=user_content,

@@ -76,7 +76,13 @@ def upload_gallery(gallery, s3_resource, bucket_name):
                                             ContentType=mime_type[0])
 
 
-def deploy(gallery, bucket, region):
+def deploy(bucket, region):
+    gallery = os.path.join(os.getcwd(), "build")
+    if not os.path.isdir(gallery):
+        print("The gallery has not been built yet.")
+        print("Use 'mikula build' to generate your gallery and `mikula serve` to test it locally.")
+        return
+
     credentials = read_credentials()
     s3 = boto3.resource('s3',
                         aws_access_key_id=credentials["aws_access_key_id"],

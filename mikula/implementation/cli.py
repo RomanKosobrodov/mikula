@@ -1,5 +1,5 @@
 import argparse
-import os
+from mikula.implementation.initialise import initialise
 from mikula.implementation.configure import configure, read_configuration, DEFAULTS
 from mikula.implementation.build import build
 from mikula.implementation.serve import serve
@@ -16,11 +16,10 @@ def create_parser():
 
     subparsers = parser.add_subparsers()
 
+    serve_parser = subparsers.add_parser("init")
+    serve_parser.set_defaults(function=initialise)
+
     serve_parser = subparsers.add_parser("configure")
-    serve_parser.add_argument("--source",
-                              help="Path to the gallery source files",
-                              required=False,
-                              default=os.getcwd())
     serve_parser.add_argument("--reset",
                               help="Reset AWS credentials",
                               action="store_true",
@@ -28,36 +27,21 @@ def create_parser():
     serve_parser.set_defaults(function=configure)
 
     build_parser = subparsers.add_parser("build")
-    build_parser.add_argument("--source",
-                              help="Gallery source directory containing images, metadata and settings",
-                              default=os.getcwd(),
-                              required=False)
-    build_parser.add_argument("--output",
-                              help="Output directory",
-                              required=True)
     build_parser.add_argument("--theme",
-                              help="theme",
+                              help="Mikula theme",
                               default="default",
                               required=False)
     build_parser.set_defaults(function=build)
 
     serve_parser = subparsers.add_parser("serve")
-    serve_parser.add_argument("--gallery",
-                              help="path to the gallery",
-                              default=os.getcwd(),
-                              required=False)
     serve_parser.add_argument("--port",
-                              help="Output directory",
+                              help="port number (default is 5000)",
                               type=int,
                               default=5000,
                               required=False)
     serve_parser.set_defaults(function=serve)
 
     deploy_parser = subparsers.add_parser("deploy")
-    deploy_parser.add_argument("--gallery",
-                               help="path to the gallery",
-                               default=os.getcwd(),
-                               required=False)
     deploy_parser.add_argument("--bucket",
                                help="Name of AWS S3 bucket",
                                required=True)

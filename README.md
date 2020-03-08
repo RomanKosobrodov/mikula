@@ -34,62 +34,83 @@ mikula --version
 ```
 
 ## Getting Started with Mikula
-Once you installed Mikula, clone a sample gallery from [GitHub](https://github.com/RomanKosobrodov/mikula-sample-gallery):
-
+### Create a directory for your new gallery
+Mikula is a command-line tool, so fire up your favourite Terminal program.
+Create a directory for your new gallery. For example:
 ```bash
-git clone https://github.com/RomanKosobrodov/mikula-sample-gallery
+mkdir ~/mikula-gallery
+```
+or 
+```bash
+mkdir ~/Desktop/mikula-gallery
+```
+Navigate into this directory:
+```bash
+cd ~/mikula-gallery
+```
+or 
+```bash
+cd ~/Desktop/mikula-gallery
 ```
 
-### Navigate to the gallery directory
-
+### Initialise Mikula
+When you run
 ```bash
-cd mikula-sample-gallery
+mikula init
 ```
+it will create a stub gallery consisting of one album, including one picture and three pages: Home, About and Contact.
+Put your source files (images and text) into the `source` directory. Create a subdirectory for each album in the gallery. 
+When you build your gallery it will be saved in the `build` directory. You can use Mikula to deploy it to AWS S3 bucket 
+(provided you have an AWS account with sufficient priviligies) or upload it manually to your web server.
 
-### Configure Mukula
+### Configure AWS credentials
+If you choose to use AWS S3 to host your gallery, provide Mikula with your AWS credentials by running this command:
 ```bash
 mikula configure
 ```
-If you have a AWS S3 account you can provide your access key, secret and region.
-Otherwise, skip these settings.
+This step is optional if you use a different hosting method.
 
-### Build sample gallery
-
-Choose the output directory and run:
+### Build the gallery
+Run
 ```bash
-mikula build --output=<your-output-directory>
+mikula build
 ```
+to generate your gallery in the `build` directory.
 
-### View
-Run the development server and check the results
+### Try it
+You can test the results by running a local web server:
 ```bash
 mikula serve
 ```
-Click on the [link](http://localhost:5000) to open the gallery in your browser.
-To exit the server press `Ctrl + C` (or `Command + C` on Mac).
-
-### Deploy
-If you configured your AWS S3 credentials you can deploy your gallery to AWS S3.
-Choose a name for the bucket which is unique for AWS and run:
+You gallery should be available on [http://localhost:5000](http://localhost:5000) 
+Optionally, you can specify a different port number, for example:
 ```bash
-mikula deploy --bucket <your-bucket-name>
+mikula serve --port 1234
 ```
-Check that everything is working as expected by opening your website.
-The url has the following format:
-```
-<your-bucket-name>.s3-website-<your-AWS-region>.amazonaws.com
-```
+will run the server on [http://localhost:1234](http://localhost:1234)
 
-## Installing from source
+### Deployment
+Run 
+```bash
+mikula deploy --bucket <bucket-name> --region <AWS-region>
+```
+to deploy the website on AWS S3.
+Alternatively, copy the content of the `build` directory to your web server. For example:
+```bash
+scp -rp build user@example.com:/www/
+```
+will copy all the files and subdirectories from `build` into `/www/` on your server.
 
-### Get the source
+# Installing from source
+
+## Get the source
 
 Clone the project repository from GitHub:
 ```bash
 git clone https://github.com/RomanKosobrodov/mikula.git
 ```
 
-### Install dependencies
+## Install dependencies
 
 You will need development requirements:
 ```bash
@@ -97,25 +118,25 @@ pip install -r requirements-dev.txt
 ```
 As usual, it is a good idea to use a virtual environment.
 
-### Run Mikula
+## Run Mikula
 
 To run the package installed from source use the following command:
 ```bash
 python -m mikula <command> <options>
 ```
-Where `<command>` is one of `configure`, `build`, `serve` or `deploy`, and `<options>` are 
+Where `<command>` is one of `init`, `configure`, `build`, `serve` or `deploy`, and `<options>` are 
 command arguments. Run
 ```bash
 python -m mikula -h
 ```
 to get a list of all supported commands and arguments.
 
-
 ### Package and upload to PyPI
+
 Run `setup.py` to build the package and `twine` to upload it to PyPI:
 ```bash
 rm dist/*
 rm -rf build/*
-python3.7 setup.py sdist bdist_wheel
+python3.8 setup.py sdist bdist_wheel
 twine upload dist/* 
 ```
