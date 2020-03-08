@@ -9,12 +9,13 @@ with open("README.md", "r") as fh:
 PATH = os.path.dirname(__file__)
 
 
-def include_data(themes_directory, *extra):
+def include_data(root, directories, *extra):
     content = list()
-    path = pathlib.Path(themes_directory)
-    for current, _, _ in os.walk(themes_directory):
-        relative = os.path.relpath(current, path.parent)
-        content.append(os.path.join(relative, "*"))
+    root_path = pathlib.Path(root)
+    for directory in directories:
+        for current, _, _ in os.walk(os.path.join(root, directory)):
+            relative = os.path.relpath(current, root_path)
+            content.append(os.path.join(relative, "*"))
     content.extend(extra)
     return content
 
@@ -25,9 +26,11 @@ def get_version():
     return version
 
 
-print(include_data(os.path.join("mikula", "themes"),
-                   "VERSION",
-                    "LICENSE"))
+INCLUDE_DIRS = ("themes",
+                os.path.join("implementation", "skeleton"))
+INCLUDED_DATA = include_data("mikula", INCLUDE_DIRS, "VERSION")
+
+print(INCLUDED_DATA)
 
 setuptools.setup(
     name="mikula",
@@ -41,7 +44,7 @@ setuptools.setup(
     url="https://github.com/RomanKosobrodov/mikula",
     packages=setuptools.find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_data={
-        'mikula': include_data(os.path.join("mikula", "themes"), "VERSION")
+        'mikula': INCLUDED_DATA
     },
     scripts=['bin/mikula'],
     classifiers=[
