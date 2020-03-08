@@ -4,6 +4,8 @@ from mikula.implementation.configure import configure, read_configuration, DEFAU
 from mikula.implementation.build import build
 from mikula.implementation.serve import serve
 from mikula.implementation.deploy import deploy
+from mikula.implementation.customize import customize
+import os
 
 
 def create_parser():
@@ -50,6 +52,20 @@ def create_parser():
                                default=read_configuration().get("region", DEFAULTS["region"]),
                                required=False)
     deploy_parser.set_defaults(function=deploy)
+
+    customize_parser = subparsers.add_parser("customize")
+    customize_parser.add_argument("--theme",
+                                  help="Name of Mikula theme you wish to customize",
+                                  required=True)
+    customize_parser.add_argument("--prototype",
+                                  help="Name of prototype Mikula theme you wish to customize",
+                                  default="default",
+                                  required=False)
+    customize_parser.add_argument("--destination",
+                                  help="Destination directory for the custom theme",
+                                  default=os.path.join(os.getcwd(), "themes"),
+                                  required=False)
+    customize_parser.set_defaults(function=customize)
 
     return parser
 
