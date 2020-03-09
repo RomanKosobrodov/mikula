@@ -30,8 +30,6 @@ INCLUDE_DIRS = ("themes",
                 os.path.join("implementation", "skeleton"))
 INCLUDED_DATA = include_data("mikula", INCLUDE_DIRS, "VERSION")
 
-print(INCLUDED_DATA)
-
 setuptools.setup(
     name="mikula",
     version=get_version(),
