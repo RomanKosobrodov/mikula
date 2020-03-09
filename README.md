@@ -16,7 +16,28 @@ Mikula is a Ukrainian version of name Nicholas.
 
 
 ## Installation
-Use pip to install Mikula
+
+### Python 
+You will need Python version 3.8 or above to run Mikula.
+If you don't have Python 3.8 installed on your system follow the instructions on [python.org](https://www.python.org/downloads/).
+
+### Pip
+`Pip` is python package manager. Check that you have the correct version installed by running:
+```bash
+pip --version
+```
+You should see pip version number and python path with `(python 3.8)` or higher at the end.
+If you see a different version number or get `command not found` install pip:
+```bash
+python3.8 -m pip install pip
+```
+You might also want to upgrade pip to the latest version:
+```bash
+python3.8 -m pip install --upgrade pip
+```
+
+### Install Mikula with pip
+With pip set up, install Mikula
 ```bash
 pip install mikula
 ```
@@ -26,7 +47,7 @@ pip install --user mikula
 ```
 When updating from a previous version:
 ```bash
-pip install --update mikula
+pip install --upgrade mikula
 ```
 Check your installation:
 ```bash
