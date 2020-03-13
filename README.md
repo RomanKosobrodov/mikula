@@ -122,6 +122,19 @@ scp -rp build user@example.com:/www/
 ```
 will copy all the files and subdirectories from `build` into `/www/` on your server.
 
+### Theme Customisation
+
+Mikula themes can be customised. To create a new theme based on an existing one
+use the following command:
+```bash
+mikula customise --theme <my-awesome-theme> --prototype <default> --destination <theme-directory>
+```
+This will copy the prototype theme in the specified destination directory.
+The custom theme can be used with the `build` command:
+```bash
+mikula build --theme <my-awesome-theme>
+```
+
 # Installing from source
 
 ## Get the source

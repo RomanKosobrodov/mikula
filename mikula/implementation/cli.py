@@ -55,7 +55,7 @@ def create_parser():
 
     customize_parser = subparsers.add_parser("customize")
     customize_parser.add_argument("--theme",
-                                  help="Name of Mikula theme you wish to customize",
+                                  help="Name for your new theme",
                                   required=True)
     customize_parser.add_argument("--prototype",
                                   help="Name of prototype Mikula theme you wish to customize",
