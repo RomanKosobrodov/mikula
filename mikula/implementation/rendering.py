@@ -49,7 +49,7 @@ def render_album_page(album, keys, index, template, page_list):
     thumbnails = parse_images(album, keys, index)
     user_content = Template(content)
     if "page_title" not in meta.keys():
-        meta["page_title"] = meta["title"]
+        meta["page_title"] = meta.get("title", "")
     meta["assets"] = os.path.join(gallery_root, USER_ASSETS)
     html = template.render(page_list_=page_list,
                            root_=gallery_root,

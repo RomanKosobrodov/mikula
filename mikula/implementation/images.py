@@ -10,6 +10,7 @@ GALLERY = gallery_dir
 IMAGES = images_dir
 THUMBNAILS = thumbnails_dir
 
+
 def is_image(filename):
     try:
         Image.open(filename)
@@ -95,6 +96,7 @@ def process_images(source_directory, parsed, excluded, output, config):
                           image_format, thumbnail_height)
         for original, record in images.items():
             converted, meta, _ = record
+            print(os.path.join(directory, original))
             exif = convert_image(original, converted, directory, images_dst, thumbnails_dst, source_directory, height,
                                  image_format, thumbnail_height)
             meta = extract_exif_meta(meta, exif, index_meta)

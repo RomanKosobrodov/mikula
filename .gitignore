@@ -3,6 +3,7 @@
 /images/
 __pycache__/
 todo.list
+list_exif_tags.py
 
 # Compiled python modules.
 *.pyc

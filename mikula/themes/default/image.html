@@ -15,14 +15,16 @@
 </div>
 <div class="image-metadata">
     {% if exif %}
-        {% if exif["Model"] %}
-            <p>Camera: {{exif["Model"]}}</p>
-        {% endif %}
-        {% if exif["DateTime"] %}
-            <p>Date: {{exif["DateTime"]}}</p>
-        {% endif %}
-        {% if exif["ISOSpeedRatings"] and exif["ShutterSpeedValue"] and exif["FNumber"] %}
-            <p>{{exif["ISOSpeedRatings"]}} ISO, {{exif["ShutterSpeedValue"]}}s, {{exif["FNumber"]}}</p>
+        {% if show_exif %}
+            {% if exif["Model"] %}
+                <p>Camera: {{exif["Model"]}}</p>
+            {% endif %}
+            {% if exif["DateTime"] %}
+                <p>Date: {{exif["DateTime"]}}</p>
+            {% endif %}
+            {% if exif["ISOSpeedRatings"] and exif["ShutterSpeedValue"] and exif["FNumber"] %}
+                <p>{{exif["ISOSpeedRatings"]}} ISO, {{exif["ShutterSpeedValue"]}}s, {{exif["FNumber"]}}</p>
+            {% endif %}
         {% endif %}
     {% endif %}
 </div>

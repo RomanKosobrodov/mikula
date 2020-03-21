@@ -27,4 +27,4 @@ def build(theme):
     copy_user_assets(source, output)
     process_images(source, album, excluded, output, config)
     render(album, error_page, pages, output, theme_directory)
-    print(f'Gallery built in "{output}" using theme "{theme}"')
+    print(f'\nGallery built in "{output}" using theme "{theme}"')
