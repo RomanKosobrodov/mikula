@@ -8,33 +8,37 @@
     {% include user_content_ %}
 {% endif %}
 <div class="album-container">
-    <ul class="child-albums-list">
-        {% for title, url, thumbnail in albums_ %}
-        <li>
-            <a href="{{ url }}">
-                {% if thumbnail %}
-                <img class="album-thumbnail" src="{{ thumbnail }}"/>
-                {% else %}
-                <div class="album-default-thumbnail"></div>
-                {% endif %}
-            </a>
-            <p class="child-album-title">{{ title }}</p>
-        </li>
-        {% endfor %}
-    </ul>
+    {% if albums_|length > 0 %}
+        <ul class="child-albums-list">
+            {% for title, url, thumbnail in albums_ %}
+            <li>
+                <a href="{{ url }}">
+                    {% if thumbnail %}
+                    <img class="album-thumbnail" src="{{ thumbnail }}"/>
+                    {% else %}
+                    <div class="album-default-thumbnail"></div>
+                    {% endif %}
+                </a>
+                <p class="child-album-title">{{ title }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 </div>
-<div class="thumbnail-container">
-    <ul class="thumbnails-list">
-        {% for title, url, thumbnail in thumbnails_ %}
-        <li class="thumbnail-item">
-            <a href="{{ url }}">
-                <img class="picture" src="{{ thumbnail }}"/>
-            </a>
-            <p class="thumbnail-title">{{ title }}</p>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
+{% if thumbnails_|length > 0 %}
+    <div class="thumbnail-container">
+        <ul class="thumbnails-list">
+            {% for title, url, thumbnail in thumbnails_ %}
+            <li class="thumbnail-item">
+                <a href="{{ url }}">
+                    <img class="picture" src="{{ thumbnail }}"/>
+                </a>
+                <p class="thumbnail-title">{{ title }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
 {% if not place_before %}
     {% include user_content_ %}
 {% endif %}
