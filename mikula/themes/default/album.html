@@ -4,7 +4,7 @@
 {% if back_ %}
 <a href="{{ back_ }}">Back</a>
 {% endif %}
-{% if place_before %}
+{% if not place_after %}
     {% include user_content_ %}
 {% endif %}
 <div class="album-container">
@@ -39,7 +39,7 @@
         </ul>
     </div>
 {% endif %}
-{% if not place_before %}
+{% if place_after %}
     {% include user_content_ %}
 {% endif %}
 {% endblock body %}

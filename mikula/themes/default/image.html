@@ -7,7 +7,7 @@
 {% if next_ %}
     <a href="{{next_}}">next</a>
 {% endif %}
-{% if place_before %}
+{% if not place_after %}
     {% include user_content_ %}
 {% endif %}
 <div class="image-container">
@@ -28,7 +28,7 @@
         {% endif %}
     {% endif %}
 </div>
-{% if not place_before %}
+{% if place_after %}
     {% include user_content_ %}
 {% endif %}
 

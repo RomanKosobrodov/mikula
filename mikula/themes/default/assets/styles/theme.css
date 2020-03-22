@@ -1,27 +1,108 @@
-.navigation-page-list{
- display: flex;
- flex-direction: row;
- justify-content: centre;
+body {
+  margin: 0;
+  background-color: rgb(236, 236, 236);
 }
 
-.navigation-page-list li{
-    list-style-type: none;
-    margin: 10px;
+.navigation-bar {
+  background-color: rgb(209, 206, 206);
+  font-size: 1.2rem;
+  width: 100vw;
+}
+
+.navigation-page-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: centre;
+  margin-block-start: 0;
+  padding-inline-start: 3%;
+}
+
+.navigation-page-list li {
+  list-style-type: none;
+  margin: 10px;
+  color: black;
+}
+
+.navigation-page-list li a {
+  color: black;
+  font-size: 1.4rem;
+  font-family: 'Arima Madurai', cursive;
+}
+
+.navigation-page-list li a:hover {
+  color: rgb(17, 11, 97);
+}
+
+.nav-link a {
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 15px 7px;
+}
+
+h1 {
+  color: rgb(83, 81, 81);
+  font-family: 'Dancing Script', cursive;
+  font-size: 60px;
+  margin: 4%;
+  padding-left: 1%;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+p {
+  margin: 4% auto;
+  width: 65%;
+  font-size: 1.2rem;
+  text-align: justify;
+}
+
+.thumbnail-item {
+  height: 100%;
+  width: auto;
+  margin-bottom: 2rem;
+}
+
+img {
+  height: 60%;
+  width: auto;
+}
+
+ul {
+  padding-inline-start: 0;
+}
+
+.thumbnail-container {
+  margin: 5%;
 }
 
 .child-albums-list,
-.thumbnails-list
- {
-    list-style-type: none;
-    display: grid;
-    grid-template-columns: repeat(4, auto);
+.thumbnails-list {
+  list-style-type: none;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
 }
 
-.album-default-thumbnail{
-    background-image: url("../images/folder.svg");
-    background-position: centre;
-    background-repeat: no-repeat;
-    height: 200px;
-    width: auto;
-    align-content: centre;
+.child-albums-list {
+  margin: 8% 5%;
+}
+
+.album-default-thumbnail {
+  background-image: url("../images/folder.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 300px;
+  width: auto;
+  align-content: center;
+}
+
+.thumbnail-title {
+  display: none;
+}
+
+.child-album-title {
+  width: 100%;
+  font-family: arial;qq
+  letter-spacing: 1px;
 }

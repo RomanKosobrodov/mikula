@@ -14,13 +14,18 @@ IGNORED = settings.ignored
 def parse_pages(source_directory):
     parsed = OrderedDict()
     pattern = os.path.join(source_directory, PAGES_DIR, "*.md")
-    for fn in glob.glob(pattern):
+    filenames = list(glob.glob(pattern))
+    index = len(filenames)
+    for fn in filenames:
         meta, content = render_markdown(fn, DEFAULT_PAGE_META)
         basename, _ = os.path.splitext(os.path.basename(fn))
         if "title" not in meta:
             meta["title"] = basename
+        meta["order"] = meta.get("order", index)
+        index = index + 1
         parsed[basename] = (meta, content)
-    return parsed
+    ordered_pages = OrderedDict(sorted(parsed.items(), key=lambda x: x[1][0]["order"]))
+    return ordered_pages
 
 
 def discover(directory, image_format):
