@@ -16,14 +16,17 @@ def parse_subdirectories(album, keys, index):
         key = os.path.normpath(os.path.join(current, directory))
         _, _, _, meta, _ = album[key]
         title = meta.get("title", directory)
+        order = meta.get("order", -1)
         url = os.path.join(directory, "index.html")
         thumbnail_filename = meta.get("thumbnail", None)
         if thumbnail_filename is not None:
             thumbnail_url = os.path.join(relative, GALLERY, IMAGES, THUMBNAILS, thumbnail_filename)
         else:
             thumbnail_url = None
-        output.append((title, url, thumbnail_url))
-    return relative, output, album_meta, album_md
+        output.append((order, title, url, thumbnail_url))
+    ordered = sorted(output, key=lambda x: x[0])  # sort by order
+    ordered = [(t, u, thu) for _, t, u, thu in ordered]   # re-assemble without order
+    return relative, ordered, album_meta, album_md
 
 
 def parse_images(album, keys, index):

@@ -158,6 +158,7 @@ The following metadata fields are recognised by Mikula:
 | place_before      | {true, false} | Set to place the text before the image(s). Default is false.                |
 | exif              | list          | Extract information from EXIF data. See below for a list of supported tags. |
 | show_exif         | {true, false} | Set to true to show minimal EXIF data below the image.                      |
+| order             | number        | If defined, albums and images are sorted by order (low values come first)   |
 
 You can also define your own fields and use them in the document.
 

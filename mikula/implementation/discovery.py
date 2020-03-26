@@ -32,15 +32,19 @@ def discover(directory, image_format):
     nodes = walk(directory, exclude=IGNORED, topdown=False)
     parsed = OrderedDict()
     excluded = dict()
+    album_index = len(nodes)
     for source_dir, subdirs, files in nodes:
         images = OrderedDict()
         index_content = ""
         index_meta = dict()
         path = os.path.relpath(directory, source_dir)
+        file_index = len(files)
         for file in files:
             fn = os.path.join(source_dir, file)
             if "index.md" in file.lower():
                 index_meta, index_content = render_markdown(fn, DEFAULT_PAGE_META)
+                index_meta["order"] = index_meta.get("order", album_index)
+                album_index += 1
                 continue
             if is_image(fn):
                 image_id = str(uuid.uuid4())
@@ -54,7 +58,11 @@ def discover(directory, image_format):
                     meta = {"title": basename}
                     html = ""
                 meta["basename"] = basename
+                meta["order"] = meta.get("order", file_index)
+                file_index += 1
                 images[file] = (image_file, meta, html)
+
+        images = OrderedDict(sorted(images.items(), key=lambda x: x[1][1]["order"]))
 
         relative = os.path.relpath(source_dir, directory)
 
