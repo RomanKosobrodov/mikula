@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 {% block body %}
-<a href="index.html">back to album</a>
-{% if previous_ %}
-    <a href="{{previous_}}">previous</a>
-{% endif %}
-{% if next_ %}
-    <a href="{{next_}}">next</a>
-{% endif %}
+<div class="image-navigation">
+    {% if previous_ %}
+        <a class="previous" href="{{previous_}}">&#8249;</a>
+    {% endif %}
+    {% if next_ %}
+        <a class="next" href="{{next_}}">&#8250;</a>
+    {% endif %}
+    <a class="album-link" href="index.html"> &#10005; </a>
+</div>
 {% if not place_after %}
     {% include user_content_ %}
 {% endif %}

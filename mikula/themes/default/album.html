@@ -7,24 +7,26 @@
 {% if not place_after %}
     {% include user_content_ %}
 {% endif %}
-<div class="album-container">
-    {% if albums_|length > 0 %}
-        <ul class="child-albums-list">
-            {% for title, url, thumbnail in albums_ %}
-            <li>
-                <a href="{{ url }}">
-                    {% if thumbnail %}
-                    <img class="album-thumbnail" src="{{ thumbnail }}"/>
-                    {% else %}
-                    <div class="album-default-thumbnail"></div>
-                    {% endif %}
-                </a>
-                <p class="child-album-title">{{ title }}</p>
+
+
+{% if albums_|length > 0 %}
+    <ul class="child-album-list">
+        {% for title, url, thumbnail in albums_ %}
+            <li class="child-album-item">
+                <div class="child-album-container">
+                    <a class="child-album-link" href="{{ url }}">
+                        {% if thumbnail %}
+                        <img class="child-album-thumbnail" src="{{ thumbnail }}"/>
+                        {% else %}
+                        <div class="child-album-default-thumbnail"></div>
+                        {% endif %}
+                    </a>
+                    <p class="child-album-title">{{ title }}</p>
+                </div>
             </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-</div>
+        {% endfor %}
+    </ul>
+{% endif %}
 {% if thumbnails_|length > 0 %}
     <div class="thumbnail-container">
         <ul class="thumbnails-list">

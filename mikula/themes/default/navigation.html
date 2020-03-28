@@ -1,9 +1,11 @@
-<nav class="navigation-bar">
-    <ul class="navigation-page-list">
+<nav>
+    <div class="navigation-container">
+    <ul class="navigation-bar">
         {% for title, link in page_list_ %}
-        <li class="nav-link">
-            <a href="{{root_}}/{{link}}">{{title}}</a>
+        <li class="navigation-item">
+            <a class="navigation-link" href="{{root_}}/{{link}}">{{title}}</a>
         </li>
         {% endfor %}
     </ul>
+    </div>
 </nav>
