@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
 {% include "navigation.html" %}
+<div class="album-main">
 {% if back_ %}
 <a href="{{ back_ }}">Back</a>
 {% endif %}
 {% if not place_after %}
-    {% include user_content_ %}
+    <div class="album-text-before">
+        {% include user_content_ %}
+    </div>
 {% endif %}
-
 
 {% if albums_|length > 0 %}
     <ul class="child-album-list">
@@ -18,7 +20,7 @@
                         {% if thumbnail %}
                         <img class="child-album-thumbnail" src="{{ thumbnail }}"/>
                         {% else %}
-                        <div class="child-album-default-thumbnail"></div>
+                        <img class="child-album-thumbnail" src="{{root_}}/_assets_/images/folder.svg"/>
                         {% endif %}
                     </a>
                     <p class="child-album-title">{{ title }}</p>
@@ -28,20 +30,39 @@
     </ul>
 {% endif %}
 {% if thumbnails_|length > 0 %}
-    <div class="thumbnail-container">
-        <ul class="thumbnails-list">
-            {% for title, url, thumbnail in thumbnails_ %}
-            <li class="thumbnail-item">
-                <a href="{{ url }}">
-                    <img class="picture" src="{{ thumbnail }}"/>
+    <ul class="thumbnail-list">
+        {% for title, url, thumbnail in thumbnails_ %}
+        <li class="thumbnail-item">
+            <div class="thumbnail-container">
+                <a class="thumbnail-link" href="{{ url }}">
+                    <img class="thumbnail-image" src="{{ thumbnail }}"/>
                 </a>
                 <p class="thumbnail-title">{{ title }}</p>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+
 {% endif %}
 {% if place_after %}
-    {% include user_content_ %}
+    <div class="album-text-after">
+        {% include user_content_ %}
+    </div>
 {% endif %}
+</div>
+<script type="text/javascript">
+    const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const max_columns = {{ list_heights_ | length }};
+    const width =  23;
+    const height = width * {{ list_heights_[2] }};
+    const padding = {{ thumbnail_padding_ }};
+
+    window.addEventListener('load', function() {
+        let root = document.documentElement;
+        root.style.setProperty('--list-height', `${height}vw`);
+        root.style.setProperty('--thumbnail-padding', `${padding}vw`);
+        root.style.setProperty('--thumbnail-width', `${width}vw`);
+    });
+</script>
+
 {% endblock body %}

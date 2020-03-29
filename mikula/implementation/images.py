@@ -19,8 +19,47 @@ def is_image(filename):
     return True
 
 
+def get_image_aspect(filename):
+    try:
+        img = Image.open(filename)
+        width, height = img.size
+        exif = img._getexif()
+        if exif is not None:
+            if EXIF_ORIENTATION in exif.keys():
+                code = exif[EXIF_ORIENTATION]
+                angle = ROTATION.get(code, None)
+                if angle == 90 or angle == 270:
+                    width, height = height, width
+
+        if width > 0:
+            return height / width
+        else:
+            return 0.0
+    except IOError:
+        return 0.0
+
+
+def rescale_image(img, config, is_thumbnail):
+    aspect = img.height / img.width
+    if is_thumbnail:
+        rescale_dimension = config.get("rescale_thumbnail", "width")
+        image_size = config.get("thumbnail_size", 400)
+    else:
+        rescale_dimension = config.get("rescale_image", "width")
+        image_size = config.get("image_size", 600)
+
+    if rescale_dimension.lower() == "height":
+        height = image_size
+        width = int(height / aspect)
+    else:
+        width = image_size
+        height = int(aspect * width)
+
+    return img.resize((width, height), Image.ANTIALIAS)
+
+
 def convert_image(original, converted, directory, images_dst, thumbnails_dst,
-                  source_directory, height, image_format, thumbnail_height):
+                  source_directory, config):
     file_path = os.path.join(source_directory, directory, original)
     img = Image.open(file_path)
     exif = img._getexif()
@@ -30,22 +69,20 @@ def convert_image(original, converted, directory, images_dst, thumbnails_dst,
             angle = ROTATION.get(code, None)
             if angle is not None:
                 img = img.rotate(angle, expand=True)
-    aspect = img.height / img.width
-    width = int(height / aspect)
-    img = img.resize((width, height), Image.ANTIALIAS)
 
+    rescaled = rescale_image(img, config, is_thumbnail=False)
     image_dst = os.path.join(images_dst, converted)
-    img.save(image_dst, format=image_format)
+    image_format = config.get("image_format", "png")
+    rescaled.save(image_dst, format=image_format)
 
-    thumbnail_width = int(thumbnail_height / aspect)
-    img.thumbnail((thumbnail_width, thumbnail_height))
+    rescaled = rescale_image(img, config, is_thumbnail=True)
     thumbnail_dst = os.path.join(thumbnails_dst, converted)
-    img.save(thumbnail_dst, format=image_format)
+    rescaled.save(thumbnail_dst, format=image_format)
     img.close()
     return exif
 
 
-def extract_exif_meta(meta, exif, album_meta):
+def update_meta_with_exif(meta, exif, album_meta):
     def get_exif_values(tags):
         output = dict()
         for tag in tags:
@@ -78,13 +115,9 @@ def extract_exif_meta(meta, exif, album_meta):
     else:
         exif_tags = album_meta.get("exif", tuple())
     meta["exif"] = get_exif_values(exif_tags)
-    return meta
 
 
 def process_images(source_directory, parsed, excluded, output, config):
-    image_format = config["image_format"]
-    height = config["image_height"]
-    thumbnail_height = config["thumbnail_height"]
     images_dst = os.path.join(output, GALLERY, IMAGES)
     thumbnails_dst = os.path.join(images_dst, THUMBNAILS)
     for directory, content in parsed.items():
@@ -92,11 +125,9 @@ def process_images(source_directory, parsed, excluded, output, config):
         if directory in excluded.keys():
             excluded_original, excluded_converted = excluded[directory]
             convert_image(excluded_original, excluded_converted, directory, images_dst, thumbnails_dst,
-                          source_directory, height,
-                          image_format, thumbnail_height)
+                          source_directory, config)
         for original, record in images.items():
-            converted, meta, _ = record
+            converted, meta, *rest = record
             print(os.path.join(directory, original))
-            exif = convert_image(original, converted, directory, images_dst, thumbnails_dst, source_directory, height,
-                                 image_format, thumbnail_height)
-            meta = extract_exif_meta(meta, exif, index_meta)
+            exif = convert_image(original, converted, directory, images_dst, thumbnails_dst, source_directory, config)
+            update_meta_with_exif(meta, exif, index_meta)

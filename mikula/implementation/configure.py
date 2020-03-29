@@ -3,8 +3,10 @@ import os
 
 DEFAULTS = {
     "image_format": "png",
-    "image_height": 600,
-    "thumbnail_height": 200,
+    "rescale_thumbnail": "width",
+    "thumbnail_size": 600,
+    "rescale_image": "height",
+    "image_size": 1000,
     "region": ""
 }
 

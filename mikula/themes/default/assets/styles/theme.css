@@ -1,8 +1,21 @@
+:root {
+    --list-height: 100vw;
+    --thumbnail-width: 25vw;
+    --thumbnail-padding: 1vw;
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   background-color: rgb(236, 236, 236);
 }
 
+/* Navigation on Album Page */
 .navigation-bar {
   margin: 0;
   padding-left: 20px;
@@ -30,39 +43,57 @@ body {
   color: white;
 }
 
-h1 {
+/* Album Page - Text */
+.album-text-before,
+.album-text-after {
+  width: 80%;
+  margin-left: 10%;
+  padding-top: 60px;
+  padding-bottom: 30px;
+}
+
+.album-text-before h1,
+.album-text-after h1 {
   color: rgb(94, 90, 90);
   font-family: 'Dancing Script', cursive;
   font-size: 50px;
   text-align: center;
   letter-spacing: 1px;
+  padding-bottom: 30px;
 }
 
+/* Album Page - Child Albums */
 .child-album-list {
   width: 80%;
   margin: 3% auto;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+  justify-content: center;
 }
 
 .child-album-item {
   list-style: none;
+  width: 30%;
+  display: flex;
 }
 
 .child-album-container{
-  background-color: rgb(194, 190, 190);
   border-radius: 2px;
   margin: 10px;
   height: 20vw;
   width: 30vw;
   display: flex;
   flex-direction: column;
+  background-color: white;
 }
 
 .child-album-link {
   height: 75%;
   display: flex;
+  width: auto;
+  padding: 5px 5px 15px 5px;
+  background-color: lightgray;
 }
 
 .child-album-thumbnail {
@@ -74,11 +105,39 @@ h1 {
 
 .child-album-title {
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.5vw;
+  padding-top: 10px;
 }
 
-/* image page styles */
+/* Album Thumbnails */
+.thumbnail-list {
+  height: var(--list-height); /* changed by the script */
+  width: 80vw;
+  margin: 3% auto;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  background-color: white;
+}
 
+.thumbnail-item {
+  list-style: none;
+}
+
+.thumbnail-link {
+  padding: var(--thumbnail-padding); /* changed by the script */
+}
+
+.thumbnail-image {
+  width: var(--thumbnail-width);
+  height: auto;
+}
+
+.thumbnail-title {
+  display: none;
+}
+
+/* Image page */
 .picture {
   height: 95vh;
   width: auto;
@@ -132,61 +191,3 @@ h1 {
 
 
 
-
-/*         old           */class="album-link"
-
-p {
-  margin: 4% auto;
-  width: 65%;
-  font-size: 1.2rem;
-  text-align: justify;
-}
-
-.thumbnail-item {
-  height: 100%;
-  width: auto;
-  margin-bottom: 2rem;
-}
-
-img {
-  height: 60%;
-  width: auto;
-}
-
-ul {
-  padding-inline-start: 0;
-}
-
-.thumbnail-container {
-  margin: 5%;
-}
-
-/*
-.child-albums-list, */
-.thumbnails-list {
-  list-style-type: none;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-around;
-}
-
-.album-default-thumbnail {
-  background-image: url("../images/folder.svg");
-  background-position: center;
-  background-repeat: no-repeat;
-  height: 300px;
-  width: auto;
-  align-content: center;
-}
-
-.thumbnail-title {
-  display: none;
-}
-
-/*
-.child-album-title {
-  width: 100%;
-  font-family: arial;qq
-  letter-spacing: 1px;
-}
-*/

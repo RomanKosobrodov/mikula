@@ -19,12 +19,14 @@ def build(theme):
         return
 
     theme_directory = get_theme_directory(theme)
+    theme_configuration = read_configuration(directory=theme_directory, filename="configuration.yaml")
     config = read_configuration(directory=source, filename="configuration.yaml")
+    config.update(theme_configuration)
     album, excluded, error_page = discover(source, config["image_format"])
     pages = parse_pages(source_directory=source)
     create_directories(album, output)
     copy_assets(theme_directory, output)
     copy_user_assets(source, output)
     process_images(source, album, excluded, output, config)
-    render(album, error_page, pages, output, theme_directory)
+    render(album, error_page, pages, output, theme_directory,config)
     print(f'\nGallery built in "{output}" using theme "{theme}"')

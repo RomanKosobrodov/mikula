@@ -10,7 +10,9 @@
     <a class="album-link" href="index.html"> &#10005; </a>
 </div>
 {% if not place_after %}
-    {% include user_content_ %}
+    <div class="image-text-before">
+        {% include user_content_ %}
+    </div>
 {% endif %}
 <div class="image-container">
     <img class="picture" src="{{image_}}">
@@ -31,7 +33,9 @@
     {% endif %}
 </div>
 {% if place_after %}
-    {% include user_content_ %}
+    <div class="image-text-after">
+        {% include user_content_ %}
+    </div>
 {% endif %}
 
 {% endblock body %}

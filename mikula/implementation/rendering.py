@@ -8,6 +8,50 @@ THUMBNAILS = settings.thumbnails_dir
 USER_ASSETS = settings.user_assets_dir
 
 
+def cum_sum(x):
+    if len(x) == 0:
+        return [0.0]
+
+    cs = [0.0] * (len(x))
+    cs[0] = x[0]
+    for k in range(1, len(cs)):
+        cs[k] = cs[k-1] + x[k]
+    return cs
+
+
+def find_closest(x, val):
+    min_diff = 1e20
+    index = 0
+    for k in range(len(x)):
+        diff = abs(x[k] - val)
+        if diff < min_diff:
+            min_diff = diff
+            index = k
+    return x[index]
+
+
+def maximum_height(cumulative, columns):
+    total = cumulative[-1]
+    ideal = total / columns
+    previous = 0
+    max_height = 0
+    for k in range(columns):
+        boundary = ideal * (k+1)
+        height = find_closest(cumulative, boundary) - previous
+        previous = height + previous
+        if height > max_height:
+            max_height = height
+    return max_height
+
+
+def calculate_heights(aspects, max_columns=3):
+    cs = cum_sum(aspects)
+    heights = [0.0] * max_columns
+    for c in range(max_columns):
+        heights[c] = maximum_height(cs, c+1)
+    return heights
+
+
 def parse_subdirectories(album, keys, index):
     output = list()
     current = keys[index]
@@ -32,13 +76,14 @@ def parse_subdirectories(album, keys, index):
 def parse_images(album, keys, index):
     output = list()
     relative, _, image_files, *rest = album[keys[index]]
-
-    for original, (image_file, image_meta, _) in image_files.items():
+    aspects = list()
+    for original, (image_file, image_meta, _, aspect) in image_files.items():
         image_name = image_meta["title"]
         image_url = f"{image_meta['basename']}.html"
         thumbnail_url = os.path.join(relative, GALLERY, IMAGES, THUMBNAILS, image_file)
         output.append((image_name, image_url, os.path.normpath(thumbnail_url)))
-    return output
+        aspects.append(aspect)
+    return output, aspects
 
 
 def parent_album(index, length):
@@ -47,9 +92,12 @@ def parent_album(index, length):
     return None
 
 
-def render_album_page(album, keys, index, template, page_list):
+def render_album_page(album, keys, index, template, page_list, config):
     gallery_root, child_albums, meta, content = parse_subdirectories(album, keys, index)
-    thumbnails = parse_images(album, keys, index)
+    thumbnails, aspects = parse_images(album, keys, index)
+    max_columns = config.get("max_columns", 1)
+    heights = calculate_heights(aspects, max_columns)
+    padding = config.get("padding", 0.1)
     user_content = Template(content)
     if "page_title" not in meta.keys():
         meta["page_title"] = meta.get("title", "")
@@ -60,6 +108,8 @@ def render_album_page(album, keys, index, template, page_list):
                            back_=parent_album(index, len(keys)),
                            albums_=child_albums,
                            thumbnails_=thumbnails,
+                           list_heights_=heights,
+                           thumbnail_padding_=padding,
                            **meta)
     return html
 
@@ -68,13 +118,13 @@ def get_image_page(image_files, image_keys, index):
     if index < 0 or index >= len(image_keys):
         return None
     original = image_keys[index]
-    _, meta, _ = image_files[original]
+    _, meta, *rest = image_files[original]
     return f"{meta['basename']}.html"
 
 
 def render_image_page(gallery_root, image_files, image_keys, image_index,
                       image_template, relative_path, page_list):
-    image_file, meta, content = image_files[image_keys[image_index]]
+    image_file, meta, content, _ = image_files[image_keys[image_index]]
     user_content = Template(content)
     if "page_title" not in meta.keys():
         meta["page_title"] = meta["title"]
@@ -119,7 +169,7 @@ def render_pages(pages, destination_directory, template):
     return page_list
 
 
-def render(album, error_page, pages, output_directory, theme):
+def render(album, error_page, pages, output_directory, theme, config):
     env = Environment(
         loader=FileSystemLoader(theme),
         autoescape=select_autoescape(['html', 'xml'])
@@ -137,7 +187,7 @@ def render(album, error_page, pages, output_directory, theme):
 
     keys = tuple(album.keys())
     for index in range(len(keys)):
-        album_page = render_album_page(album, keys, index, album_template, page_list)
+        album_page = render_album_page(album, keys, index, album_template, page_list, config)
         dst_directory = os.path.join(output_directory, keys[index])
         album_filename = os.path.join(dst_directory, "index.html")
         with open(album_filename, 'w') as fid:

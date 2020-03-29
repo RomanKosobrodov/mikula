@@ -2,7 +2,7 @@ import os
 import uuid
 import glob
 from collections import OrderedDict
-from mikula.implementation.images import is_image
+from mikula.implementation.images import is_image, get_image_aspect
 from mikula.implementation.md import render_markdown, DEFAULT_ERROR, DEFAULT_PAGE_META
 from mikula.implementation import settings
 from mikula.implementation.util import walk
@@ -47,6 +47,7 @@ def discover(directory, image_format):
                 album_index += 1
                 continue
             if is_image(fn):
+                aspect = get_image_aspect(fn)
                 image_id = str(uuid.uuid4())
                 image_file = f"{image_id}.{image_format.lower()}"
                 basename, _ = os.path.splitext(file)
@@ -60,7 +61,7 @@ def discover(directory, image_format):
                 meta["basename"] = basename
                 meta["order"] = meta.get("order", file_index)
                 file_index += 1
-                images[file] = (image_file, meta, html)
+                images[file] = (image_file, meta, html, aspect)
 
         images = OrderedDict(sorted(images.items(), key=lambda x: x[1][1]["order"]))
 
