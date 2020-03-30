@@ -49,19 +49,32 @@
         {% include user_content_ %}
     </div>
 {% endif %}
+  <footer>
+    <p>&copy; Roman Kosobrodov & LenkinWeb</p>
+  </footer>
 </div>
 <script type="text/javascript">
     const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    const max_columns = {{ list_heights_ | length }};
-    const width =  23;
-    const height = width * {{ list_heights_[2] }};
+    const max_columns = {{ max_heights_ | length }};
     const padding = {{ thumbnail_padding_ }};
+    const heights = {{ max_heights_ | safe }};
+    const counts = {{ image_counts_ | safe }};
+    console.log("heights=", heights);
+    console.log("counts=", counts);
 
     window.addEventListener('load', function() {
         let root = document.documentElement;
-        root.style.setProperty('--list-height', `${height}vw`);
+        const list_width = 80;
+        root.style.setProperty('--list-width', `${list_width}vw`);
         root.style.setProperty('--thumbnail-padding', `${padding}vw`);
-        root.style.setProperty('--thumbnail-width', `${width}vw`);
+        for (let c=1; c<=max_columns; c++ ) {
+            const k = c-1;
+            const width = (list_width - (c+1) * padding) / c;
+            let height = width * heights[k] + padding * (1 + counts[k]);
+            height = Math.ceil(1.015 * height) + 2 * padding;
+            root.style.setProperty(`--list-height${c}`, `${height}vw`);
+            root.style.setProperty(`--thumbnail-width${c}`, `${width}vw`);
+        }
     });
 </script>
 

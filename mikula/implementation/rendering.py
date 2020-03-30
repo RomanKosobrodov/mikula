@@ -27,29 +27,36 @@ def find_closest(x, val):
         if diff < min_diff:
             min_diff = diff
             index = k
-    return x[index]
+    return index
 
 
 def maximum_height(cumulative, columns):
     total = cumulative[-1]
     ideal = total / columns
     previous = 0
+    previous_count = 0
     max_height = 0
+    count_in_max = 0
     for k in range(columns):
         boundary = ideal * (k+1)
-        height = find_closest(cumulative, boundary) - previous
+        ind_closest = find_closest(cumulative, boundary)
+        height = cumulative[ind_closest] - previous
         previous = height + previous
+        count = ind_closest - previous_count + 1
+        previous_count = count + previous_count
         if height > max_height:
             max_height = height
-    return max_height
+            count_in_max = count
+    return max_height, count_in_max
 
 
 def calculate_heights(aspects, max_columns=3):
     cs = cum_sum(aspects)
     heights = [0.0] * max_columns
+    counts = [0] * max_columns
     for c in range(max_columns):
-        heights[c] = maximum_height(cs, c+1)
-    return heights
+        heights[c], counts[c] = maximum_height(cs, c+1)
+    return heights, counts
 
 
 def parse_subdirectories(album, keys, index):
@@ -96,7 +103,7 @@ def render_album_page(album, keys, index, template, page_list, config):
     gallery_root, child_albums, meta, content = parse_subdirectories(album, keys, index)
     thumbnails, aspects = parse_images(album, keys, index)
     max_columns = config.get("max_columns", 1)
-    heights = calculate_heights(aspects, max_columns)
+    heights, counts = calculate_heights(aspects, max_columns)
     padding = config.get("padding", 0.1)
     user_content = Template(content)
     if "page_title" not in meta.keys():
@@ -108,7 +115,8 @@ def render_album_page(album, keys, index, template, page_list, config):
                            back_=parent_album(index, len(keys)),
                            albums_=child_albums,
                            thumbnails_=thumbnails,
-                           list_heights_=heights,
+                           max_heights_=heights,
+                           image_counts_=counts,
                            thumbnail_padding_=padding,
                            **meta)
     return html

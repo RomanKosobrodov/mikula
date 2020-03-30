@@ -1,6 +1,11 @@
 :root {
-    --list-height: 100vw;
-    --thumbnail-width: 25vw;
+    --list-width: 80vw;
+    --list-height1: 100vw;
+    --list-height2: 100vw;
+    --list-height3: 100vw;
+    --thumbnail-width1: 25vw;
+    --thumbnail-width2: 25vw;
+    --thumbnail-width3: 25vw;
     --thumbnail-padding: 1vw;
 }
 
@@ -111,13 +116,14 @@ body {
 
 /* Album Thumbnails */
 .thumbnail-list {
-  height: var(--list-height); /* changed by the script */
-  width: 80vw;
+  height: var(--list-height3);
+  width: var(--list-width);
   margin: 3% auto;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   background-color: white;
+  padding: calc(var(--thumbnail-padding) / 2.0);
 }
 
 .thumbnail-item {
@@ -125,11 +131,12 @@ body {
 }
 
 .thumbnail-link {
-  padding: var(--thumbnail-padding); /* changed by the script */
+  display: inline-block;
+  padding: calc(var(--thumbnail-padding) / 2.0);
 }
 
 .thumbnail-image {
-  width: var(--thumbnail-width);
+  width: var(--thumbnail-width3);
   height: auto;
 }
 
@@ -185,9 +192,28 @@ body {
   font-family: Arial;
 }
 
+/* Album Footer */
+footer {
+  background-color: rgb(163, 161, 159);
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  margin-top: 5%;
+}
 
+@media only screen and (max-width: 1000px) {
+  .thumbnail-list {
+    height: var(--list-height2);
+  }
+  .thumbnail-image {
+    width: var(--thumbnail-width2);
+}
 
-
-
-
+@media only screen and (max-width: 600px) {
+  .thumbnail-list {
+    height: var(--list-height1);
+  }
+  .thumbnail-image {
+    width: var(--thumbnail-width1);
+}
 
