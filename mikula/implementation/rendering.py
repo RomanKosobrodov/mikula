@@ -93,10 +93,37 @@ def parse_images(album, keys, index):
     return output, aspects
 
 
-def parent_album(index, length):
-    if index < length - 1:
-        return "../index.html"
-    return None
+def get_title(album, key):
+    meta = album[key][3]  # meta is element with index 3
+    album_title = meta.get("title", "*")
+    if len(album_title) == 0:
+        album_title = "*"
+    return album_title
+
+
+def parent_albums(album, keys, index):
+    if keys[index] == ".":
+        return [get_title(album, ".")], ["index.html"]
+
+    path = keys[index].split(os.sep)
+    depth = len(path)
+    titles = list()
+    links = list()
+    for k in range(depth):
+        relative_path = path[:depth-k]
+        key = os.path.join(*relative_path)
+        album_title = get_title(album, key)
+        relative = "../" * k + "index.html"
+        titles.append(album_title)
+        links.append(relative)
+
+    titles.append(get_title(album, "."))
+    links.append("../" * depth + "index.html")
+
+    titles.reverse()
+    links.reverse()
+
+    return titles, links
 
 
 def render_album_page(album, keys, index, template, page_list, config):
@@ -109,10 +136,12 @@ def render_album_page(album, keys, index, template, page_list, config):
     if "page_title" not in meta.keys():
         meta["page_title"] = meta.get("title", "")
     meta["assets"] = os.path.join(gallery_root, USER_ASSETS)
+    titles_links = parent_albums(album, keys, index)
     html = template.render(page_list_=page_list,
                            root_=gallery_root,
                            user_content_=user_content,
-                           back_=parent_album(index, len(keys)),
+                           parent_titles_=titles_links[0],
+                           parent_links_=titles_links[1],
                            albums_=child_albums,
                            thumbnails_=thumbnails,
                            max_heights_=heights,

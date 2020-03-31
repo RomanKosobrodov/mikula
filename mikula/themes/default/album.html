@@ -2,8 +2,12 @@
 {% block body %}
 {% include "navigation.html" %}
 <div class="album-main">
-{% if back_ %}
-<a href="{{ back_ }}">Back</a>
+{% if parent_titles_ | length > 1 %}
+    <div class="breadcrumbs">
+    {% for title in parent_titles_ %}
+        <a class="breadcrumbs-link" href="{{ parent_links_[loop.index0]|e }}">{{ title|e }}</a>
+    {% endfor %}
+    </div>
 {% endif %}
 {% if not place_after %}
     <div class="album-text-before">
@@ -59,8 +63,6 @@
     const padding = {{ thumbnail_padding_ }};
     const heights = {{ max_heights_ | safe }};
     const counts = {{ image_counts_ | safe }};
-    console.log("heights=", heights);
-    console.log("counts=", counts);
 
     window.addEventListener('load', function() {
         let root = document.documentElement;
