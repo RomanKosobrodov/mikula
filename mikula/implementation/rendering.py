@@ -147,6 +147,7 @@ def render_album_page(album, keys, index, template, page_list, config):
                            max_heights_=heights,
                            image_counts_=counts,
                            thumbnail_padding_=padding,
+                           config_=config,
                            **meta)
     return html
 

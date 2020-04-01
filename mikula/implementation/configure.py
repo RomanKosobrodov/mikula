@@ -1,5 +1,7 @@
+from mikula import __version__
 import yaml
 import os
+import time
 
 DEFAULTS = {
     "image_format": "png",
@@ -9,6 +11,7 @@ DEFAULTS = {
     "image_size": 1000,
     "region": ""
 }
+
 
 AWS_REGIONS = ("us-east-2", "us-east-1", "us-west-1", "us-west-2",
                "ap-east-1", "ap-south-1", "ap-northeast-3", "ap-northeast-2",
@@ -53,6 +56,17 @@ def read_configuration(directory=".", filename="configuration.yaml"):
         with open(fn, "r") as fid:
             user_defined = yaml.load(fid, Loader=yaml.Loader)
             config.update(user_defined)
+    return config
+
+
+def update_configuration(config, theme_config):
+    config["mikula_version"] = __version__
+    config.update(theme_config)
+    if "footer" in config.keys():
+        if "copyright" in config["footer"].keys():
+            if "year_end" in config["footer"]["copyright"]:
+                if config["footer"]["copyright"]["year_end"] == "*":
+                    config["footer"]["copyright"]["year_end"] = time.strftime("%Y")
     return config
 
 

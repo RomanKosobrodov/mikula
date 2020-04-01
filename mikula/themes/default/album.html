@@ -5,7 +5,12 @@
 {% if parent_titles_ | length > 1 %}
     <div class="breadcrumbs">
     {% for title in parent_titles_ %}
-        <a class="breadcrumbs-link" href="{{ parent_links_[loop.index0]|e }}">{{ title|e }}</a>
+        {% if title == parent_titles_ | last %}
+            <div class="breadcrumbs-current"> {{ title | e }} </div>
+        {% else %}
+            <a class="breadcrumbs-link" href="{{ parent_links_[loop.index0]|e }}">{{ title|e }}</a>
+            <i class="breadcrumbs-divider"></i>
+        {% endif %}
     {% endfor %}
     </div>
 {% endif %}
@@ -53,9 +58,7 @@
         {% include user_content_ %}
     </div>
 {% endif %}
-  <footer>
-    <p>&copy; Roman Kosobrodov & LenkinWeb</p>
-  </footer>
+{% include "footer.html" %}
 </div>
 <script type="text/javascript">
     const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);

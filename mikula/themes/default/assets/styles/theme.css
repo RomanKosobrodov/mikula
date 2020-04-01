@@ -49,13 +49,32 @@ body {
 }
 
 /* Breadcrumbs */
-.breadcrumbs-link {
-  color: black;
-  text-decoration: none;
+.breadcrumbs {
+  display: inline-block;
+  font-size: 1.25rem;
   font-weight: bold;
-  font-size: 1.0rem;
-  letter-spacing: 1px;
   font-family: 'Arima Madurai', cursive;
+  margin-left: 2rem;
+  margin-top: 1.5rem;
+}
+
+.breadcrumbs-link {
+  color: #5a635d;
+  text-decoration: none;
+}
+
+.breadcrumbs-link:hover {
+  color: black;
+}
+
+.breadcrumbs-divider::before {
+  color: black;
+  content: "\003E";
+}
+
+.breadcrumbs-current{
+  color: black;
+  display: inline-block;
 }
 
 /* Album Page - Text */
@@ -204,12 +223,27 @@ body {
 
 /* Album Footer */
 footer {
-  background-color: rgb(163, 161, 159);
+  background-color: rgb(213, 220, 222);
   display: inline-block;
   width: 100%;
-  text-align: center;
   margin-top: 5%;
+  padding: 1rem;
 }
+
+.footer-copyright p {
+  display: inline-block;
+}
+
+.footer-credits-mikula {
+  display: inline-block;
+}
+
+.footer-credits-theme a,
+.footer-credits-theme p {
+  display: inline-block
+}
+
+
 
 @media only screen and (max-width: 1000px) {
   .thumbnail-list {

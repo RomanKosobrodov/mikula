@@ -1,4 +1,4 @@
-from mikula.implementation.configure import read_configuration
+from mikula.implementation.configure import read_configuration, update_configuration
 from mikula.implementation.images import process_images
 from mikula.implementation.discovery import discover, parse_pages
 from mikula.implementation.util import create_directories, copy_user_assets, copy_assets, get_theme_directory
@@ -21,7 +21,7 @@ def build(theme):
     theme_directory = get_theme_directory(theme)
     theme_configuration = read_configuration(directory=theme_directory, filename="configuration.yaml")
     config = read_configuration(directory=source, filename="configuration.yaml")
-    config.update(theme_configuration)
+    config = update_configuration(config, theme_configuration)
     album, excluded, error_page = discover(source, config["image_format"])
     pages = parse_pages(source_directory=source)
     create_directories(album, output)
