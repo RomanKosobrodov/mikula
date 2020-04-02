@@ -1,3 +1,5 @@
+/*@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');*/
+
 :root {
     --list-width: 80vw;
     --list-height1: 100vw;
@@ -16,9 +18,31 @@
 }
 
 body {
-  margin: 0;
   background-color: rgb(236, 236, 236);
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
 }
+
+/* Common styles */
+.main-container {
+  display: flex;
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.width-80 {
+  width: 80%;
+}
+
+.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 
 /* Navigation on Album Page */
 .navigation-bar {
@@ -72,7 +96,7 @@ body {
   content: "\003E";
 }
 
-.breadcrumbs-current{
+.breadcrumbs-current {
   color: black;
   display: inline-block;
 }
@@ -86,14 +110,19 @@ body {
   padding-bottom: 30px;
 }
 
-.album-text-before h1,
-.album-text-after h1 {
+h1 {
   color: rgb(94, 90, 90);
   font-family: 'Dancing Script', cursive;
   font-size: 50px;
   text-align: center;
   letter-spacing: 1px;
   padding-bottom: 30px;
+}
+
+p {
+  font-family: 'Source Sans Pro', sans-serif;
+  text-align: center;
+  padding-bottom: 10px;
 }
 
 /* Album Page - Child Albums */
@@ -221,30 +250,46 @@ body {
   font-family: Arial;
 }
 
-/* Album Footer */
+/* Footer */
 footer {
   background-color: rgb(213, 220, 222);
   display: inline-block;
   width: 100%;
-  margin-top: 5%;
   padding: 1rem;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+footer a {
+ text-decoration: none;
+ color: rgb(43, 43, 41);
+}
+
+footer a:hover {
+ color: green;
+}
+
+footer p {
+ padding: 0;
 }
 
 .footer-copyright p {
   display: inline-block;
+  font-size: 1rem;
 }
 
-.footer-credits-mikula {
+.footer-secondary {
   display: inline-block;
+  font-size: 0.8rem;
+  color: rgb(97, 95, 90);
 }
 
-.footer-credits-theme a,
-.footer-credits-theme p {
-  display: inline-block
+/* Pages */
+.user-text {
+  padding-top: 100px;
 }
 
 
-
+/* Media Queries */
 @media only screen and (max-width: 1000px) {
   .thumbnail-list {
     height: var(--list-height2);

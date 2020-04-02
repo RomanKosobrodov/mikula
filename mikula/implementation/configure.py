@@ -54,7 +54,11 @@ def read_configuration(directory=".", filename="configuration.yaml"):
     config = DEFAULTS
     if os.path.isfile(fn):
         with open(fn, "r") as fid:
-            user_defined = yaml.load(fid, Loader=yaml.Loader)
+            try:
+                user_defined = yaml.load(fid, Loader=yaml.Loader)
+            except yaml.error.MarkedYAMLError as e:
+                print(f'The following error occurred {e}')
+                exit(1)
             config.update(user_defined)
     return config
 

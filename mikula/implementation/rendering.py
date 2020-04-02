@@ -177,18 +177,19 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
     return html, f"{meta['basename']}.html"
 
 
-def create_page(page, page_list, destination_directory, filename, template):
+def create_page(page, page_list, destination_directory, filename, template, config):
     meta, content = page
     user_content = Template(content)
     html = template.render(user_content_=user_content,
                            page_list_=page_list,
+                           config_=config,
                            **meta)
     fn = os.path.join(destination_directory, filename)
     with open(fn, "w") as fid:
         fid.write(html)
 
 
-def render_pages(pages, destination_directory, template):
+def render_pages(pages, destination_directory, template, config):
     page_list = list()
     render_list = list()
     for basename, page in pages.items():
@@ -202,7 +203,7 @@ def render_pages(pages, destination_directory, template):
         page_list.append((meta["title"], fn))
 
     for content, fn in render_list:
-        create_page(content, page_list, destination_directory, fn, template)
+        create_page(content, page_list, destination_directory, fn, template, config)
 
     return page_list
 
@@ -219,9 +220,9 @@ def render(album, error_page, pages, output_directory, theme, config):
     page_list = list()
     if len(pages) > 0:
         pages_template = env.get_template("pages.html")
-        page_list = render_pages(pages, output_directory, pages_template)
+        page_list = render_pages(pages, output_directory, pages_template, config)
 
-    create_page(error_page, page_list, output_directory, "error.html", error_template)
+    create_page(error_page, page_list, output_directory, "error.html", error_template, config)
 
     keys = tuple(album.keys())
     for index in range(len(keys)):

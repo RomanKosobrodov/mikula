@@ -1,65 +1,69 @@
 {% extends "base.html" %}
 {% block body %}
 {% include "navigation.html" %}
-<div class="album-main">
-{% if parent_titles_ | length > 1 %}
-    <div class="breadcrumbs">
-    {% for title in parent_titles_ %}
-        {% if title == parent_titles_ | last %}
-            <div class="breadcrumbs-current"> {{ title | e }} </div>
-        {% else %}
-            <a class="breadcrumbs-link" href="{{ parent_links_[loop.index0]|e }}">{{ title|e }}</a>
-            <i class="breadcrumbs-divider"></i>
-        {% endif %}
-    {% endfor %}
-    </div>
-{% endif %}
-{% if not place_after %}
-    <div class="album-text-before">
-        {% include user_content_ %}
-    </div>
-{% endif %}
+<div class="main-container">
+    <div class="full-width">
+    {% if parent_titles_ | length > 1 %}
+        <div class="breadcrumbs">
+        {% for title in parent_titles_ %}
+            {% if title == parent_titles_ | last %}
+                <div class="breadcrumbs-current"> {{ title | e }} </div>
+            {% else %}
+                <a class="breadcrumbs-link" href="{{ parent_links_[loop.index0]|e }}">{{ title|e }}</a>
+                <i class="breadcrumbs-divider"></i>
+            {% endif %}
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% if not place_after %}
+        <div class="album-text-before">
+            {% include user_content_ %}
+        </div>
+    {% endif %}
 
-{% if albums_|length > 0 %}
-    <ul class="child-album-list">
-        {% for title, url, thumbnail in albums_ %}
-            <li class="child-album-item">
-                <div class="child-album-container">
-                    <a class="child-album-link" href="{{ url }}">
-                        {% if thumbnail %}
-                        <img class="child-album-thumbnail" src="{{ thumbnail }}"/>
-                        {% else %}
-                        <img class="child-album-thumbnail" src="{{root_}}/_assets_/images/folder.svg"/>
-                        {% endif %}
+    {% if albums_|length > 0 %}
+        <ul class="child-album-list">
+            {% for title, url, thumbnail in albums_ %}
+                <li class="child-album-item">
+                    <div class="child-album-container">
+                        <a class="child-album-link" href="{{ url }}">
+                            {% if thumbnail %}
+                            <img class="child-album-thumbnail" src="{{ thumbnail }}"/>
+                            {% else %}
+                            <img class="child-album-thumbnail" src="{{root_}}/_assets_/images/folder.svg"/>
+                            {% endif %}
+                        </a>
+                        <p class="child-album-title">{{ title }}</p>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if thumbnails_|length > 0 %}
+        <ul class="thumbnail-list">
+            {% for title, url, thumbnail in thumbnails_ %}
+            <li class="thumbnail-item">
+                <div class="thumbnail-container">
+                    <a class="thumbnail-link" href="{{ url }}">
+                        <img class="thumbnail-image" src="{{ thumbnail }}"/>
                     </a>
-                    <p class="child-album-title">{{ title }}</p>
+                    <p class="thumbnail-title">{{ title }}</p>
                 </div>
             </li>
-        {% endfor %}
-    </ul>
-{% endif %}
-{% if thumbnails_|length > 0 %}
-    <ul class="thumbnail-list">
-        {% for title, url, thumbnail in thumbnails_ %}
-        <li class="thumbnail-item">
-            <div class="thumbnail-container">
-                <a class="thumbnail-link" href="{{ url }}">
-                    <img class="thumbnail-image" src="{{ thumbnail }}"/>
-                </a>
-                <p class="thumbnail-title">{{ title }}</p>
-            </div>
-        </li>
-        {% endfor %}
-    </ul>
+            {% endfor %}
+        </ul>
 
-{% endif %}
-{% if place_after %}
-    <div class="album-text-after">
-        {% include user_content_ %}
+    {% endif %}
+    {% if place_after %}
+        <div class="album-text-after">
+            {% include user_content_ %}
+        </div>
+    {% endif %}
     </div>
-{% endif %}
-{% include "footer.html" %}
 </div>
+
+{% include "footer.html" %}
+
 <script type="text/javascript">
     const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     const max_columns = {{ max_heights_ | length }};

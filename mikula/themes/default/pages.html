@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block body %}
 {% include "navigation.html"%}
-{% include user_content_ %}
+<div class="main-container">
+    <div class="page-container full-width">
+        <div class="user-text width-80 centered">
+            {% include user_content_ %}
+        </div>
+    </div>
+</div>
+{% include "footer.html" %}
 {% endblock body %}
