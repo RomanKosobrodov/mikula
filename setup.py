@@ -54,7 +54,7 @@ setuptools.setup(
         "boto3==1.10.26",
         "Jinja2==2.10.3",
         "Markdown==3.1.1",
-        "Pillow==6.2.1",
+        "Pillow>=6.2.2",
         "PyYAML==5.1.2"
     ]
 )
