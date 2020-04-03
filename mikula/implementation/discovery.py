@@ -22,7 +22,7 @@ def parse_pages(source_directory):
     index = len(filelist)
     for fn in filelist:
         basename, ext = os.path.splitext(os.path.basename(fn))
-        if ext == 'md':
+        if ext == '.md':
             meta, content = render_markdown(fn, DEFAULT_PAGE_META)
         else:
             meta, content = render_hypertext(fn, DEFAULT_PAGE_META)

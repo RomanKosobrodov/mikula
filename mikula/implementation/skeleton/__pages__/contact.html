@@ -1,0 +1,44 @@
+---
+title: Contact
+sender_endpoint: sendmail@example.com
+redirect_url: localhost:4005/index.html
+order: 4
+---
+
+<h1>Contact Me</h1>
+
+<div class="contact-container">
+  <form class="contact-form"
+    action="{{ sender_endpoint }}"
+    method="post"
+  >
+    <input type="hidden" name="redirect" value="{{ redirect_url }}" />
+    <label for="sender">Name</label><br />
+    <input
+      class="form-control"
+      type="text"
+      name="sender"
+      size="40"
+      required
+      placeholder="Your name"
+    />
+    <label for="email">Email address</label>
+    <input
+      class="form-control"
+      type="email"
+      name="email"
+      size="40"
+      required
+      placeholder="Email"
+    />
+    <label for="message">Message</label>
+    <textarea
+      class="form-control"
+      rows="7"
+      cols="80"
+      name="message"
+      required
+    ></textarea>
+    <input class="btn btn-primary" type="submit" name="submit" value="Submit" />
+  </form>
+</div>
