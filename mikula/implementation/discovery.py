@@ -4,6 +4,7 @@ import glob
 from collections import OrderedDict
 from mikula.implementation.images import is_image
 from mikula.implementation.md import render_markdown, DEFAULT_ERROR, DEFAULT_PAGE_META
+from mikula.implementation.hypertext import render_hypertext
 from mikula.implementation import settings
 from mikula.implementation.util import walk
 
@@ -13,10 +14,18 @@ IGNORED = settings.ignored
 
 def parse_pages(source_directory):
     parsed = OrderedDict()
-    pattern = os.path.join(source_directory, PAGES_DIR, "*.md")
-    for fn in glob.glob(pattern):
-        meta, content = render_markdown(fn, DEFAULT_PAGE_META)
-        basename, _ = os.path.splitext(os.path.basename(fn))
+    extensions = ['md', 'html']
+    filelist = list()
+    for e in extensions:
+        pattern = os.path.join(source_directory, PAGES_DIR, f"*.{e}")
+        filelist.extend(glob.glob(pattern))
+
+    for fn in filelist:
+        basename, ext = os.path.splitext(os.path.basename(fn))
+        if ext == 'md':
+            meta, content = render_markdown(fn, DEFAULT_PAGE_META)
+        else:
+            meta, content = render_hypertext(fn, DEFAULT_PAGE_META)
         if "title" not in meta:
             meta["title"] = basename
         parsed[basename] = (meta, content)
