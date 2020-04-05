@@ -2,7 +2,7 @@
 {% block body %}
 {% include "navigation.html" %}
 <div class="main-container">
-    <div class="full-width">
+    <li class="full-width">
     {% if parent_titles_ | length > 1 %}
         <div class="breadcrumbs">
         {% for title in parent_titles_ %}
@@ -16,7 +16,7 @@
         </div>
     {% endif %}
     {% if not place_after %}
-        <div class="album-text-before">
+        <div class="user-text text-before">
             {% include user_content_ %}
         </div>
     {% endif %}
@@ -33,7 +33,9 @@
                             <img class="child-album-thumbnail" src="{{root_}}/_assets_/images/folder.svg"/>
                             {% endif %}
                         </a>
-                        <p class="child-album-title">{{ title }}</p>
+                    </div>
+                    <div class="child-album-title">
+                        <p>{{ title }}</p>
                     </div>
                 </li>
             {% endfor %}
@@ -55,7 +57,7 @@
 
     {% endif %}
     {% if place_after %}
-        <div class="album-text-after">
+        <div class="user-text text-after">
             {% include user_content_ %}
         </div>
     {% endif %}

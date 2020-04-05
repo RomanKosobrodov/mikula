@@ -163,7 +163,10 @@ def get_image_page(image_files, image_keys, index):
 def render_image_page(gallery_root, image_files, image_keys, image_index,
                       image_template, relative_path, page_list):
     image_file, meta, content, _ = image_files[image_keys[image_index]]
-    user_content = Template(content)
+    if len(content) > 0:
+        user_content = Template(content)
+    else:
+        user_content = None
     if "page_title" not in meta.keys():
         meta["page_title"] = meta["title"]
     meta["assets"] = os.path.join(gallery_root, USER_ASSETS)

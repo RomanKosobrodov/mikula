@@ -6,9 +6,9 @@ Mikula is written in Python and supports uploads to AWS S3.
 ## Motivation
 
 I used JAlbum some time ago.
-With enough tweaking to the themes it produced acceptable results but I always wanted more 
-flexibility in designing my albums. Jekyll inspired me to create my own gallery generator in Python,
-so here it is, welcome Mikula.
+With a little bit of tinkering it produced acceptable results but I always wanted more 
+flexibility in designing my own themes and albums. Jekyll provided an inspiration for creating Mikula: static gallery 
+generator written in Python.
 
 ## Name
 
@@ -31,13 +31,17 @@ If you see a different version number or get `command not found` install pip:
 ```bash
 python3.8 -m pip install pip
 ```
-You might also want to upgrade pip to the latest version:
+It is also a good idea to upgrade pip to the latest version:
 ```bash
 python3.8 -m pip install --upgrade pip
 ```
+Depending on your system configuration you might want to install `pip` globally with `sudo`:
+```bash
+sudo python3.8 -m pip install --upgrade pip
+```
 
 ### Install Mikula with pip
-With pip set up, install Mikula
+With `pip` set up, install Mikula
 ```bash
 pip install mikula
 ```
@@ -81,15 +85,16 @@ mikula init
 ```
 it will create a stub gallery consisting of one album, including one picture and three pages: Home, About and Contact.
 Put your source files (images and text) into the `source` directory. Create a subdirectory for each album in the gallery. 
-When you build your gallery it will be saved in the `build` directory. You can use Mikula to deploy it to AWS S3 bucket 
-(provided you have an AWS account with sufficient priviligies) or upload it manually to your web server.
+When you build your gallery it will be saved in the `build` directory. You can use Mikula to deploy the generated gallery 
+to AWS S3 bucket (provided you have an AWS account with sufficient priviligies) or upload it manually to your web server.
+More cloud platforms might be supported in the future.
 
 ### Configure AWS credentials
 If you choose to use AWS S3 to host your gallery, provide Mikula with your AWS credentials by running this command:
 ```bash
 mikula configure
 ```
-This step is optional if you use a different hosting method.
+This step is not required if you plan to use a different hosting method.
 
 ### Build the gallery
 Run
@@ -140,7 +145,7 @@ You can add metadata in the beginning of your Markdown file. The metadata block 
 three dashes:
 ```markdown
 ---
-title: Funny cat's images
+title: Funny cats' images
 ---
 
 # Images of cats
@@ -149,16 +154,16 @@ This page contains a collection of amusing feline pictures.
 
 The following metadata fields are recognised by Mikula:
 
-| Field             | Value         | Description                                                                 |
-| ----------------- | ------------- | --------------------------------------------------------------------------- |
-| page_title        | string        | Page title displayed by the browser                                         |
-| title             | string        | Album or image title displayed on the parent page                           |
-| thumbnail         | file path     | Name of the file to be used as an album thumbnail                           |
-| exclude_thumbnail | {true, false} | Set to true to exclude album thumbnail from the gallery. Default is true    |
-| place_before      | {true, false} | Set to place the text before the image(s). Default is false.                |
-| exif              | list          | Extract information from EXIF data. See below for a list of supported tags. |
-| show_exif         | {true, false} | Set to true to show minimal EXIF data below the image.                      |
-| order             | number        | If defined, albums and images are sorted by order (low values come first)   |
+| Field             | Value         | Description                                                                   |
+| ----------------- | ------------- | ----------------------------------------------------------------------------- |
+| page_title        | string        | Page title displayed by the browser                                           |
+| title             | string        | Album or image title displayed on the parent page                             |
+| thumbnail         | file path     | Name of an image file to be used as an album thumbnail                        |
+| exclude_thumbnail | {true, false} | Set to `true` to exclude album thumbnail from the gallery. Default is `false`.|
+| place_before      | {true, false} | Set to place the text before the image(s). Default is `false`.                |
+| exif              | list          | Extract information from EXIF data. See below for a list of supported tags.   |
+| show_exif         | {true, false} | Set to true to show minimal EXIF data below the image.                        |
+| order             | number        | If defined, albums and images are sorted by order (low values come first)     |
 
 You can also define your own fields and use them in the document.
 
@@ -184,7 +189,7 @@ Picture of sunflowers taken on {{exif["DateTime"]}} in my garden with {{exif["Ma
 ISO speed {{exif["ISOSpeedRatings"]}}, shutter speed {{exif["ShutterSpeedValue"]}} at f{{exif["FNumber"]}}.
 ```
 
-the page rendered by Mikula will include the image followed by the text:
+the page rendered by Mikula will show the following text (styling removed for clarity):
 ```markdown
 Sunflowers
 Picture of sunflowers taken on 2018:05:13 10:13:46 in my garden with Canon EOS 450D. 
