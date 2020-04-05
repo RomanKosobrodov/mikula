@@ -2,7 +2,7 @@ import os
 import uuid
 import glob
 from collections import OrderedDict
-from mikula.implementation.images import is_image, get_image_aspect
+from mikula.implementation.images import is_image, get_image_info
 from mikula.implementation.md import render_markdown, DEFAULT_ERROR, DEFAULT_PAGE_META
 from mikula.implementation.hypertext import render_hypertext
 from mikula.implementation import settings
@@ -10,6 +10,10 @@ from mikula.implementation.util import walk
 
 PAGES_DIR = settings.pages_source
 IGNORED = settings.ignored
+SORT_BY_DATE = 0
+SORT_BY_NAME = 1
+SORT_BY_ORDER = 2
+SORT_METHOD = {"date": SORT_BY_DATE, "name": SORT_BY_NAME, "order": SORT_BY_ORDER}
 
 
 def parse_pages(source_directory):
@@ -35,7 +39,8 @@ def parse_pages(source_directory):
     return ordered_pages
 
 
-def discover(directory, image_format):
+def discover(directory, image_format, sort_by):
+    sort_code = SORT_METHOD.get(sort_by.lower(), "name")
     nodes = walk(directory, exclude=IGNORED, topdown=False)
     parsed = OrderedDict()
     excluded = dict()
@@ -54,7 +59,7 @@ def discover(directory, image_format):
                 album_index += 1
                 continue
             if is_image(fn):
-                aspect = get_image_aspect(fn)
+                aspect, image_date = get_image_info(fn)
                 image_id = str(uuid.uuid4())
                 image_file = f"{image_id}.{image_format.lower()}"
                 basename, _ = os.path.splitext(file)
@@ -66,8 +71,13 @@ def discover(directory, image_format):
                     meta = {"title": basename}
                     html = ""
                 meta["basename"] = basename
-                meta["order"] = meta.get("order", file_index)
-                file_index += 1
+                if sort_code == SORT_BY_DATE:
+                    meta["order"] = image_date
+                elif sort_code == SORT_BY_NAME:
+                    meta["order"] = os.path.basename(fn)
+                else:
+                    meta["order"] = meta.get("order", file_index)
+                    file_index += 1
                 images[file] = (image_file, meta, html, aspect)
 
         images = OrderedDict(sorted(images.items(), key=lambda x: x[1][1]["order"]))

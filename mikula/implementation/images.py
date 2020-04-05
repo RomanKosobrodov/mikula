@@ -1,9 +1,11 @@
 import os
+import datetime
 from PIL import Image, ExifTags
 from mikula.implementation.exif import nominal_shutter_speed, nominal_f_number, nominal_aperture
 from mikula.implementation.settings import gallery_dir, images_dir, thumbnails_dir
 
 EXIF_ORIENTATION = 0x0112
+EXIF_DATE_TIME = 0x0132  # The format is "YYYY:MM:DD HH:MM:SS" with time shown in 24-hour format
 ROTATION = {3: 180, 6: 270, 8: 90}
 TAG_CODE = {key: value for key, value in zip(ExifTags.TAGS.values(), ExifTags.TAGS.keys())}
 GALLERY = gallery_dir
@@ -19,7 +21,10 @@ def is_image(filename):
     return True
 
 
-def get_image_aspect(filename):
+def get_image_info(filename):
+    timestamp = os.path.getmtime(filename)
+    filedate = datetime.datetime.fromtimestamp(timestamp)
+    date = filedate.strftime("%Y:%m:%d %H:%M:%S")
     try:
         img = Image.open(filename)
         width, height = img.size
@@ -30,13 +35,16 @@ def get_image_aspect(filename):
                 angle = ROTATION.get(code, None)
                 if angle == 90 or angle == 270:
                     width, height = height, width
+            if EXIF_DATE_TIME in exif.keys():
+                date = exif[EXIF_DATE_TIME]
 
         if width > 0:
-            return height / width
+            aspect = height / width
         else:
-            return 0.0
+            aspect = 0.0
+        return aspect, date
     except IOError:
-        return 0.0
+        return 0.0, "0000:00:00 00:00:00"
 
 
 def rescale_image(img, config, is_thumbnail):

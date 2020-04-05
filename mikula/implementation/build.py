@@ -22,7 +22,9 @@ def build(theme):
     theme_configuration = read_configuration(directory=theme_directory, filename="configuration.yaml")
     config = read_configuration(directory=source, filename="configuration.yaml")
     config = update_configuration(config, theme_configuration)
-    album, excluded, error_page = discover(source, config["image_format"])
+    album, excluded, error_page = discover(directory=source,
+                                           image_format=config.get("image_format", "png"),
+                                           sort_by=config.get("sort_by", "name"))
     pages = parse_pages(source_directory=source)
     create_directories(album, output)
     copy_assets(theme_directory, output)
