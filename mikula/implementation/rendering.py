@@ -203,7 +203,9 @@ def render_pages(pages, destination_directory, template, config):
             fn = "index.html"
         else:
             render_list.append((page, fn))
-        page_list.append((meta["title"], fn))
+        hidden = meta.get("hidden", False)
+        if not hidden:
+            page_list.append((meta["title"], fn))
 
     for content, fn in render_list:
         create_page(content, page_list, destination_directory, fn, template, config)
