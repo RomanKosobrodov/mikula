@@ -198,6 +198,11 @@ ISO speed 100, shutter speed 1/500 at f1.4.
 ```
 A list of supported EXIF tags is included in [EXIF-tags.md](https://github.com/RomanKosobrodov/mikula/blob/master/EXIF-tags.md).
 
+# Gallery configuration
+
+Gallery configuration is stored in `source/configuration.yaml`. 
+
+
 # Installing from source
 
 If you plan to contribute to Mikula you will need to install it from the source.

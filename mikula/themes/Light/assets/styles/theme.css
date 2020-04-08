@@ -1,14 +1,14 @@
 /*@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');*/
 
 :root {
-    --list-width: 80vw;
-    --list-height1: 100vw;
-    --list-height2: 100vw;
-    --list-height3: 100vw;
-    --thumbnail-width1: 25vw;
-    --thumbnail-width2: 25vw;
-    --thumbnail-width3: 25vw;
-    --thumbnail-padding: 1vw;
+  --list-width: 80vw;
+  --list-height1: 100vw;
+  --list-height2: 100vw;
+  --list-height3: 100vw;
+  --thumbnail-width1: 25vw;
+  --thumbnail-width2: 25vw;
+  --thumbnail-width3: 25vw;
+  --thumbnail-padding: 1vw;
   /* child-albums variables */
   --item-width: 25vw;
   --image-container-height: calc(var(--item-width) * 3 / 4);
@@ -204,6 +204,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
+  align-content: center;
   background-color: white;
   padding: calc(var(--thumbnail-padding) / 2.0);
 }

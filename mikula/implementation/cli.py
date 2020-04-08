@@ -31,7 +31,7 @@ def create_parser():
     build_parser = subparsers.add_parser("build")
     build_parser.add_argument("--theme",
                               help="Mikula theme",
-                              default="default",
+                              default="Light",
                               required=False)
     build_parser.set_defaults(function=build)
 

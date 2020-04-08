@@ -6,7 +6,7 @@ from mikula.implementation.settings import gallery_dir, images_dir, thumbnails_d
 
 EXIF_ORIENTATION = 0x0112
 EXIF_DATE_TIME = 0x0132  # The format is "YYYY:MM:DD HH:MM:SS" with time shown in 24-hour format
-ROTATION = {3: 180, 6: 270, 8: 90}
+ROTATION = {3: Image.ROTATE_180, 6: Image.ROTATE_270, 8: Image.ROTATE_90}
 TAG_CODE = {key: value for key, value in zip(ExifTags.TAGS.values(), ExifTags.TAGS.keys())}
 GALLERY = gallery_dir
 IMAGES = images_dir
@@ -27,13 +27,13 @@ def get_image_info(filename):
     date = filedate.strftime("%Y:%m:%d %H:%M:%S")
     try:
         img = Image.open(filename)
-        width, height = img.size
         exif = img._getexif()
+        width, height = img.size
         if exif is not None:
             if EXIF_ORIENTATION in exif.keys():
                 code = exif[EXIF_ORIENTATION]
                 angle = ROTATION.get(code, None)
-                if angle == 90 or angle == 270:
+                if angle == Image.ROTATE_270 or angle == Image.ROTATE_90:
                     width, height = height, width
             if EXIF_DATE_TIME in exif.keys():
                 date = exif[EXIF_DATE_TIME]
@@ -76,7 +76,7 @@ def convert_image(original, converted, directory, images_dst, thumbnails_dst,
             code = exif[EXIF_ORIENTATION]
             angle = ROTATION.get(code, None)
             if angle is not None:
-                img = img.rotate(angle, expand=True)
+                img = img.transpose(angle)
 
     rescaled = rescale_image(img, config, is_thumbnail=False)
     image_dst = os.path.join(images_dst, converted)
