@@ -17,24 +17,24 @@ def extension(file):
     return ext[1:]
 
 
-def create(directory):
-    if os.path.isdir(directory):
+def create(directory, overwrite=True):
+    if os.path.isdir(directory) and overwrite:
         shutil.rmtree(directory)
     if not os.path.isdir(directory):
         os.mkdir(directory)
 
 
-def create_directories(parsed, output_directory):
-    create(output_directory)
+def create_directories(parsed, output_directory, overwrite=True):
+    create(output_directory, overwrite)
 
     gallery_dir = os.path.join(output_directory, settings.gallery_dir)
-    create(gallery_dir)
+    create(gallery_dir, overwrite)
 
     images_dir = os.path.join(gallery_dir, settings.images_dir)
-    create(images_dir)
+    create(images_dir, overwrite)
 
     thumbnails_dir = os.path.join(images_dir, settings.thumbnails_dir)
-    create(thumbnails_dir)
+    create(thumbnails_dir, overwrite)
 
     for directory in reversed(parsed.keys()):
         absolute = os.path.join(output_directory, directory)
@@ -45,7 +45,7 @@ def create_directories(parsed, output_directory):
 def copy_assets(theme, output_directory):
     src = os.path.join(theme, "assets")
     dst = os.path.join(output_directory, settings.assets_dir)
-    shutil.copytree(src, dst)
+    shutil.copytree(src, dst, dirs_exist_ok=True)
 
 
 def copy_user_assets(source, output):

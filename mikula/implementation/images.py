@@ -5,7 +5,13 @@ from mikula.implementation.exif import nominal_shutter_speed, nominal_f_number, 
 from mikula.implementation.settings import gallery_dir, images_dir, thumbnails_dir
 
 EXIF_ORIENTATION = 0x0112
+EXIF_USER_COMMENT = 0X9286
+EXIF_MAKER_NOTE = 0x927C
 EXIF_DATE_TIME = 0x0132  # The format is "YYYY:MM:DD HH:MM:SS" with time shown in 24-hour format
+
+ALL_ZEROS_LENGTH = 20
+ALL_ZEROS = bytearray(ALL_ZEROS_LENGTH)
+
 ROTATION = {3: Image.ROTATE_180, 6: Image.ROTATE_270, 8: Image.ROTATE_90}
 TAG_CODE = {key: value for key, value in zip(ExifTags.TAGS.values(), ExifTags.TAGS.keys())}
 GALLERY = gallery_dir
@@ -37,14 +43,20 @@ def get_image_info(filename):
                     width, height = height, width
             if EXIF_DATE_TIME in exif.keys():
                 date = exif[EXIF_DATE_TIME]
-
+            if EXIF_USER_COMMENT in exif.keys():
+                # remove user comment if starts with zeros (empty)
+                if exif[EXIF_USER_COMMENT][:ALL_ZEROS_LENGTH] == ALL_ZEROS:
+                    del exif[EXIF_USER_COMMENT]
+            # remove maker note (useless)
+            if EXIF_MAKER_NOTE in exif.keys():
+                del exif[EXIF_MAKER_NOTE]
         if width > 0:
             aspect = height / width
         else:
             aspect = 0.0
-        return aspect, date
+        return aspect, date, exif
     except IOError:
-        return 0.0, "0000:00:00 00:00:00"
+        return 0.0, "0000:00:00 00:00:00", None
 
 
 def rescale_image(img, config, is_thumbnail):
@@ -66,28 +78,24 @@ def rescale_image(img, config, is_thumbnail):
     return img.resize((width, height), Image.ANTIALIAS)
 
 
-def convert_image(original, converted, directory, images_dst, thumbnails_dst,
+def convert_image(original, orientation, converted, directory, images_dst, thumbnails_dst,
                   source_directory, config):
     file_path = os.path.join(source_directory, directory, original)
     img = Image.open(file_path)
-    exif = img._getexif()
-    if exif is not None:
-        if EXIF_ORIENTATION in exif.keys():
-            code = exif[EXIF_ORIENTATION]
-            angle = ROTATION.get(code, None)
-            if angle is not None:
-                img = img.transpose(angle)
+    angle = ROTATION.get(orientation, None)
+    if angle is not None:
+        img = img.transpose(angle)
 
     rescaled = rescale_image(img, config, is_thumbnail=False)
-    image_dst = os.path.join(images_dst, converted)
+    image_fn = os.path.join(images_dst, converted)
     image_format = config.get("image_format", "png")
-    rescaled.save(image_dst, format=image_format)
+    rescaled.save(image_fn, format=image_format)
 
     rescaled = rescale_image(img, config, is_thumbnail=True)
-    thumbnail_dst = os.path.join(thumbnails_dst, converted)
-    rescaled.save(thumbnail_dst, format=image_format)
+    thumbnail_fn = os.path.join(thumbnails_dst, converted)
+    rescaled.save(thumbnail_fn, format=image_format)
     img.close()
-    return exif
+    return file_path, image_fn, thumbnail_fn
 
 
 def update_meta_with_exif(meta, exif, album_meta):
@@ -125,17 +133,28 @@ def update_meta_with_exif(meta, exif, album_meta):
     meta["exif"] = get_exif_values(exif_tags)
 
 
-def process_images(source_directory, parsed, excluded, output, config):
+def process_images(source_directory, parsed, excluded, output, config, cache):
     images_dst = os.path.join(output, GALLERY, IMAGES)
     thumbnails_dst = os.path.join(images_dst, THUMBNAILS)
     for directory, content in parsed.items():
         relative, subdirs, images, index_meta, index_content = content
         if directory in excluded.keys():
             excluded_original, excluded_converted = excluded[directory]
-            convert_image(excluded_original, excluded_converted, directory, images_dst, thumbnails_dst,
+            orientation = 0
+            convert_image(excluded_original, orientation, excluded_converted, directory, images_dst, thumbnails_dst,
                           source_directory, config)
         for original, record in images.items():
-            converted, meta, *rest = record
-            print(os.path.join(directory, original))
-            exif = convert_image(original, converted, directory, images_dst, thumbnails_dst, source_directory, config)
+            converted, meta, _, _, exif, update_required = record
+            if update_required:
+                if exif is None:
+                    orientation = 0
+                else:
+                    orientation = exif.get(EXIF_ORIENTATION, 0)
+                original_fn, image_fn, thumbnail_fn = convert_image(original, orientation, converted, directory,
+                                                                    images_dst, thumbnails_dst,
+                                                                    source_directory, config)
+                print(f"{os.path.join(directory, original)} - updated")
+                cache.update(original_fn, image_fn, thumbnail_fn)
+            else:
+                print(f"{os.path.join(directory, original)}")
             update_meta_with_exif(meta, exif, index_meta)

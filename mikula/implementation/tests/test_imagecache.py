@@ -109,7 +109,6 @@ def test_imagecache_config():
 
     config["one"] = "uno"
     assert ic.config_changed(config)
-
     clean_up()
 
 

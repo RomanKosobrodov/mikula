@@ -8,6 +8,7 @@ from mikula.implementation.hypertext import render_hypertext
 from mikula.implementation import settings
 from mikula.implementation.util import walk
 
+
 PAGES_DIR = settings.pages_source
 IGNORED = settings.ignored
 SORT_BY_DATE = 0
@@ -39,7 +40,17 @@ def parse_pages(source_directory):
     return ordered_pages
 
 
-def discover(directory, image_format, sort_by):
+def discover(directory, config, cache):
+    image_format = config.get("image_format", "jpeg")
+    config["image_format"] = image_format
+    sort_by = config.get("sort_by", "name")
+    config["sort_by"] = sort_by
+
+    config_changed = cache.config_changed(config)
+    if config_changed:
+        cache.reset()
+        cache.update_config(config)
+
     sort_code = SORT_METHOD.get(sort_by.lower(), "name")
     nodes = walk(directory, exclude=IGNORED, topdown=False)
     parsed = OrderedDict()
@@ -59,9 +70,19 @@ def discover(directory, image_format, sort_by):
                 album_index += 1
                 continue
             if is_image(fn):
-                aspect, image_date = get_image_info(fn)
-                image_id = str(uuid.uuid4())
-                image_file = f"{image_id}.{image_format.lower()}"
+                aspect, image_date, exif = get_image_info(fn)
+                if config_changed:
+                    update_required = True
+                else:
+                    update_required = cache.require_update(fn)
+
+                if update_required:
+                    image_id = str(uuid.uuid4())
+                    image_file = f"{image_id}.{image_format.lower()}"
+                else:
+                    image_file, thumbnail_file = cache.get_filenames()
+                    image_file = os.path.basename(image_file)
+
                 basename, _ = os.path.splitext(file)
                 markdown_fn = os.path.join(source_dir, f"{basename}.md")
                 if os.path.isfile(markdown_fn):
@@ -78,7 +99,7 @@ def discover(directory, image_format, sort_by):
                 else:
                     meta["order"] = meta.get("order", file_index)
                     file_index += 1
-                images[file] = (image_file, meta, html, aspect)
+                images[file] = (image_file, meta, html, aspect, exif, update_required)
 
         images = OrderedDict(sorted(images.items(), key=lambda x: x[1][1]["order"]))
 
@@ -103,4 +124,4 @@ def discover(directory, image_format, sort_by):
         error_meta = {"title": "Server Error", "page_title": "Server Error"}
         error_content = DEFAULT_ERROR
 
-    return parsed, excluded, (error_meta, error_content)
+    return parsed, excluded, (error_meta, error_content), config_changed

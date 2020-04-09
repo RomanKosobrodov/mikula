@@ -84,7 +84,7 @@ def parse_images(album, keys, index):
     output = list()
     relative, _, image_files, *rest = album[keys[index]]
     aspects = list()
-    for original, (image_file, image_meta, _, aspect) in image_files.items():
+    for original, (image_file, image_meta, _, aspect, _, _) in image_files.items():
         image_name = image_meta["title"]
         image_url = f"{image_meta['basename']}.html"
         thumbnail_url = os.path.join(relative, GALLERY, IMAGES, THUMBNAILS, image_file)
@@ -162,7 +162,7 @@ def get_image_page(image_files, image_keys, index):
 
 def render_image_page(gallery_root, image_files, image_keys, image_index,
                       image_template, relative_path, page_list):
-    image_file, meta, content, _ = image_files[image_keys[image_index]]
+    image_file, meta, content, *rest = image_files[image_keys[image_index]]
     if len(content) > 0:
         user_content = Template(content)
     else:

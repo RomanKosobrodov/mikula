@@ -11,6 +11,10 @@ class ImageCache:
         self.cache = SqliteDict(db_filename)
         self.recent_lookup_ = None
 
+    def reset(self):
+        self.cache.clear()
+        self.recent_lookup_ = None
+
     def config_changed(self, config):
         if "config" not in self.cache.keys():
             return True
