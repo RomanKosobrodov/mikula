@@ -173,6 +173,11 @@ body {
   background-color: #ece3e3;
 }
 
+.child-album-link {
+  outline: none;
+  border: none;
+}
+
 .child-album-thumbnail {
   max-height: var(--image-height);
   max-width: calc(var(--item-width) - calc(var(--image-margin) * 2));
@@ -216,6 +221,8 @@ body {
 .thumbnail-link {
   display: inline-block;
   padding: calc(var(--thumbnail-padding) / 2.0);
+  border: none;
+  outline: none;
 }
 
 .thumbnail-image {

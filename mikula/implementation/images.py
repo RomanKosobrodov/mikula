@@ -1,6 +1,8 @@
 import os
 import datetime
+from multiprocessing import Pool
 from PIL import Image, ExifTags
+import piexif
 from mikula.implementation.exif import nominal_shutter_speed, nominal_f_number, nominal_aperture
 from mikula.implementation.settings import gallery_dir, images_dir, thumbnails_dir
 
@@ -12,7 +14,15 @@ EXIF_DATE_TIME = 0x0132  # The format is "YYYY:MM:DD HH:MM:SS" with time shown i
 ALL_ZEROS_LENGTH = 20
 ALL_ZEROS = bytearray(ALL_ZEROS_LENGTH)
 
-ROTATION = {3: Image.ROTATE_180, 6: Image.ROTATE_270, 8: Image.ROTATE_90}
+ORIENTATION = {
+    2: Image.FLIP_LEFT_RIGHT,
+    3: Image.ROTATE_180,
+    4: Image.FLIP_TOP_BOTTOM,
+    5: Image.TRANSPOSE,
+    6: Image.ROTATE_270,
+    7: Image.TRANSVERSE,
+    8: Image.ROTATE_90
+}
 TAG_CODE = {key: value for key, value in zip(ExifTags.TAGS.values(), ExifTags.TAGS.keys())}
 GALLERY = gallery_dir
 IMAGES = images_dir
@@ -33,12 +43,12 @@ def get_image_info(filename):
     date = filedate.strftime("%Y:%m:%d %H:%M:%S")
     try:
         img = Image.open(filename)
-        exif = img._getexif()
+        exif = img.getexif()
         width, height = img.size
         if exif is not None:
             if EXIF_ORIENTATION in exif.keys():
                 code = exif[EXIF_ORIENTATION]
-                angle = ROTATION.get(code, None)
+                angle = ORIENTATION.get(code, None)
                 if angle == Image.ROTATE_270 or angle == Image.ROTATE_90:
                     width, height = height, width
             if EXIF_DATE_TIME in exif.keys():
@@ -78,22 +88,32 @@ def rescale_image(img, config, is_thumbnail):
     return img.resize((width, height), Image.ANTIALIAS)
 
 
-def convert_image(original, orientation, converted, directory, images_dst, thumbnails_dst,
+def convert_image(original, converted, directory, images_dst, thumbnails_dst,
                   source_directory, config):
     file_path = os.path.join(source_directory, directory, original)
     img = Image.open(file_path)
-    angle = ROTATION.get(orientation, None)
-    if angle is not None:
-        img = img.transpose(angle)
-
+    if "exif" in img.info:
+        exif = piexif.load(img.info["exif"])
+        image_orientation = exif["0th"].get(piexif.ImageIFD.Orientation, 1)
+        angle = ORIENTATION.get(image_orientation, None)
+        if angle is not None:
+            img = img.transpose(angle)
+        exif["0th"][piexif.ImageIFD.Orientation] = 1
+        if "add_copyright" in config:
+            c = exif["0th"].get(piexif.ImageIFD.Copyright, "")
+            if len(c) == 0:
+                exif["0th"][piexif.ImageIFD.Copyright] = config["add_copyright"]
+        exif_bytes = piexif.dump(exif)
+    else:
+        exif_bytes = None
     rescaled = rescale_image(img, config, is_thumbnail=False)
     image_fn = os.path.join(images_dst, converted)
     image_format = config.get("image_format", "png")
-    rescaled.save(image_fn, format=image_format)
+    rescaled.save(image_fn, format=image_format, exif=exif_bytes)
 
     rescaled = rescale_image(img, config, is_thumbnail=True)
     thumbnail_fn = os.path.join(thumbnails_dst, converted)
-    rescaled.save(thumbnail_fn, format=image_format)
+    rescaled.save(thumbnail_fn, format=image_format, exif=exif_bytes)
     img.close()
     return file_path, image_fn, thumbnail_fn
 
@@ -133,28 +153,35 @@ def update_meta_with_exif(meta, exif, album_meta):
     meta["exif"] = get_exif_values(exif_tags)
 
 
+def converter(args):
+    original_fn, image_fn, thumbnail_fn = convert_image(*args)
+    original, _, directory, *rest = args
+    relative = os.path.join(directory, original)
+    return relative, original_fn, image_fn, thumbnail_fn
+
+
 def process_images(source_directory, parsed, excluded, output, config, cache):
     images_dst = os.path.join(output, GALLERY, IMAGES)
     thumbnails_dst = os.path.join(images_dst, THUMBNAILS)
+    parallel_tasks = list()
     for directory, content in parsed.items():
         relative, subdirs, images, index_meta, index_content = content
         if directory in excluded.keys():
             excluded_original, excluded_converted = excluded[directory]
-            orientation = 0
-            convert_image(excluded_original, orientation, excluded_converted, directory, images_dst, thumbnails_dst,
+            convert_image(excluded_original, excluded_converted, directory, images_dst, thumbnails_dst,
                           source_directory, config)
         for original, record in images.items():
             converted, meta, _, _, exif, update_required = record
             if update_required:
-                if exif is None:
-                    orientation = 0
-                else:
-                    orientation = exif.get(EXIF_ORIENTATION, 0)
-                original_fn, image_fn, thumbnail_fn = convert_image(original, orientation, converted, directory,
-                                                                    images_dst, thumbnails_dst,
-                                                                    source_directory, config)
-                print(f"{os.path.join(directory, original)} - updated")
-                cache.update(original_fn, image_fn, thumbnail_fn)
+                parallel_tasks.append((original, converted, directory,
+                                       images_dst, thumbnails_dst,
+                                       source_directory, config))
             else:
                 print(f"{os.path.join(directory, original)}")
             update_meta_with_exif(meta, exif, index_meta)
+
+    num_processes = config.get("parallel_workers", None)
+    with Pool(processes=num_processes) as pool:
+        for relative, original_fn, image_fn, thumbnail_fn in pool.imap(converter, parallel_tasks):
+            cache.update(original_fn, image_fn, thumbnail_fn)
+            print(f"{relative} - updated")

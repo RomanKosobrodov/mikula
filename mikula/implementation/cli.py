@@ -33,6 +33,10 @@ def create_parser():
                               help="Mikula theme",
                               default="Light",
                               required=False)
+    build_parser.add_argument("--clean",
+                              help="Remove cache and build from scratch",
+                              action="store_true",
+                              default=False)
     build_parser.set_defaults(function=build)
 
     serve_parser = subparsers.add_parser("serve")
