@@ -15,7 +15,7 @@
   --image-height: calc(var(--image-container-height) * 5 / 6);
   --image-margin: calc(var(--image-container-height) * 1 / 12);
   --image-title-height: calc(var(--image-container-height) * 1 / 4);
-  --item-width2: 39vw;
+  --item-width2: 38vw;
   --item-width1: 78vw;
 }
 
@@ -76,7 +76,7 @@ body {
 
 .user-text h2 {
   font-size: 2.4rem;
-  text-align: right;
+  text-align: left;
   padding-bottom: 3%;
   font-family: 'Federo', sans-serif;
 }
@@ -87,7 +87,7 @@ body {
 .user-text h6
 {
   font-size: 2.0rem;
-  text-align: right;
+  text-align: left;
   padding-bottom: 3%;
   font-family: 'Federo', sans-serif;
 }
@@ -317,6 +317,41 @@ footer a:hover {
   font-size: 0.8rem;
   color: rgb(170, 166, 155);
   text-align: center;
+}
+
+/* Contact form */
+.contact-form div {
+  width: 100%;
+  text-align: left;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 1.2rem;
+  padding-bottom: 2rem;
+}
+
+.contact-form-label {
+  display: block;
+  padding-bottom: 0.5rem;
+}
+
+.contact-form-input {
+  display: block;
+  border: 1px solid #999;
+  padding: 7px;
+}
+
+.contact-form-textarea {
+  width: 100%;
+  resize: vertical;
+  height: 35vh;
+  max-height: 60vh;
+  min-height: 10vh;
+}
+
+.contact-form-submit {
+  background-color: #686262;
+  border: none;
+  padding: 10px 25px;
+  color: white;
 }
 
 /* Media Queries */

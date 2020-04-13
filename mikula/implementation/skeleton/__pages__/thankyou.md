@@ -3,6 +3,6 @@ title: Thank you
 hidden: true
 ---
 
-# Thank you
-I will contact you shortly.
+# Message Sent
+Thank you for your message. I will contact you shortly.
  

@@ -7,38 +7,42 @@ order: 3
 
 <h1>Contact Me</h1>
 
-<div class="contact-container">
-  <form class="contact-form"
-    action="{{ sender_endpoint }}"
-    method="post"
-  >
-    <input type="hidden" name="redirect" value="{{ redirect_url }}" />
-    <label for="sender">Name</label><br />
+<form class="contact-form"
+  action="{{ sender_endpoint }}"
+  method="post"
+>
+  <input type="hidden" name="redirect" value="{{ redirect_url }}" />
+  <div class="contact-sender">
+    <label class="contact-form-label" for="sender">Name</label>
     <input
-      class="form-control"
+      class="contact-form-input"
       type="text"
       name="sender"
       size="40"
       required
       placeholder="Your name"
     />
-    <label for="email">Email address</label>
+  </div>
+  <div class="contact-email">
+    <label class="contact-form-label" for="email">Email address</label>
     <input
-      class="form-control"
+      class="contact-form-input"
       type="email"
       name="email"
       size="40"
       required
       placeholder="Email"
     />
-    <label for="message">Message</label>
+  </div>
+  <div class="contact-form-message">
+    <label class="contact-form-label" for="message">Message</label>
     <textarea
-      class="form-control"
+      class="contact-form-textarea"
       rows="7"
       cols="80"
       name="message"
       required
     ></textarea>
-    <input class="btn btn-primary" type="submit" name="submit" value="Submit" />
-  </form>
-</div>
+  </div>
+  <button class="contact-form-submit" type="submit" name="submit">Submit</button>
+</form>
