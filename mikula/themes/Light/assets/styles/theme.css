@@ -15,7 +15,7 @@
   --image-height: calc(var(--image-container-height) * 5 / 6);
   --image-margin: calc(var(--image-container-height) * 1 / 12);
   --image-title-height: calc(var(--image-container-height) * 1 / 4);
-  --item-width2: 38vw;
+  --item-width2: 37vw;
   --item-width1: 78vw;
   --h1-font-size: 3.6rem;
 }
@@ -45,21 +45,14 @@ body {
   width: 100%;
 }
 
-.width-80 {
-  width: 80%;
-}
-
-.centered {
-  margin-left: auto;
-  margin-right: auto;
-}
-
 .user-text {
   width: 70%;
-  margin-left: 15%;
+  max-width: 1000px;
   padding-bottom: 30px;
   padding-top: 100px;
   color: #222;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .user-text p {
@@ -185,6 +178,11 @@ body {
   padding: 0.5rem;
 }
 
+/* Pages */
+.page-container {
+  width: 100%;
+}
+
 /* Navigation on Album Page */
 .navigation-bar {
   margin: 0;
@@ -255,7 +253,7 @@ body {
 .child-album-item {
   list-style: none;
   width: var(--item-width);
-  margin-bottom: 1vw;
+  margin-bottom: 2vw;
   text-align: center;
   border: 1px solid lightgray;
 }
@@ -281,14 +279,13 @@ body {
 }
 
 .child-album-title {
-  padding: 0 0 16px 16px;
+  padding: 16px 16px;
   background-color: white;
 }
 
 .child-album-title p {
   text-align: center;
   margin: 0;
-  padding-top: calc(var(--image-title-height) * 1 / 4);
   font-size: 1.3rem;
   font-family: 'Cabin';
   color: #6b6565;

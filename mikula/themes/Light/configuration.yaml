@@ -5,7 +5,7 @@ thumbnail_size: 600
 rescale_image: "height"
 image_size: 1000
 max_columns: 3
-padding: 1
+padding: 2
 theme:
   name: "Light"
   author: "LenkinWeb"
