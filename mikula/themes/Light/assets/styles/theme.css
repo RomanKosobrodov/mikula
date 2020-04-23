@@ -18,6 +18,7 @@
   --item-width2: 37vw;
   --item-width1: 78vw;
   --h1-font-size: 3.6rem;
+  --image-navigation-font-size: 4rem;
 }
 
 *{
@@ -326,22 +327,22 @@ body {
 
 /* Image page */
 .picture {
-  max-height: 95vh;
-  max-width: 95vw;
+  max-height: 90vh;
+  max-width: 90vw;
   width: auto;
   height: auto;
   display: block;
-  margin-top: 2vh;
+  margin-top: 5vh;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 3vh;
+  margin-bottom: 5vh;
 }
 
 .previous,
 .next {
   color: black;
   text-decoration: none;
-  font-size: 4rem;
+  font-size: var(--image-navigation-font-size);
   font-family: Times;
   color: grey;
   position: fixed;
@@ -365,7 +366,7 @@ body {
 }
 
 .album-link {
-  font-size: 25px;
+  font-size: calc(0.4 * var(--image-navigation-font-size));
   position: fixed;
   top: 2%;
   right: 1%;
@@ -488,5 +489,17 @@ footer a:hover {
 
   .user-text h1 {
     font-size: 2.0rem;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .picture {
+    max-height: 85vh;
+    max-width: 85vw;
+    margin-top: 7vh;
+    margin-bottom: 8vh;
+  }
+  :root {
+    --image-navigation-font-size: 3rem;
   }
 }
