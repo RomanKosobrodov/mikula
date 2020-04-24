@@ -63,7 +63,7 @@ def create_parser():
                                   required=True)
     customize_parser.add_argument("--prototype",
                                   help="Name of prototype Mikula theme you wish to customize",
-                                  default="default",
+                                  default="Light",
                                   required=False)
     customize_parser.add_argument("--destination",
                                   help="Destination directory for the custom theme",
