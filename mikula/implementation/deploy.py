@@ -60,7 +60,7 @@ def configure_website_bucket(s3_resource, bucket_name):
     bucket_policy.put(Policy=policy_string)
 
 
-def upload_gallery(gallery, s3_resource, bucket_name):
+def upload_gallery(gallery, s3_resource, bucket_name, is_existing=False):
     s3_bucket_object = s3_resource.Bucket(bucket_name)
     print(f'Uploading files to "{bucket_name}"')
     for subdir, dirs, files in os.walk(gallery):
@@ -70,10 +70,15 @@ def upload_gallery(gallery, s3_resource, bucket_name):
             with open(full_path, 'rb') as data:
                 key = full_path[len(gallery) + 1:]
                 print(f'"{key}" - "{mime_type[0]}"')
-                s3_bucket_object.put_object(Key=key,
-                                            Body=data,
-                                            ACL="public-read",
-                                            ContentType=mime_type[0])
+                if is_existing:
+                    s3_bucket_object.put_object(Key=key,
+                                                Body=data,
+                                                ContentType=mime_type[0])
+                else:
+                    s3_bucket_object.put_object(Key=key,
+                                                Body=data,
+                                                ACL="public-read",
+                                                ContentType=mime_type[0])
 
 
 def deploy(bucket, region):
@@ -88,7 +93,8 @@ def deploy(bucket, region):
                         aws_access_key_id=credentials["aws_access_key_id"],
                         aws_secret_access_key=credentials["aws_secret_access_key"])
 
-    if bucket_exists(s3, bucket_name=bucket):
+    exists = bucket_exists(s3, bucket_name=bucket)
+    if exists:
         confirmed = input_yes_no(f"Bucket '{bucket}' already exists. All content in this bucket will be deleted. "
                                  f"Is this OK?")
         if not confirmed:
@@ -96,9 +102,9 @@ def deploy(bucket, region):
         empty_bucket(s3, bucket_name=bucket)
     else:
         create_bucket(s3, bucket, region)
+        configure_website_bucket(s3, bucket_name=bucket)
 
-    configure_website_bucket(s3, bucket_name=bucket)
-    upload_gallery(gallery, s3, bucket_name=bucket)
+    upload_gallery(gallery, s3, bucket_name=bucket, is_existing=exists)
     url = f"http://{bucket}.s3-website-{region}.amazonaws.com"
     print("\nWebsite deployed successfully")
     print(f"It is available at {url}")
