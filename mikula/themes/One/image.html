@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="image-navigation">
+    {% if previous_ %}
+        <a class="previous" href="{{previous_}}">&#8249;</a>
+    {% endif %}
+    {% if next_ %}
+        <a class="next" href="{{next_}}">&#8250;</a>
+    {% endif %}
+    <a class="album-link" href="index.html"> &#10005; </a>
+</div>
+{% if not place_after and user_content_ %}
+    <div class="user-text text-before">
+        {% include user_content_ %}
+    </div>
+{% endif %}
+<div class="image-container">
+    <img class="picture" src="{{image_}}">
+</div>
+{% if exif %}
+    {% if show_exif %}
+        <div class="image-metadata">
+            {% if exif["Model"] %}
+                <p>Camera: {{exif["Model"]}}</p>
+            {% endif %}
+            {% if exif["DateTime"] %}
+                <p>Date: {{exif["DateTime"]}}</p>
+            {% endif %}
+            {% if exif["ISOSpeedRatings"] and exif["ShutterSpeedValue"] and exif["FNumber"] %}
+                <p>{{exif["ISOSpeedRatings"]}} ISO, {{exif["ShutterSpeedValue"]}}s, {{exif["FNumber"]}}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endif %}
+{% if place_after and user_content_ %}
+    <div class="user-text text-after">
+        {% include user_content_ %}
+    </div>
+{% endif %}
+
+{% endblock body %}

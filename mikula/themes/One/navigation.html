@@ -1,0 +1,25 @@
+<nav>
+    <ul class="navigation-list">
+        {% for title, link in page_list_ %}
+        <li class="navigation-item">
+            <a class="navigation-link" href="{{root_}}/{{link}}">{{title}}</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+        {% if albums_|length > 0 %}
+        <ul class="child-album-list">
+            {% for title, url, thumbnail in albums_ %}
+                <li class="child-album-item">
+                        <a class="child-album-link" href="{{ url }}">
+                            {{ title }}
+                        </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+
+</nav>
+
+
