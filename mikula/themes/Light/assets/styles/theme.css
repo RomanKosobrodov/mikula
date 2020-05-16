@@ -262,7 +262,7 @@ body {
 .child-album-container{
   width: 100%;
   height: var(--image-container-height);
-  background-color: #ece3e3;
+  background-color: #eeeeee;
 }
 
 .child-album-link {
