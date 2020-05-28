@@ -1,4 +1,5 @@
 ---
+renderer: "one-page"
 image_format: "png"
 rescale_thumbnail: "width"
 thumbnail_size: 600
