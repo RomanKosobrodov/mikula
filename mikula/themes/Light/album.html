@@ -28,9 +28,9 @@
                     <div class="child-album-container">
                         <a class="child-album-link" href="{{ url }}">
                             {% if thumbnail %}
-                            <img class="child-album-thumbnail" src="{{ thumbnail }}"/>
+                            <img class="child-album-thumbnail" alt="album {{ title }}" src="{{ thumbnail }}"/>
                             {% else %}
-                            <img class="child-album-thumbnail" src="{{root_}}/_assets_/images/folder.svg"/>
+                            <img class="child-album-thumbnail" alt="album {{ title }}"src="{{root_}}/_assets_/images/folder.svg"/>
                             {% endif %}
                         </a>
                     </div>
