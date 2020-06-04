@@ -136,6 +136,8 @@ def render_album_page(album, keys, index, template, page_list, config):
     if "page_title" not in meta.keys():
         meta["page_title"] = meta.get("title", "")
     meta["assets"] = os.path.join(gallery_root, USER_ASSETS)
+    metadata = {"meta": config.get("meta", dict())}
+    metadata.update(meta)
     titles_links = parent_albums(album, keys, index)
     html = template.render(page_list_=page_list,
                            root_=gallery_root,
@@ -148,7 +150,7 @@ def render_album_page(album, keys, index, template, page_list, config):
                            image_counts_=counts,
                            thumbnail_padding_=padding,
                            config_=config,
-                           **meta)
+                           **metadata)
     return html
 
 
@@ -161,7 +163,7 @@ def get_image_page(image_files, image_keys, index):
 
 
 def render_image_page(gallery_root, image_files, image_keys, image_index,
-                      image_template, relative_path, page_list):
+                      image_template, relative_path, page_list, config):
     image_file, meta, content, *rest = image_files[image_keys[image_index]]
     if len(content) > 0:
         user_content = Template(content)
@@ -170,23 +172,27 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
     if "page_title" not in meta.keys():
         meta["page_title"] = meta["title"]
     meta["assets"] = os.path.join(gallery_root, USER_ASSETS)
+    metadata = {"meta": config.get("meta", dict())}
+    metadata.update(meta)
     html = image_template.render(page_list_=page_list,
                                  root_=gallery_root,
                                  user_content_=user_content,
                                  image_=os.path.join(relative_path, image_file),
                                  previous_=get_image_page(image_files, image_keys, image_index - 1),
                                  next_=get_image_page(image_files, image_keys, image_index + 1),
-                                 **meta)
+                                 **metadata)
     return html, f"{meta['basename']}.html"
 
 
 def create_page(page, page_list, destination_directory, filename, template, config):
     meta, content = page
     user_content = Template(content)
+    metadata = {"meta": config.get("meta", dict())}
+    metadata.update(meta)
     html = template.render(user_content_=user_content,
                            page_list_=page_list,
                            config_=config,
-                           **meta)
+                           **metadata)
     fn = os.path.join(destination_directory, filename)
     with open(fn, "w") as fid:
         fid.write(html)
@@ -247,7 +253,8 @@ def render(album, error_page, pages, output_directory, theme, config):
                                                      image_index=k,
                                                      image_template=image_template,
                                                      relative_path=relative_path,
-                                                     page_list=page_list)
+                                                     page_list=page_list,
+                                                     config=config)
             fn = os.path.join(dst_directory, filename)
             with open(fn, "w") as fid:
                 fid.write(image_page)

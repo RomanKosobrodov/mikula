@@ -1,4 +1,7 @@
 ---
+meta:
+  description: "Theme Light for Mikula Gallery"
+  keywords: "image gallery, photography"
 image_format: "png"
 rescale_thumbnail: "width"
 thumbnail_size: 600
