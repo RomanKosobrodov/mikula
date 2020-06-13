@@ -1,25 +1,59 @@
-<nav>
-    <ul class="navigation-list">
-        {% for title, link in page_list_ %}
-        <li class="navigation-item">
-            <a class="navigation-link" href="{{root_}}/{{link}}">{{title}}</a>
-        </li>
-        {% endfor %}
-    </ul>
-
-        {% if albums_|length > 0 %}
-        <ul class="child-album-list">
-            {% for title, url, thumbnail in albums_ %}
-                <li class="child-album-item">
-                        <a class="child-album-link" href="{{ url }}">
-                            {{ title }}
+{% macro render_navigation(path, album, level) -%}
+    {% if level < path|length %}
+        {% set current = path[level] %}
+        {% set relative = album[current][0] %}
+        {% set items = album[current][1] %}
+        <ul class="nav-list">
+            {% for item in items %}
+                {% if path[level+1] == current + "/" + item %}
+                    {% if level+1 == path|length - 1 %}
+                        {% set item_class = "nav-album-item active-item"%}
+                    {% else %}
+                        {% set item_class = "nav-album-item"%}
+                    {% endif %}
+                    <li class="nav-item selected-nav-item">
+                        <a class="nav-link selected-nav-link" href="{{root_}}/{{current}}/{{ item }}/index.html">
+                            {{ item }}
                         </a>
-                </li>
+                       {{ render_navigation(path, album, level+1) }}
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{root_}}/{{current}}/{{ item }}/index.html">
+                            {{ item }}
+                        </a>
+                    </li>
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
+{%- endmacro %}
 
+<nav>
+    <ul class="nav-list">
+        <li class="nav-item">
+            <a class="nav-link" href="{{root_}}/index.html">
+                Home
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{root_}}/about.html">
+                About
+            </a>
+        </li>
+        <li class="nav-item selected-nav-item">
+            <a class="nav-link" href="{{root_}}/album/index.html">
+                Gallery
+            </a>
+            {% if album_|length > 0 %}
+                {{ render_navigation(path_, album_, 0) }}
+            {% endif %}
+        </li>
 
+         <li class="nav-item">
+            <a class="nav-link" href="{{root_}}/index.html">
+                Contact
+            </a>
+        </li>
+    </ul>
 </nav>
-
-
