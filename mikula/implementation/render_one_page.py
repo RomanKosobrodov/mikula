@@ -12,26 +12,26 @@ USER_ASSETS = settings.user_assets_dir
 
 def render_album_page(album, keys, index, template):
     gallery_root, child_albums, meta, content = parse_subdirectories(album, keys, index)
-    # thumbnails, aspects = parse_images(album, keys, index)
-    # max_columns = config.get("max_columns", 1)
-    # heights, counts = calculate_heights(aspects, max_columns)
-    # padding = config.get("padding", 0.1)
-    # user_content = Template(content)
-    # if "page_title" not in meta.keys():
-    #     meta["page_title"] = meta.get("title", "")
-    # meta["assets"] = os.path.join(gallery_root, USER_ASSETS)
-    # titles_links = parent_albums(album, keys, index)
+
     components = keys[index].split(os.sep)
     if index > 0:
         path = [os.sep.join(components[:k+1]) for k in range(len(components))]
     else:
         path = []
-    print(f"Rendering '{keys[index]}';  path={path}")
+
+    relative, _, image_dict, *rest = album[keys[index]]
+    relative_path = os.path.join(relative, GALLERY, IMAGES)
+
+    image_sources = list()
+    for k, v in image_dict.items():
+        image_sources.append(os.path.join(relative_path, v[0]))
+
     html = template.render(root_=gallery_root,
                            album_=album,
                            keys_=keys,
                            path_=path,
-                           index_=index)
+                           index_=index,
+                           sources_=image_sources)
     return html
 
 
@@ -50,14 +50,6 @@ def render(album, error_page, pages, output_directory, theme, config):
         album_filename = os.path.join(dst_directory, "index.html")
         with open(album_filename, 'w') as fid:
             fid.write(album_page)
-
-
-
-        # path, subdirs, images, index_meta, index_content = album[key]
-        # print(f'{key}: {subdirs}')
-        # for x in images:
-        #     print(f'   "{x}": {images[x]}')
-
 
     page_list = list()
     if len(pages) > 0:
