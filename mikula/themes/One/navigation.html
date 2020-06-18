@@ -1,33 +1,33 @@
-{% macro render_navigation(path, album, level) -%}
-    {% if level < path|length %}
-        {% set current = path[level] %}
-        {% set relative = album[current][0] %}
-        {% set items = album[current][1] %}
+{%- macro render_navigation(path, album, level) -%}
+    {%- if level < path|length -%}
+        {%- set current = path[level] -%}
+        {%- set relative = album[current][0] -%}
+        {%- set items = album[current][1] -%}
         <ul class="nav-list">
-            {% for item in items %}
-                {% if path[level+1] == current + "/" + item %}
-                    {% if level+1 == path|length - 1 %}
-                        {% set item_class = "nav-album-item active-item"%}
-                    {% else %}
+            {%- for item in items -%}
+                {%- if path[level+1] == current + "/" + item or current == "." and path[level+1] == item -%}
+                    {%- if level+1 == path|length - 1 -%}
+                        {%- set item_class = "nav-album-item active-item"-%}
+                    {%- else -%}
                         {% set item_class = "nav-album-item"%}
-                    {% endif %}
+                    {%- endif -%}
                     <li class="nav-item selected-nav-item">
                         <a class="nav-link selected-nav-link" href="{{root_}}/{{current}}/{{ item }}/index.html">
                             {{ item }}
                         </a>
                        {{ render_navigation(path, album, level+1) }}
                     </li>
-                {% else %}
+                {%- else -%}
                     <li class="nav-item">
                         <a class="nav-link" href="{{root_}}/{{current}}/{{ item }}/index.html">
                             {{ item }}
                         </a>
                     </li>
-                {% endif %}
-            {% endfor %}
+                {%- endif -%}
+            {%- endfor -%}
         </ul>
-    {% endif %}
-{%- endmacro %}
+    {%- endif -%}
+{%- endmacro -%}
 
 <nav>
     <ul class="nav-list">
@@ -45,9 +45,9 @@
             <a class="nav-link" href="{{root_}}/index.html">
                 Gallery
             </a>
-            {% if album_|length > 0 %}
+            {%- if album_|length > 0 -%}
                 {{ render_navigation(path_, album_, 0) }}
-            {% endif %}
+            {%- endif -%}
         </li>
 
          <li class="nav-item">

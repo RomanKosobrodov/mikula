@@ -13,11 +13,10 @@ USER_ASSETS = settings.user_assets_dir
 def render_album_page(album, keys, index, template):
     gallery_root, child_albums, meta, content = parse_subdirectories(album, keys, index)
 
-    components = keys[index].split(os.sep)
+    path = ["."]
     if index > 0:
-        path = [os.sep.join(components[:k+1]) for k in range(len(components))]
-    else:
-        path = []
+        components = keys[index].split(os.sep)
+        path = path + [os.sep.join(components[:k+1]) for k in range(len(components))]
 
     relative, _, image_dict, *rest = album[keys[index]]
     relative_path = os.path.join(relative, GALLERY, IMAGES)
