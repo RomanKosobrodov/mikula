@@ -31,29 +31,15 @@
 
 <nav>
     <ul class="nav-list">
-        <li class="nav-item">
-            <a class="nav-link" href="{{root_}}/index.html">
-                Home
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{root_}}/about.html">
-                About
-            </a>
-        </li>
-        <li class="nav-item selected-nav-item">
-            <a class="nav-link" href="{{root_}}/index.html">
-                Gallery
-            </a>
-            {%- if album_|length > 0 -%}
-                {{ render_navigation(path_, album_, 0) }}
-            {%- endif -%}
-        </li>
-
-         <li class="nav-item">
-            <a class="nav-link" href="{{root_}}/index.html">
-                Contact
-            </a>
-        </li>
+        {%- for title, url in page_list_ -%}
+            <li class="nav-item">
+                <a class="nav-link" href="{{root_}}/{{url}}">
+                    {{title}}
+                </a>
+                {%- if album_|length > 0 and url=="index.html" -%}
+                    {{ render_navigation(path_, album_, 0) }}
+                {%- endif -%}
+            </li>
+        {%- endfor -%}
     </ul>
 </nav>
