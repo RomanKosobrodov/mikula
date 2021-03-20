@@ -8,7 +8,7 @@ cryptography==3.3.2
 docutils==0.16
 idna==2.9
 jeepney==0.4.3
-Jinja2==2.11.1
+Jinja2==2.11.3
 jmespath==0.9.5
 keyring==21.2.0
 Markdown==3.2.1

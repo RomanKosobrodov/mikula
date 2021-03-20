@@ -52,7 +52,7 @@ setuptools.setup(
     python_requires='>=3.6',
     install_requires=[
         "boto3==1.10.26",
-        "Jinja2==2.10.3",
+        "Jinja2==2.11.3",
         "Markdown==3.1.1",
         "Pillow>=6.2.2",
         "piexif>=1.1.3",
