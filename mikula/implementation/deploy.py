@@ -1,6 +1,7 @@
 import os
 import json
 import boto3
+import botocore.exceptions
 from mikula.implementation.configure import read_credentials, AWS_REGIONS
 from mikula.implementation.util import input_yes_no
 import mimetypes as mime
@@ -83,22 +84,26 @@ def deploy(bucket, region):
         print("Use 'mikula build' to generate your gallery and `mikula serve` to test it locally.")
         return
 
-    credentials = read_credentials()
-    s3 = boto3.resource('s3',
-                        aws_access_key_id=credentials["aws_access_key_id"],
-                        aws_secret_access_key=credentials["aws_secret_access_key"])
+    try:
+        credentials = read_credentials()
+        s3 = boto3.resource('s3',
+                            aws_access_key_id=credentials["aws_access_key_id"],
+                            aws_secret_access_key=credentials["aws_secret_access_key"])
 
-    if bucket_exists(s3, bucket_name=bucket):
-        confirmed = input_yes_no(f"Bucket '{bucket}' already exists. All content in this bucket will be deleted. "
-                                 f"Is this OK?")
-        if not confirmed:
-            return
-        empty_bucket(s3, bucket_name=bucket)
-    else:
-        create_bucket(s3, bucket, region)
+        if bucket_exists(s3, bucket_name=bucket):
+            confirmed = input_yes_no(f"Bucket '{bucket}' already exists. All content in this bucket will be deleted. "
+                                     f"Is this OK?")
+            if not confirmed:
+                return
+            empty_bucket(s3, bucket_name=bucket)
+        else:
+            create_bucket(s3, bucket, region)
 
-    configure_website_bucket(s3, bucket_name=bucket)
-    upload_gallery(gallery, s3, bucket_name=bucket)
-    url = f"http://{bucket}.s3-website-{region}.amazonaws.com"
-    print("\nWebsite deployed successfully")
-    print(f"It is available at {url}")
+        configure_website_bucket(s3, bucket_name=bucket)
+        upload_gallery(gallery, s3, bucket_name=bucket)
+        url = f"http://{bucket}.s3-website-{region}.amazonaws.com"
+        print("\nWebsite deployed successfully")
+        print(f"It is available at {url}")
+    except botocore.exceptions.ClientError as error:
+        print(f"\nDeployment failed: \n{error}")
+        exit(1)
