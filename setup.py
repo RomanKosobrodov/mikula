@@ -56,6 +56,6 @@ setuptools.setup(
         "Markdown==3.1.1",
         "Pillow>=6.2.2",
         "piexif>=1.1.3",
-        "PyYAML==5.1.2"
+        "PyYAML==5.4"
     ]
 )
