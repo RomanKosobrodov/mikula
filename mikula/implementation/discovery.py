@@ -9,7 +9,6 @@ from mikula.implementation import settings
 from mikula.implementation.util import walk
 
 
-PAGES_DIR = settings.pages_source
 IGNORED = settings.ignored
 SORT_BY_DATE = 0
 SORT_BY_NAME = 1
@@ -17,12 +16,12 @@ SORT_BY_ORDER = 2
 SORT_METHOD = {"date": SORT_BY_DATE, "name": SORT_BY_NAME, "order": SORT_BY_ORDER}
 
 
-def parse_pages(source_directory):
+def parse_special_directory(special_directory):
     parsed = OrderedDict()
     extensions = ['md', 'html']
     filelist = list()
     for e in extensions:
-        pattern = os.path.join(source_directory, PAGES_DIR, f"*.{e}")
+        pattern = os.path.join(special_directory, f"*.{e}")
         filelist.extend(glob.glob(pattern))
     index = len(filelist)
     for fn in filelist:

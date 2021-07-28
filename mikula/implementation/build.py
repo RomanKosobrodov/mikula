@@ -1,9 +1,10 @@
 from mikula.implementation.configure import read_configuration, update_configuration
 from mikula.implementation.images import process_images
-from mikula.implementation.discovery import discover, parse_pages
+from mikula.implementation.discovery import discover, parse_special_directory
 from mikula.implementation.util import create_directories, copy_user_assets, copy_assets, get_theme_directory
 from mikula.implementation.rendering import render
 from mikula.implementation.image_cache import ImageCache
+from mikula.implementation import settings
 import os
 import time
 
@@ -33,7 +34,8 @@ def build(theme, clean, album_directory=os.getcwd()):
     if clean:
         cache.reset()
     album, excluded, error_page, config_changes = discover(directory=source, config=config, cache=cache)
-    pages = parse_pages(source_directory=source)
+    pages = parse_special_directory(os.path.join(source, settings.pages_source))
+    blog = parse_special_directory(os.path.join(source, settings.blog_source))
 
     create_directories(album, output, overwrite=config_changes)
     copy_assets(theme_directory, output)
