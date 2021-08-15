@@ -20,6 +20,9 @@ def render_pages(pages, destination_directory, template, config):
     for basename, page in pages.items():
         fn = f"{basename}.html"
         meta, _ = page
+        blog_page = meta.get("render_blog_here", False)
+        if blog_page:
+            continue
         home_page = meta.get("render_gallery_here", False)
         if home_page:
             fn = "index.html"

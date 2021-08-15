@@ -1,6 +1,7 @@
 from mikula.implementation.configure import read_configuration, update_configuration
 from mikula.implementation.images import process_images
 from mikula.implementation.discovery import discover, parse_special_directory
+from mikula.implementation.blog import parse_blog_directory
 from mikula.implementation.util import create_directories, copy_user_assets, copy_assets, get_theme_directory
 from mikula.implementation.rendering import render
 from mikula.implementation.image_cache import ImageCache
@@ -35,7 +36,7 @@ def build(theme, clean, album_directory=os.getcwd()):
         cache.reset()
     album, excluded, error_page, config_changes = discover(directory=source, config=config, cache=cache)
     pages = parse_special_directory(os.path.join(source, settings.pages_source))
-    blog = parse_special_directory(os.path.join(source, settings.blog_source))
+    blog = parse_blog_directory(os.path.join(source, settings.blog_source))
 
     create_directories(album, output, overwrite=config_changes)
     copy_assets(theme_directory, output)
@@ -43,7 +44,13 @@ def build(theme, clean, album_directory=os.getcwd()):
 
     process_images(source, album, excluded, output, config, cache)
 
-    render(album, error_page, pages, output, theme_directory, config)
+    render(album=album,
+           error_page=error_page,
+           pages=pages,
+           blog=blog,
+           output_directory=output,
+           theme=theme_directory,
+           config=config)
     elapsed = time.perf_counter() - start_time
     print(f"\nDone in {elapsed:.1f} seconds")
     print(f'\nGallery built in "{output}" using theme "{theme}"')

@@ -181,7 +181,7 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
     return html, f"{meta['basename']}.html"
 
 
-def render(album, error_page, pages, output_directory, theme, config):
+def render(album, error_page, pages, blog, output_directory, theme, config):
     env = Environment(
         loader=FileSystemLoader(theme),
         autoescape=select_autoescape(['html', 'xml'])
