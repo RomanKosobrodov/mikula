@@ -35,7 +35,7 @@ def render_album_page(album, keys, index, template, page_list):
     return html
 
 
-def render(album, error_page, pages, blog, output_directory, theme, config):
+def render(album, error_page, pages, output_directory, theme, config):
     env = Environment(
         loader=FileSystemLoader(theme),
         autoescape=select_autoescape(['html', 'xml'])
@@ -58,3 +58,4 @@ def render(album, error_page, pages, blog, output_directory, theme, config):
         with open(album_filename, 'w') as fid:
             fid.write(album_page)
 
+    return page_list

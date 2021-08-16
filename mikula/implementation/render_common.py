@@ -22,6 +22,8 @@ def render_pages(pages, destination_directory, template, config):
         meta, _ = page
         blog_page = meta.get("render_blog_here", False)
         if blog_page:
+            fn = "blog/index.html"
+            page_list.append((meta["title"], fn))
             continue
         home_page = meta.get("render_gallery_here", False)
         if home_page:
