@@ -4,16 +4,25 @@
 <div class="main-container">
     <div class="full-width">
     {% if posts_|length > 0 %}
-        <ul class="thumbnail-list">
+        <ul class="child-album-list">
             {% for date, title, url, thumbnail in posts_ %}
-            <li class="thumbnail-item">
-                <div class="thumbnail-container">
-                    <a class="thumbnail-link" href="{{ url }}">
-                        <img class="thumbnail-image" src="{{ thumbnail }}"/>
-                    </a>
-                    <p class="thumbnail-title">{{ title }}</p>
-                </div>
-            </li>
+                <li class="child-album-item">
+                    <div class="child-album-title">
+                        <p>{{ date }}</p>
+                    </div>
+                    <div class="child-album-container">
+                        <a class="child-album-link" href="{{ url }}">
+                            {% if thumbnail %}
+                            <img class="child-album-thumbnail" src="{{ thumbnail }}"/>
+                            {% else %}
+                            <img class="child-album-thumbnail" src="{{root_}}/_assets_/images/folder.svg"/>
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="child-album-title">
+                        <p>{{ title }}</p>
+                    </div>
+                </li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -21,28 +30,5 @@
 </div>
 
 {% include "footer.html" %}
-
-<script type="text/javascript">
-    const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    const max_columns = {{ max_heights_ | length }};
-    const padding = {{ thumbnail_padding_ }};
-    const heights = {{ max_heights_ | safe }};
-    const counts = {{ image_counts_ | safe }};
-
-    document.addEventListener('DOMContentLoaded', function() {
-        let root = document.documentElement;
-        const list_width = 80;
-        root.style.setProperty('--list-width', `${list_width}vw`);
-        root.style.setProperty('--thumbnail-padding', `${padding}vw`);
-        for (let c=1; c<=max_columns; c++ ) {
-            const k = c-1;
-            const width = (list_width - (c+1) * padding) / c;
-            let height = width * heights[k] + padding * (1 + counts[k]);
-            height = Math.ceil(1.015 * height) + 2 * padding;
-            root.style.setProperty(`--list-height${c}`, `${height}vw`);
-            root.style.setProperty(`--thumbnail-width${c}`, `${width}vw`);
-        }
-    });
-</script>
 
 {% endblock body %}
