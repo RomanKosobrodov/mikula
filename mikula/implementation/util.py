@@ -1,6 +1,5 @@
 import os
 import shutil
-from pathlib import Path
 from distutils.dir_util import copy_tree
 from mikula.implementation import settings
 

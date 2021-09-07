@@ -4,22 +4,22 @@
 <div class="main-container">
     <div class="full-width">
     {% if posts_|length > 0 %}
-        <ul class="child-album-list">
+        <ul class="blog-list">
             {% for date, title, url, thumbnail in posts_ %}
-                <li class="child-album-item">
-                    <div class="child-album-title">
+                <li class="blog-item">
+                    <div class="blog-date">
                         <p>{{ date }}</p>
                     </div>
-                    <div class="child-album-container">
-                        <a class="child-album-link" href="{{ url }}">
+                    <div class="blog-container">
+                        <a class="blog-link" href="{{ url }}">
                             {% if thumbnail %}
-                            <img class="child-album-thumbnail" src="{{ thumbnail }}"/>
+                            <img class="blog-thumbnail" src="{{ thumbnail }}"/>
                             {% else %}
-                            <img class="child-album-thumbnail" src="{{root_}}/_assets_/images/folder.svg"/>
+                            <img class="blog-thumbnail" src="{{root_}}/_assets_/images/folder.svg"/>
                             {% endif %}
                         </a>
                     </div>
-                    <div class="child-album-title">
+                    <div class="blog-title">
                         <p>{{ title }}</p>
                     </div>
                 </li>

@@ -50,8 +50,7 @@ def build(theme, clean, album_directory=os.getcwd()):
                        theme=theme_directory,
                        config=config)
 
-    posts = parse_blog_directory(os.path.join(source, settings.blog_source))
-    render_blog(posts=posts,
+    render_blog(blog_directory=os.path.join(source, settings.blog_source),
                 page_list=page_list,
                 output_directory=output,
                 theme=theme_directory,
