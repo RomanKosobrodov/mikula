@@ -4,6 +4,8 @@ thumbnails_dir = "thumbnails"
 assets_dir = "_assets_"
 user_assets_dir = "_user-assets_"
 
-pages_source = "__pages__"
 assets_source = "__assets__"
-ignored = (pages_source, assets_source, ".git")
+blog_source = "__blog__"
+pages_source = "__pages__"
+
+ignored = (assets_source, blog_source, pages_source, ".git")

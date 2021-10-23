@@ -88,10 +88,7 @@ def rescale_image(img, config, is_thumbnail):
     return img.resize((width, height), Image.ANTIALIAS)
 
 
-def convert_image(original, converted, directory, images_dst, thumbnails_dst,
-                  source_directory, config):
-    file_path = os.path.join(source_directory, directory, original)
-    img = Image.open(file_path)
+def update_exif(img, config):
     if "exif" in img.info:
         exif = piexif.load(img.info["exif"])
         image_orientation = exif["0th"].get(piexif.ImageIFD.Orientation, 1)
@@ -105,15 +102,26 @@ def convert_image(original, converted, directory, images_dst, thumbnails_dst,
                 exif["0th"][piexif.ImageIFD.Copyright] = config["add_copyright"]
         exif_bytes = piexif.dump(exif)
     else:
-        exif_bytes = b''
-    rescaled = rescale_image(img, config, is_thumbnail=False)
-    image_fn = os.path.join(images_dst, converted)
-    image_format = config.get("image_format", "png")
-    rescaled.save(image_fn, format=image_format, exif=exif_bytes)
+        exif_bytes = b""
+    return img, exif_bytes
 
-    rescaled = rescale_image(img, config, is_thumbnail=True)
-    thumbnail_fn = os.path.join(thumbnails_dst, converted)
-    rescaled.save(thumbnail_fn, format=image_format, exif=exif_bytes)
+
+def convert_image(original, converted, directory, images_dst, thumbnails_dst,
+                  source_directory, config):
+    file_path = os.path.join(source_directory, directory, original)
+    img = Image.open(file_path)
+    img, exif_bytes = update_exif(img, config)
+    image_format = config.get("image_format", "png")
+    image_fn = None
+    thumbnail_fn = None
+    if images_dst is not None:
+        rescaled = rescale_image(img, config, is_thumbnail=False)
+        image_fn = os.path.join(images_dst, converted)
+        rescaled.save(image_fn, format=image_format, exif=exif_bytes)
+    if thumbnails_dst is not None:
+        rescaled = rescale_image(img, config, is_thumbnail=True)
+        thumbnail_fn = os.path.join(thumbnails_dst, converted)
+        rescaled.save(thumbnail_fn, format=image_format, exif=exif_bytes)
     img.close()
     return file_path, image_fn, thumbnail_fn
 

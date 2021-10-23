@@ -292,6 +292,65 @@ body {
   color: #6b6565;
 }
 
+/* Blog */
+.blog-list {
+  width: 80vw;
+  padding: 1vw;
+  margin-left: 10vw;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.blog-item {
+  list-style: none;
+  width: var(--item-width);
+  margin-bottom: 2vw;
+  text-align: center;
+  border: 1px solid lightgray;
+}
+
+.blog-date {
+  padding: 16px 16px;
+  background-color: white;
+}
+
+.blog-container{
+  width: 100%;
+  height: var(--image-container-height);
+  background-color: #ece3e3;
+}
+
+.blog-link {
+  outline: none;
+  border: none;
+}
+
+.blog-thumbnail {
+  max-height: var(--image-height);
+  max-width: calc(var(--item-width) - calc(var(--image-margin) * 2));
+  width: auto;
+  height: auto;
+  margin: var(--image-margin);
+  background-color: #ece3e3;
+}
+
+.blog-title {
+  padding: 16px 16px;
+  background-color: white;
+}
+
+.blog-title p {
+  text-align: center;
+  margin: 0;
+  font-size: 1.3rem;
+  font-family: 'Cabin';
+  color: #6b6565;
+}
+
+
+
 /* Album Thumbnails */
 .thumbnail-list {
   height: var(--list-height3);

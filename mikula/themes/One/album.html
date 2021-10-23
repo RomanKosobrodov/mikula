@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block body %}
+
+<div class="main-container">
+    {% include "navigation.html" %}
+    <div class="image-container">
+        <div class="image-container">
+            {% if sources_ %}
+                {% set img_source = sources_[0] %}
+                <img id="clickable-image" class="picture"
+                    role="button"
+                    tabIndex="0"
+                    src="{{img_source}}">
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="{{root_}}/_assets_/scripts/cycle_images.js"></script>
+<script> document.getElementById("clickable-image").onclick = cycle_images({{sources_|safe}}); </script>
+{% endblock body %}

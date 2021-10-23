@@ -68,6 +68,5 @@ def walk(path, exclude=tuple(), topdown=False):
 def get_theme_directory(theme):
     if os.path.isdir(theme):
         return theme
-
     d = os.path.dirname(__file__)
     return os.path.abspath(os.path.join(d, os.pardir, "themes", theme))

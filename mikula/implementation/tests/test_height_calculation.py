@@ -1,4 +1,4 @@
-from mikula.implementation.rendering import cum_sum, calculate_heights, find_closest
+from mikula.implementation.render_default import cum_sum, calculate_heights, find_closest
 import math
 
 
