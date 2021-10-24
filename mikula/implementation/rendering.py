@@ -6,8 +6,8 @@ RENDERERS = {"default": default,
              "one-page": one_page}
 
 
-def render(album, error_page, pages, output_directory, theme, config):
+def render(album, pages, output_directory, templates, config):
     renderer = config.get("renderer", "default")
     module = RENDERERS.get(renderer, "default")
-    page_list = module.render(album, error_page, pages, output_directory, theme, config)
+    page_list = module.render(album, pages, output_directory, templates, config)
     return page_list

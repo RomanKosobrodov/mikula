@@ -1,12 +1,10 @@
 import os
-from jinja2 import Environment, FileSystemLoader, select_autoescape, Template
+from jinja2 import Template
 from mikula.implementation import settings
-from mikula.implementation.render_common import render_pages, create_page
 
-GALLERY = settings.gallery_dir
 IMAGES = settings.images_dir
 THUMBNAILS = settings.thumbnails_dir
-USER_ASSETS = settings.user_assets_dir
+USER_ASSETS = settings.assets_dir
 
 
 def cum_sum(x):
@@ -72,7 +70,7 @@ def parse_subdirectories(album, keys, index):
         url = os.path.join(directory, "index.html")
         thumbnail_filename = meta.get("thumbnail", None)
         if thumbnail_filename is not None:
-            thumbnail_url = os.path.join(relative, GALLERY, IMAGES, THUMBNAILS, thumbnail_filename)
+            thumbnail_url = os.path.join(relative, THUMBNAILS, thumbnail_filename)
         else:
             thumbnail_url = None
         output.append((order, title, url, thumbnail_url))
@@ -88,7 +86,7 @@ def parse_images(album, keys, index):
     for original, (image_file, image_meta, _, aspect, _, _) in image_files.items():
         image_name = image_meta["title"]
         image_url = f"{image_meta['basename']}.html"
-        thumbnail_url = os.path.join(relative, GALLERY, IMAGES, THUMBNAILS, image_file)
+        thumbnail_url = os.path.join(relative, THUMBNAILS, image_file)
         output.append((image_name, image_url, os.path.normpath(thumbnail_url)))
         aspects.append(aspect)
     return output, aspects
@@ -129,6 +127,7 @@ def parent_albums(album, keys, index):
 
 def render_album_page(album, keys, index, template, page_list, config):
     gallery_root, child_albums, meta, content = parse_subdirectories(album, keys, index)
+    gallery_root = os.path.join(os.pardir, gallery_root)
     thumbnails, aspects = parse_images(album, keys, index)
     max_columns = config.get("max_columns", 1)
     heights, counts = calculate_heights(aspects, max_columns)
@@ -181,25 +180,10 @@ def render_image_page(gallery_root, image_files, image_keys, image_index,
     return html, f"{meta['basename']}.html"
 
 
-def render(album, error_page, pages, output_directory, theme, config):
-    env = Environment(
-        loader=FileSystemLoader(theme),
-        autoescape=select_autoescape(['html', 'xml'])
-    )
-    album_template = env.get_template("album.html")
-    image_template = env.get_template("image.html")
-    error_template = env.get_template("error.html")
-
-    page_list = list()
-    if len(pages) > 0:
-        pages_template = env.get_template("pages.html")
-        page_list = render_pages(pages, output_directory, pages_template, config)
-
-    create_page(error_page, page_list, output_directory, "error.html", error_template, config)
-
+def render(album, page_list, output_directory, templates, config):
     keys = tuple(album.keys())
     for index in range(len(keys)):
-        album_page = render_album_page(album, keys, index, album_template, page_list, config)
+        album_page = render_album_page(album, keys, index, templates["album"], page_list, config)
         dst_directory = os.path.join(output_directory, keys[index])
         album_filename = os.path.join(dst_directory, "index.html")
         with open(album_filename, 'w') as fid:
@@ -207,16 +191,15 @@ def render(album, error_page, pages, output_directory, theme, config):
 
         relative, _, image_files, _, _ = album[keys[index]]
         image_keys = tuple(image_files.keys())
-        relative_path = os.path.join(relative, GALLERY, IMAGES)
+        relative_path = os.path.join(relative, IMAGES)
         for k in range(len(image_keys)):
-            image_page, filename = render_image_page(gallery_root=relative,
+            image_page, filename = render_image_page(gallery_root=os.path.join(os.pardir, relative),
                                                      image_files=image_files,
                                                      image_keys=image_keys,
                                                      image_index=k,
-                                                     image_template=image_template,
+                                                     image_template=templates["image"],
                                                      relative_path=relative_path,
                                                      page_list=page_list)
             fn = os.path.join(dst_directory, filename)
             with open(fn, "w") as fid:
                 fid.write(image_page)
-    return page_list

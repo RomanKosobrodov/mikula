@@ -4,7 +4,7 @@ from multiprocessing import Pool
 from PIL import Image, ExifTags
 import piexif
 from mikula.implementation.exif import nominal_shutter_speed, nominal_f_number, nominal_aperture
-from mikula.implementation.settings import gallery_dir, images_dir, thumbnails_dir
+from mikula.implementation.settings import images_dir, thumbnails_dir
 
 EXIF_ORIENTATION = 0x0112
 EXIF_USER_COMMENT = 0X9286
@@ -24,7 +24,6 @@ ORIENTATION = {
     8: Image.ROTATE_90
 }
 TAG_CODE = {key: value for key, value in zip(ExifTags.TAGS.values(), ExifTags.TAGS.keys())}
-GALLERY = gallery_dir
 IMAGES = images_dir
 THUMBNAILS = thumbnails_dir
 
@@ -168,9 +167,11 @@ def converter(args):
     return relative, original_fn, image_fn, thumbnail_fn
 
 
-def process_images(source_directory, parsed, excluded, output, config, cache):
-    images_dst = os.path.join(output, GALLERY, IMAGES)
-    thumbnails_dst = os.path.join(images_dst, THUMBNAILS)
+def process_images(source_directory, parsed, excluded, destination, config, cache):
+    if not os.path.isdir(destination):
+        os.mkdir(destination)
+    images_dst = os.path.join(destination, IMAGES)
+    thumbnails_dst = os.path.join(destination, THUMBNAILS)
     parallel_tasks = list()
     for directory, content in parsed.items():
         relative, subdirs, images, index_meta, index_content = content

@@ -2,7 +2,7 @@ import os
 import json
 import boto3
 import botocore.exceptions
-from mikula.implementation.configure import read_credentials, AWS_REGIONS
+from mikula.implementation.configure import read_credentials
 from mikula.implementation.util import input_yes_no
 import mimetypes as mime
 

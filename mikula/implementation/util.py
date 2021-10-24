@@ -27,13 +27,10 @@ def create(directory, overwrite=True):
 def create_directories(parsed, output_directory, overwrite=True):
     create(output_directory, overwrite)
 
-    gallery_dir = os.path.join(output_directory, settings.gallery_dir)
-    create(gallery_dir, overwrite)
-
-    images_dir = os.path.join(gallery_dir, settings.images_dir)
+    images_dir = os.path.join(output_directory, settings.images_dir)
     create(images_dir, overwrite)
 
-    thumbnails_dir = os.path.join(images_dir, settings.thumbnails_dir)
+    thumbnails_dir = os.path.join(output_directory, settings.thumbnails_dir)
     create(thumbnails_dir, overwrite)
 
     for directory in reversed(parsed.keys()):
@@ -49,8 +46,8 @@ def copy_assets(theme, output_directory):
 
 
 def copy_user_assets(source, output):
-    src = os.path.join(os.path.abspath(source), settings.assets_source)
-    dst = os.path.join(os.path.abspath(output), settings.user_assets_dir)
+    src = os.path.join(os.path.abspath(source), settings.assets_dir)
+    dst = os.path.join(os.path.abspath(output), settings.assets_dir)
     if os.path.isdir(src):
         copy_tree(src, dst)
 
@@ -70,3 +67,7 @@ def get_theme_directory(theme):
         return theme
     d = os.path.dirname(__file__)
     return os.path.abspath(os.path.join(d, os.pardir, "themes", theme))
+
+
+def directory_basename(source_directory):
+    return os.path.basename(os.path.abspath(source_directory))

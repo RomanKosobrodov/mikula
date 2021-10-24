@@ -3,7 +3,7 @@ import glob
 import datetime
 import re
 import uuid
-from jinja2 import Environment, FileSystemLoader, select_autoescape, Template
+from jinja2 import Template
 from collections import OrderedDict
 from mikula.implementation.md import parse_markdown, render_document, DEFAULT_PAGE_META
 from mikula.implementation.settings import assets_dir
@@ -61,7 +61,7 @@ def process_post_image(post_source, image_path, is_thumbnail, output_directory, 
     basename, ext = os.path.splitext(os.path.basename(image_path))
     image_ext = config.get("image_format", "png")
     suffix = str(uuid.uuid4())
-    destination_fn = os.path.join(output_directory,
+    destination_fn = os.path.join(os.path.dirname(output_directory),
                                   assets_dir,
                                   f"{basename}-{suffix[:8]}.{image_ext}")
 
@@ -70,6 +70,8 @@ def process_post_image(post_source, image_path, is_thumbnail, output_directory, 
         return None
 
     destination_dir = os.path.dirname(destination_fn)
+    if not os.path.isdir(destination_dir):
+        os.mkdir(destination_dir)
     convert_image(original=abs_path,
                   converted=os.path.basename(destination_fn),
                   directory="",
@@ -96,9 +98,8 @@ def convert_post_images(content_filename, document, output_directory, rendered_u
 
 def render_post(post, page_list, output_directory, filename, template, config):
     source_fn, meta, document = post
-
     date = meta["date"]
-    directory = os.path.join(output_directory, "blog", f"{date.year}", f"{date.month:02d}", f"{date.day:02d}")
+    directory = os.path.join(output_directory, f"{date.year}", f"{date.month:02d}", f"{date.day:02d}")
     os.makedirs(directory, exist_ok=True)
     fn = os.path.join(directory, filename)
     url = os.path.join(f"{date.year}", f"{date.month:02d}", f"{date.day:02d}", filename)
@@ -122,12 +123,8 @@ def render_post(post, page_list, output_directory, filename, template, config):
     return url
 
 
-def render_blog(blog_directory, page_list, output_directory, theme, config):
-    env = Environment(
-        loader=FileSystemLoader(theme),
-        autoescape=select_autoescape(['html', 'xml'])
-    )
-    post_template = env.get_template("post.html")
+def render_blog(blog_directory, page_list, output_directory, templates, config):
+    post_template = templates["post"]
     blog_posts = list()
 
     for post, parsed in parse_blog_directory(blog_directory):
@@ -143,21 +140,24 @@ def render_blog(blog_directory, page_list, output_directory, theme, config):
                                                 is_thumbnail=True,
                                                 output_directory=output_directory,
                                                 config=config)
-            relative_thumbnail = os.path.relpath(destination_fn, os.path.join(output_directory, url))
+            if destination_fn is None:
+                print(f'Warning: Unable to find thumbnail file "{thumbnail}" defined in file "{fn}"')
+                relative_thumbnail = None
+            else:
+                relative_thumbnail = os.path.relpath(destination_fn, os.path.join(output_directory, url))
         else:
             relative_thumbnail = None
         blog_posts.append((date_str, title, url, relative_thumbnail))
 
     if len(blog_posts) > 0:
-        blog_template = env.get_template("blog.html")
-
+        blog_template = templates["blog"]
         padding = config.get("padding", 0.1)
-        html = blog_template.render(root_="..",
+        html = blog_template.render(root_="",
                                     page_list_=page_list,
                                     posts_=blog_posts,
                                     thumbnail_padding_=padding,
                                     config_=config,
                                     **meta)
-        fn = os.path.join(output_directory, "blog", "index.html")
+        fn = os.path.join(output_directory, "index.html")
         with open(fn, "w") as fid:
             fid.write(html)

@@ -1,5 +1,21 @@
 import os
-from jinja2 import Template
+from jinja2 import Environment, FileSystemLoader, select_autoescape, Template
+from mikula.implementation.md import DEFAULT_ERROR
+
+
+def load_templates(theme_directory):
+    templates = dict()
+    env = Environment(
+        loader=FileSystemLoader(theme_directory),
+        autoescape=select_autoescape(['html', 'xml'])
+    )
+    templates["page"] = env.get_template("pages.html")
+    templates["album"] = env.get_template("album.html")
+    templates["image"] = env.get_template("image.html")
+    templates["error"] = env.get_template("error.html")
+    templates["post"] = env.get_template("post.html")
+    templates["blog"] = env.get_template("blog.html")
+    return templates
 
 
 def create_page(page, page_list, destination_directory, filename, template, config):
@@ -12,6 +28,28 @@ def create_page(page, page_list, destination_directory, filename, template, conf
     fn = os.path.join(destination_directory, filename)
     with open(fn, "w") as fid:
         fid.write(html)
+
+
+def create_default_error_page(page_list, destination_directory, template, config):
+    error_meta = {"title": "Server Error", "page_title": "Server Error"}
+    error_content = DEFAULT_ERROR
+    create_page(page=(error_meta, error_content),
+                page_list=page_list,
+                destination_directory=destination_directory,
+                filename="error.html",
+                template=template,
+                config=config)
+
+
+def create_redirect_page(meta, destination):
+    if "index_page" in meta:
+        if meta["index_page"]:
+            target = os.path.join(meta["source"], "index.html")
+            document = "<html><head>"
+            document += f'<meta http-equiv="refresh" content="0; URL={target}" />\n'
+            document += "</head><body></body></html>"
+            with open(destination, "w") as dst:
+                dst.write(document)
 
 
 def render_pages(pages, destination_directory, template, config):

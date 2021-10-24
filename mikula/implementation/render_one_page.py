@@ -4,10 +4,9 @@ from mikula.implementation import settings
 from mikula.implementation.render_common import create_page, render_pages
 from mikula.implementation.render_default import parse_subdirectories
 
-GALLERY = settings.gallery_dir
 IMAGES = settings.images_dir
 THUMBNAILS = settings.thumbnails_dir
-USER_ASSETS = settings.user_assets_dir
+USER_ASSETS = settings.assets_dir
 
 
 def render_album_page(album, keys, index, template, page_list):
@@ -19,7 +18,7 @@ def render_album_page(album, keys, index, template, page_list):
         path = path + [os.sep.join(components[:k+1]) for k in range(len(components))]
 
     relative, _, image_dict, *rest = album[keys[index]]
-    relative_path = os.path.join(relative, GALLERY, IMAGES)
+    relative_path = os.path.join(relative, IMAGES)
 
     image_sources = list()
     for k, v in image_dict.items():
