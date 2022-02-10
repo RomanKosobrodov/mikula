@@ -67,13 +67,15 @@ def upload_gallery(gallery, s3_resource, bucket_name):
     for subdir, dirs, files in os.walk(gallery):
         for file in files:
             full_path = os.path.join(subdir, file)
-            mime_type = mime.guess_type(full_path)
+            mime_type, encoding = mime.guess_type(full_path)
+            if mime_type is None:
+                mime_type = "text/html"
             with open(full_path, 'rb') as data:
                 key = full_path[len(gallery) + 1:]
-                print(f'"{key}" - "{mime_type[0]}"')
+                print(f'"{key}" - "{mime_type}"')
                 s3_bucket_object.put_object(Key=key,
                                             Body=data,
-                                            ContentType=mime_type[0])
+                                            ContentType=mime_type)
 
 
 def deploy(bucket, region):

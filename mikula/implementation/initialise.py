@@ -12,10 +12,11 @@ def make_directory(directory, root):
     return full_path
 
 
-def initialise(root=os.path.join(os.getcwd())):
-    source_dir = make_directory("source", root)
-    shutil.copytree(SKELETON_DIR, source_dir, dirs_exist_ok=True)
-    make_directory("build", root)
+def initialise(root=None):
+    if root is None:
+        root = os.path.join(os.getcwd())
+    shutil.copytree(SKELETON_DIR, root, dirs_exist_ok=True)
+    source_path = os.path.abspath(os.path.join(root, "source"))
     print("Gallery initialised.")
-    print(f'Start adding your pictures and captions into "{source_dir}"')
+    print(f'Start adding your pictures and captions into "{source_path}"')
     print("Run `mikula build` to generate your gallery and `mikula serve` to test it.")

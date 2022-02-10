@@ -498,6 +498,15 @@ footer a:hover {
   min-height: 10vh;
 }
 
+.contact-form-image-container {
+  width: 100%;
+  text-align: left;
+}
+
+.contact-form-image-container img {
+  margin: 0px;
+}
+
 .contact-form-submit {
   background-color: #686262;
   border: none;
