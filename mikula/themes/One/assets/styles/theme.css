@@ -1,0 +1,44 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: black;
+}
+
+body {
+  background-color: white;
+  letter-spacing: 1px;
+}
+
+.main-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  flex-direction: row;
+}
+
+.main-container nav {
+  background-color: lightgrey;
+  width: 15vw;
+  height: 100%
+}
+
+.image-container {
+  background-color: charcoal;
+  flex: 1;
+}
+
+.nav-list {
+  margin-left: 20px;
+  list-style: none;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+.nav-link {
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.selected-nav-link {
+  font-size: 1.5rem;
+}

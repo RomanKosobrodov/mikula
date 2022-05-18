@@ -1,0 +1,13 @@
+---
+renderer: "one-page"
+image_format: "png"
+rescale_thumbnail: "width"
+thumbnail_size: 600
+rescale_image: "height"
+image_size: 1000
+max_columns: 3
+padding: 2
+theme:
+  name: "Light"
+  author: "LenkinWeb"
+  link: "http://portfolio.lenkinweb.com"

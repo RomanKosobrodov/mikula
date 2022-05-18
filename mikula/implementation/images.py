@@ -4,7 +4,7 @@ from multiprocessing import Pool
 from PIL import Image, ExifTags
 import piexif
 from mikula.implementation.exif import nominal_shutter_speed, nominal_f_number, nominal_aperture
-from mikula.implementation.settings import gallery_dir, images_dir, thumbnails_dir
+from mikula.implementation.settings import images_dir, thumbnails_dir
 
 EXIF_ORIENTATION = 0x0112
 EXIF_USER_COMMENT = 0X9286
@@ -24,7 +24,6 @@ ORIENTATION = {
     8: Image.ROTATE_90
 }
 TAG_CODE = {key: value for key, value in zip(ExifTags.TAGS.values(), ExifTags.TAGS.keys())}
-GALLERY = gallery_dir
 IMAGES = images_dir
 THUMBNAILS = thumbnails_dir
 
@@ -88,10 +87,7 @@ def rescale_image(img, config, is_thumbnail):
     return img.resize((width, height), Image.ANTIALIAS)
 
 
-def convert_image(original, converted, directory, images_dst, thumbnails_dst,
-                  source_directory, config):
-    file_path = os.path.join(source_directory, directory, original)
-    img = Image.open(file_path)
+def update_exif(img, config):
     if "exif" in img.info:
         exif = piexif.load(img.info["exif"])
         image_orientation = exif["0th"].get(piexif.ImageIFD.Orientation, 1)
@@ -105,15 +101,26 @@ def convert_image(original, converted, directory, images_dst, thumbnails_dst,
                 exif["0th"][piexif.ImageIFD.Copyright] = config["add_copyright"]
         exif_bytes = piexif.dump(exif)
     else:
-        exif_bytes = b''
-    rescaled = rescale_image(img, config, is_thumbnail=False)
-    image_fn = os.path.join(images_dst, converted)
-    image_format = config.get("image_format", "png")
-    rescaled.save(image_fn, format=image_format, exif=exif_bytes)
+        exif_bytes = b""
+    return img, exif_bytes
 
-    rescaled = rescale_image(img, config, is_thumbnail=True)
-    thumbnail_fn = os.path.join(thumbnails_dst, converted)
-    rescaled.save(thumbnail_fn, format=image_format, exif=exif_bytes)
+
+def convert_image(original, converted, directory, images_dst, thumbnails_dst,
+                  source_directory, config):
+    file_path = os.path.join(source_directory, directory, original)
+    img = Image.open(file_path)
+    img, exif_bytes = update_exif(img, config)
+    image_format = config.get("image_format", "png")
+    image_fn = None
+    thumbnail_fn = None
+    if images_dst is not None:
+        rescaled = rescale_image(img, config, is_thumbnail=False)
+        image_fn = os.path.join(images_dst, converted)
+        rescaled.save(image_fn, format=image_format, exif=exif_bytes)
+    if thumbnails_dst is not None:
+        rescaled = rescale_image(img, config, is_thumbnail=True)
+        thumbnail_fn = os.path.join(thumbnails_dst, converted)
+        rescaled.save(thumbnail_fn, format=image_format, exif=exif_bytes)
     img.close()
     return file_path, image_fn, thumbnail_fn
 
@@ -160,9 +167,11 @@ def converter(args):
     return relative, original_fn, image_fn, thumbnail_fn
 
 
-def process_images(source_directory, parsed, excluded, output, config, cache):
-    images_dst = os.path.join(output, GALLERY, IMAGES)
-    thumbnails_dst = os.path.join(images_dst, THUMBNAILS)
+def process_images(source_directory, parsed, excluded, destination, config, cache):
+    if not os.path.isdir(destination):
+        os.mkdir(destination)
+    images_dst = os.path.join(destination, IMAGES)
+    thumbnails_dst = os.path.join(destination, THUMBNAILS)
     parallel_tasks = list()
     for directory, content in parsed.items():
         relative, subdirs, images, index_meta, index_content = content

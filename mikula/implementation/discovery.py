@@ -1,43 +1,15 @@
 import os
 import uuid
-import glob
 from collections import OrderedDict
 from mikula.implementation.images import is_image, get_image_info
-from mikula.implementation.md import render_markdown, DEFAULT_ERROR, DEFAULT_PAGE_META
-from mikula.implementation.hypertext import render_hypertext
-from mikula.implementation import settings
+from mikula.implementation.md import render_markdown, DEFAULT_PAGE_META
 from mikula.implementation.util import walk
 
 
-PAGES_DIR = settings.pages_source
-IGNORED = settings.ignored
 SORT_BY_DATE = 0
 SORT_BY_NAME = 1
 SORT_BY_ORDER = 2
 SORT_METHOD = {"date": SORT_BY_DATE, "name": SORT_BY_NAME, "order": SORT_BY_ORDER}
-
-
-def parse_pages(source_directory):
-    parsed = OrderedDict()
-    extensions = ['md', 'html']
-    filelist = list()
-    for e in extensions:
-        pattern = os.path.join(source_directory, PAGES_DIR, f"*.{e}")
-        filelist.extend(glob.glob(pattern))
-    index = len(filelist)
-    for fn in filelist:
-        basename, ext = os.path.splitext(os.path.basename(fn))
-        if ext == '.md':
-            meta, content = render_markdown(fn, DEFAULT_PAGE_META)
-        else:
-            meta, content = render_hypertext(fn, DEFAULT_PAGE_META)
-        if "title" not in meta:
-            meta["title"] = basename
-        meta["order"] = meta.get("order", index)
-        index = index + 1
-        parsed[basename] = (meta, content)
-    ordered_pages = OrderedDict(sorted(parsed.items(), key=lambda x: x[1][0]["order"]))
-    return ordered_pages
 
 
 def discover(directory, config, cache):
@@ -52,7 +24,7 @@ def discover(directory, config, cache):
         cache.update_config(config)
 
     sort_code = SORT_METHOD.get(sort_by.lower(), "name")
-    nodes = walk(directory, exclude=IGNORED, topdown=False)
+    nodes = walk(directory, topdown=False)
     parsed = OrderedDict()
     excluded = dict()
     album_index = len(nodes)
@@ -116,12 +88,4 @@ def discover(directory, config, cache):
                     del images[fn]
         parsed[relative] = (path, subdirs, images, index_meta, index_content)
 
-    top_dir, _, files = nodes[-1]
-    if "error.md" in files:
-        fn = os.path.join(top_dir, "error.md")
-        error_meta, error_content = render_markdown(fn)
-    else:
-        error_meta = {"title": "Server Error", "page_title": "Server Error"}
-        error_content = DEFAULT_ERROR
-
-    return parsed, excluded, (error_meta, error_content), config_changed
+    return parsed, excluded, config_changed

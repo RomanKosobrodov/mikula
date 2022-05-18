@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block body %}
+{% include "navigation.html" %}
+<div class="main-container">
+    <div class="full-width">
+    {% if posts_|length > 0 %}
+        <ul class="blog-list">
+            {% for date, title, url, thumbnail in posts_ %}
+                <li class="blog-item">
+                    <div class="blog-date">
+                        <p>{{ date }}</p>
+                    </div>
+                    <div class="blog-container">
+                        <a class="blog-link" href="{{ url }}">
+                            {% if thumbnail %}
+                            <img class="blog-thumbnail" src="{{ thumbnail }}"/>
+                            {% else %}
+                            <img class="blog-thumbnail" src="{{root_}}/_assets_/images/folder.svg"/>
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="blog-title">
+                        <p>{{ title }}</p>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    </div>
+</div>
+
+{% include "footer.html" %}
+
+{% endblock body %}

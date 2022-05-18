@@ -41,10 +41,19 @@ def extract_meta(document, defaults):
         return metadata, document
 
 
-def render_markdown(md_file, meta_defaults=None):
+def parse_markdown(md_file, meta_defaults):
     with open(md_file, "r") as fid:
         content = fid.read()
     meta, document = extract_meta(content, meta_defaults)
+    return meta, document
+
+
+def render_document(document):
     html = markdown.markdown(document, extensions=['extra'])
-    html = replace_typographics(html)
+    return replace_typographics(html)
+
+
+def render_markdown(md_file, meta_defaults=None):
+    meta, document = parse_markdown(md_file, meta_defaults)
+    html = render_document(document)
     return meta, html
