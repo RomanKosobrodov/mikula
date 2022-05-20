@@ -1,6 +1,5 @@
 import os
 import shutil
-from distutils.dir_util import copy_tree
 from mikula.implementation import settings
 
 
@@ -49,7 +48,7 @@ def copy_user_assets(source, output):
     src = os.path.join(os.path.abspath(source), settings.assets_dir)
     dst = os.path.join(os.path.abspath(output), settings.assets_dir)
     if os.path.isdir(src):
-        copy_tree(src, dst)
+        shutil.copytree(src, dst, dirs_exist_ok=True)
 
 
 def walk(path, exclude=tuple(), topdown=False):

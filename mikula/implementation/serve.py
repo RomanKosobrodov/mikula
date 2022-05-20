@@ -11,6 +11,17 @@ def serve(port):
         return
 
     class Handler(http.server.SimpleHTTPRequestHandler):
+        extensions_map = {
+            '.manifest': 'text/cache-manifest',
+            '.html': 'text/html',
+            '.png': 'image/png',
+            '.jpg': 'image/jpg',
+            '.svg': 'image/svg+xml',
+            '.css': 'text/css',
+            '.js': 'application/x-javascript',
+            '': 'text/html'
+        }
+
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=gallery, **kwargs)
 

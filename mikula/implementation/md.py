@@ -42,7 +42,7 @@ def extract_meta(document, defaults):
 
 
 def parse_markdown(md_file, meta_defaults):
-    with open(md_file, "r") as fid:
+    with open(file=md_file, mode="r", encoding="utf-8") as fid:
         content = fid.read()
     meta, document = extract_meta(content, meta_defaults)
     return meta, document

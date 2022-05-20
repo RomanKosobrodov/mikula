@@ -92,6 +92,8 @@ def convert_post_images(content_filename, document, output_directory, rendered_u
                                             config=config)
         if destination_fn is not None:
             relative = os.path.relpath(destination_fn, os.path.join(output_directory, rendered_url))
+            if os.path.sep == "\\":
+                relative = relative.replace(os.path.sep, "/")
             converted = converted.replace(image_source, relative)
     return converted
 
@@ -117,7 +119,7 @@ def render_post(post, page_list, output_directory, filename, template, config):
                            config_=config,
                            **meta)
 
-    with open(fn, "w") as fid:
+    with open(file=fn, mode="w", encoding="utf-8") as fid:
         fid.write(html)
 
     return url
