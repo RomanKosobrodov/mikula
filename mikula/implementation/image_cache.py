@@ -2,6 +2,20 @@ from sqlitedict import SqliteDict
 import os
 
 
+def query(cache, filename):
+    if filename not in cache.keys():
+        return None
+
+    timestamp, scaled, scaled_time, thumbnail, thumbnail_time = cache[filename]
+    if os.path.exists(scaled) and os.path.exists(thumbnail):
+        if os.path.getmtime(filename) == timestamp and \
+                os.path.getmtime(scaled) == scaled_time and \
+                os.path.getmtime(thumbnail) == thumbnail_time:
+            return scaled, thumbnail
+
+    return None
+
+
 class ImageCache:
     def __init__(self, directory):
         db_dirname = os.path.join(directory, ".mikula")
@@ -10,6 +24,9 @@ class ImageCache:
         db_filename = os.path.join(db_dirname, "images.cache")
         self.cache = SqliteDict(db_filename)
         self.recent_lookup_ = None
+
+    def to_dictionary(self):
+        return dict(self.cache.items())
 
     def reset(self):
         self.cache.clear()
@@ -26,19 +43,13 @@ class ImageCache:
         self.cache.commit()
 
     def require_update(self, filename):
-        if filename not in self.cache.keys():
+        found = query(self.cache, filename)
+        if found is None:
             self.recent_lookup_ = None
             return True
-
-        timestamp, scaled, scaled_time, thumbnail, thumbnail_time = self.cache[filename]
-        if os.path.exists(scaled) and os.path.exists(thumbnail):
-            if os.path.getmtime(filename) == timestamp and \
-               os.path.getmtime(scaled) == scaled_time and \
-               os.path.getmtime(thumbnail) == thumbnail_time:
-                self.recent_lookup_ = (scaled, thumbnail)
-                return False
-        self.recent_lookup_ = None
-        return True
+        else:
+            self.recent_lookup_ = found
+            return False
 
     def get_filenames(self):
         return self.recent_lookup_

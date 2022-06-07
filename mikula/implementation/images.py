@@ -42,7 +42,7 @@ def get_image_info(filename):
     date = filedate.strftime("%Y:%m:%d %H:%M:%S")
     try:
         img = Image.open(filename)
-        exif = img.getexif()
+        exif = dict(img.getexif().items())  # convert to dict to avoid serialisation problems in multiprocessing
         width, height = img.size
         if exif is not None:
             if EXIF_ORIENTATION in exif.keys():

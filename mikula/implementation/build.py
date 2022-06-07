@@ -31,7 +31,7 @@ def build(theme, clean, album_directory=os.getcwd()):
         print(f'Unable to find theme "{theme_directory}"')
         return
     theme_configuration = read_configuration(directory=theme_directory, filename="configuration.yaml")
-    config = read_configuration(directory=source, filename="configuration.yaml")
+    config = read_configuration(directory=album_directory, filename="configuration.yaml")
     config = update_configuration(config, theme_configuration)
 
     copy_assets(theme_directory, output)

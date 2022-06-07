@@ -1,3 +1,5 @@
+import copy
+
 from mikula import __version__
 import yaml
 import os
@@ -65,13 +67,14 @@ def read_configuration(directory=".", filename="configuration.yaml"):
 
 def update_configuration(config, theme_config):
     config["mikula_version"] = __version__
-    config.update(theme_config)
-    if "footer" in config.keys():
-        if "copyright" in config["footer"].keys():
-            if "year_end" in config["footer"]["copyright"]:
-                if config["footer"]["copyright"]["year_end"] == "*":
-                    config["footer"]["copyright"]["year_end"] = time.strftime("%Y")
-    return config
+    cfg = copy.deepcopy(theme_config)
+    cfg.update(config)
+    if "footer" in cfg.keys():
+        if "copyright" in cfg["footer"].keys():
+            if "year_end" in cfg["footer"]["copyright"]:
+                if cfg["footer"]["copyright"]["year_end"] == "*":
+                    cfg["footer"]["copyright"]["year_end"] = time.strftime("%Y")
+    return cfg
 
 
 def read_credentials(filename="credentials"):
