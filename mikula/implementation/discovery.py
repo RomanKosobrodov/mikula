@@ -8,11 +8,30 @@ from mikula.implementation.image_cache import query
 from functools import partial
 from multiprocessing import Pool
 
-
 SORT_BY_DATE = 0
 SORT_BY_NAME = 1
 SORT_BY_ORDER = 2
 SORT_METHOD = {"date": SORT_BY_DATE, "name": SORT_BY_NAME, "order": SORT_BY_ORDER}
+
+
+def should_convert(filename, cache, config_changed, image_format):
+    aspect, image_date, exif = get_image_info(filename)
+    if config_changed:
+        cache_data = None
+    else:
+        cache_data = query(cache, filename)
+
+    if cache_data is None:
+        image_id = str(uuid.uuid4())
+        image_file = f"{image_id}.{image_format.lower()}"
+        update_required = True
+    else:
+        image_file, thumbnail_file = cache_data
+        if image_file is None:
+            image_file = thumbnail_file
+        image_file = os.path.basename(image_file)
+        update_required = False
+    return update_required, aspect, image_date, exif, image_file
 
 
 def node_parser(node, directory, album_index, cache, config_changed, sort_code, image_format):
@@ -33,20 +52,10 @@ def node_parser(node, directory, album_index, cache, config_changed, sort_code, 
             album_index += 1
             continue
         if is_image(fn):
-            aspect, image_date, exif = get_image_info(fn)
-            if config_changed:
-                cache_data = None
-            else:
-                cache_data = query(cache, fn)
-
-            if cache_data is None:
-                image_id = str(uuid.uuid4())
-                image_file = f"{image_id}.{image_format.lower()}"
-                update_required = True
-            else:
-                image_file, _ = cache_data
-                image_file = os.path.basename(image_file)
-                update_required = False
+            update_required, aspect, im_date, exif, im_file = should_convert(filename=fn,
+                                                                             cache=cache,
+                                                                             config_changed=config_changed,
+                                                                             image_format=image_format)
 
             basename, _ = os.path.splitext(file)
             markdown_fn = os.path.join(source_dir, f"{basename}.md")
@@ -58,13 +67,13 @@ def node_parser(node, directory, album_index, cache, config_changed, sort_code, 
                 html = ""
             meta["basename"] = basename
             if sort_code == SORT_BY_DATE:
-                meta["order"] = image_date
+                meta["order"] = im_date
             elif sort_code == SORT_BY_NAME:
                 meta["order"] = os.path.basename(fn)
             else:
                 meta["order"] = meta.get("order", file_index)
                 file_index += 1
-            images[file] = (image_file, meta, html, aspect, exif, update_required)
+            images[file] = (im_file, meta, html, aspect, exif, update_required)
 
     images = OrderedDict(sorted(images.items(), key=lambda x: x[1][1]["order"]))
 

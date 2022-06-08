@@ -38,9 +38,10 @@ def create_directories(parsed, output_directory, overwrite=True):
             os.mkdir(absolute)
 
 
-def copy_assets(theme, output_directory):
+def copy_assets(theme, output_directory, clean):
     src = os.path.join(theme, "assets")
     dst = os.path.join(output_directory, settings.assets_dir)
+    create(dst, overwrite=clean)
     shutil.copytree(src, dst, dirs_exist_ok=True)
 
 

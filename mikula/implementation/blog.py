@@ -2,12 +2,14 @@ import os
 import glob
 import datetime
 import re
+import shutil
 import uuid
 from jinja2 import Template
 from collections import OrderedDict
 from mikula.implementation.md import parse_markdown, render_document, DEFAULT_PAGE_META
 from mikula.implementation.settings import assets_dir
 from mikula.implementation.images import convert_image
+from mikula.implementation.discovery import should_convert
 
 
 def parse_blog_directory(blog_directory):
@@ -37,6 +39,12 @@ def find_markdown_images(content):
     return result
 
 
+def find_local_resources(content):
+    md_link = r"\[(?P<text>.*?)\]\((?P<url>.*?)\)"
+    r = re.compile(md_link)
+    return r.findall(content)
+
+
 def locate_referenced_file(post_source, reference_path):
     if reference_path is None:
         return None
@@ -57,48 +65,82 @@ def locate_referenced_file(post_source, reference_path):
     return None
 
 
-def process_post_image(post_source, image_path, is_thumbnail, output_directory, config):
-    basename, ext = os.path.splitext(os.path.basename(image_path))
-    image_ext = config.get("image_format", "png")
-    suffix = str(uuid.uuid4())
-    destination_fn = os.path.join(os.path.dirname(output_directory),
-                                  assets_dir,
-                                  f"{basename}-{suffix[:8]}.{image_ext}")
+def process_post_resource(post_source, link_source, output_directory):
+    abs_path = locate_referenced_file(post_source, link_source)
+    if abs_path is None:
+        return None
 
+    destination_dir = os.path.join(os.path.dirname(output_directory), assets_dir)
+    if not os.path.isdir(destination_dir):
+        os.mkdir(destination_dir)
+
+    destination_fn = os.path.join(destination_dir, os.path.basename(abs_path))
+    shutil.copyfile(abs_path, destination_fn)
+    return destination_fn
+
+def process_post_image(post_source, image_path, is_thumbnail, output_directory,
+                       config, config_changed, image_format, cache):
     abs_path = locate_referenced_file(post_source, image_path)
     if abs_path is None:
         return None
 
-    destination_dir = os.path.dirname(destination_fn)
+    destination_dir = os.path.join(os.path.dirname(output_directory), assets_dir)
     if not os.path.isdir(destination_dir):
         os.mkdir(destination_dir)
-    convert_image(original=abs_path,
-                  converted=os.path.basename(destination_fn),
-                  directory="",
-                  images_dst=destination_dir if not is_thumbnail else None,
-                  thumbnails_dst=destination_dir if is_thumbnail else None,
-                  source_directory="",
-                  config=config)
+
+    update_required, _, _, _, image_file = should_convert(filename=abs_path,
+                                                          cache=cache.to_dictionary(),
+                                                          config_changed=config_changed,
+                                                          image_format=image_format)
+    if update_required:
+        fn, image_fn, thumbnail_fn = convert_image(original=abs_path,
+                                                   converted=image_file,
+                                                   directory="",
+                                                   images_dst=destination_dir if not is_thumbnail else None,
+                                                   thumbnails_dst=destination_dir if is_thumbnail else None,
+                                                   source_directory="",
+                                                   config=config)
+        cache.update(fn, image_fn, thumbnail_fn)
+
+    destination_fn = os.path.join(destination_dir, image_file)
     return destination_fn
 
 
-def convert_post_images(content_filename, document, output_directory, rendered_url, config):
+def process_post(content_filename, document, output_directory, rendered_url, config, cache):
     converted = document
+    image_format = config.get("image_format", "jpeg")
+    config_changed = cache.config_changed(config)
+
     for image_source, _ in find_markdown_images(document):
         destination_fn = process_post_image(post_source=content_filename,
                                             image_path=image_source,
                                             is_thumbnail=False,
                                             output_directory=output_directory,
-                                            config=config)
+                                            config=config,
+                                            config_changed=config_changed,
+                                            image_format=image_format,
+                                            cache=cache)
         if destination_fn is not None:
             relative = os.path.relpath(destination_fn, os.path.join(output_directory, rendered_url))
             if os.path.sep == "\\":
                 relative = relative.replace(os.path.sep, "/")
-            converted = converted.replace(image_source, relative)
+            converted = converted.replace("](" + image_source, "](" + relative, 1)
+
+    for link_text, link_file in find_local_resources(converted):
+        destination_fn = process_post_resource(post_source=content_filename,
+                                            link_source=link_file,
+                                            output_directory=output_directory)
+        if destination_fn is not None:
+            relative = os.path.relpath(destination_fn, os.path.join(output_directory, rendered_url))
+            if os.path.sep == "\\":
+                relative = relative.replace(os.path.sep, "/")
+            old_src = f"[{link_text}]({link_file})"
+            new_src = f"[{link_text}]({relative})"
+            converted = converted.replace(old_src, new_src, 1)
     return converted
 
 
-def render_post(post, page_list, output_directory, filename, template, config):
+def render_post(post, page_list, output_directory, filename, template, config, cache):
     source_fn, meta, document = post
     date = meta["date"]
     directory = os.path.join(output_directory, f"{date.year}", f"{date.month:02d}", f"{date.day:02d}")
@@ -106,11 +148,12 @@ def render_post(post, page_list, output_directory, filename, template, config):
     fn = os.path.join(directory, filename)
     url = os.path.join(f"{date.year}", f"{date.month:02d}", f"{date.day:02d}", filename)
 
-    converted = convert_post_images(content_filename=source_fn,
-                                    document=document,
-                                    output_directory=output_directory,
-                                    rendered_url=url,
-                                    config=config)
+    converted = process_post(content_filename=source_fn,
+                             document=document,
+                             output_directory=output_directory,
+                             rendered_url=url,
+                             config=config,
+                             cache=cache)
 
     content = render_document(converted)
     user_content = Template(content)
@@ -125,14 +168,23 @@ def render_post(post, page_list, output_directory, filename, template, config):
     return url
 
 
-def render_blog(blog_directory, page_list, output_directory, templates, config):
+def render_blog(blog_directory, page_list, output_directory, templates, config, cache):
     post_template = templates["post"]
     blog_posts = list()
+
+    image_format = config.get("image_format", "jpeg")
+    config_changed = cache.config_changed(config)
 
     for post, parsed in parse_blog_directory(blog_directory):
         fn, meta, _ = parsed
         filename = meta.get("permalink", post)
-        url = render_post(parsed, page_list, output_directory, filename, post_template, config)
+        url = render_post(post=parsed,
+                          page_list=page_list,
+                          output_directory=output_directory,
+                          filename=filename,
+                          template=post_template,
+                          config=config,
+                          cache=cache)
         date_str = meta["date"].strftime("%Y-%m-%d")
         title = meta.get("title", filename)
         thumbnail = meta.get("thumbnail", None)
@@ -141,7 +193,10 @@ def render_blog(blog_directory, page_list, output_directory, templates, config):
                                                 image_path=thumbnail,
                                                 is_thumbnail=True,
                                                 output_directory=output_directory,
-                                                config=config)
+                                                config=config,
+                                                config_changed=config_changed,
+                                                image_format=image_format,
+                                                cache=cache)
             if destination_fn is None:
                 print(f'Warning: Unable to find thumbnail file "{thumbnail}" defined in file "{fn}"')
                 relative_thumbnail = None

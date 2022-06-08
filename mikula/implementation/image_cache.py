@@ -5,14 +5,17 @@ import os
 def query(cache, filename):
     if filename not in cache.keys():
         return None
-
     timestamp, scaled, scaled_time, thumbnail, thumbnail_time = cache[filename]
-    if os.path.exists(scaled) and os.path.exists(thumbnail):
-        if os.path.getmtime(filename) == timestamp and \
-                os.path.getmtime(scaled) == scaled_time and \
-                os.path.getmtime(thumbnail) == thumbnail_time:
-            return scaled, thumbnail
+    if get_creation_time(filename) == timestamp and \
+            get_creation_time(scaled) == scaled_time and \
+            get_creation_time(thumbnail) == thumbnail_time:
+        return scaled, thumbnail
+    return None
 
+
+def get_creation_time(filename):
+    if filename is not None and os.path.exists(filename):
+        return os.path.getmtime(filename)
     return None
 
 
@@ -55,9 +58,9 @@ class ImageCache:
         return self.recent_lookup_
 
     def update(self, filename, scaled, thumbnail):
-        timestamp = os.path.getmtime(filename)
-        scaled_time = os.path.getmtime(scaled)
-        thumbnail_time = os.path.getmtime(thumbnail)
+        timestamp = get_creation_time(filename)
+        scaled_time = get_creation_time(scaled)
+        thumbnail_time = get_creation_time(thumbnail)
         self.cache[filename] = (timestamp,
                                 scaled,
                                 scaled_time,

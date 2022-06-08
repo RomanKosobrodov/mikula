@@ -34,7 +34,7 @@ def build(theme, clean, album_directory=os.getcwd()):
     config = read_configuration(directory=album_directory, filename="configuration.yaml")
     config = update_configuration(config, theme_configuration)
 
-    copy_assets(theme_directory, output)
+    copy_assets(theme_directory, output, clean)
     copy_user_assets(source, output)
 
     cache = ImageCache(album_directory)
@@ -67,7 +67,8 @@ def build(theme, clean, album_directory=os.getcwd()):
                         page_list=page_list,
                         output_directory=blog_destination,
                         templates=templates,
-                        config=config)
+                        config=config,
+                        cache=cache)
             index_dst = os.path.join(output, "index.html")
             create_redirect_page(meta, destination=index_dst)
         if content_type.lower() == "gallery":
