@@ -2,6 +2,7 @@ import argparse
 from mikula.implementation.initialise import initialise
 from mikula.implementation.configure import configure, read_configuration, DEFAULTS
 from mikula.implementation.build import build
+from mikula.implementation.annotate import annotate
 from mikula.implementation.serve import serve
 from mikula.implementation.deploy import deploy
 from mikula.implementation.customize import customize
@@ -10,7 +11,7 @@ import os
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Static Image Gallery Generator",
-                                     usage="mikula [-h] {configure,build,serve,deploy} ...")
+                                     usage="mikula [-h] {init,configure,annotate,build,serve,deploy,customize} ...")
     parser.add_argument("--version",
                         help="Print version number",
                         action="store_true",
@@ -27,6 +28,14 @@ def create_parser():
                               action="store_true",
                               default=False)
     serve_parser.set_defaults(function=configure)
+
+    serve_parser = subparsers.add_parser("annotate")
+    serve_parser.add_argument("--source",
+                              help="directory with images to annotate",
+                              type=str,
+                              required=False,
+                              default="")
+    serve_parser.set_defaults(function=annotate)
 
     build_parser = subparsers.add_parser("build")
     build_parser.add_argument("--theme",

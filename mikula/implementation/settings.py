@@ -1,3 +1,5 @@
 images_dir = "_images_"
 thumbnails_dir = "_thumbnails_"
 assets_dir = "_assets_"
+source_dir = "source"
+build_dir = "build"

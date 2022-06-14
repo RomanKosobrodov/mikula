@@ -5,6 +5,7 @@ from mikula.implementation.discovery import discover
 from mikula.implementation.blog import render_blog
 from mikula.implementation.util import copy_user_assets, copy_assets, get_theme_directory, create_directories
 from mikula.implementation.util import directory_basename
+from mikula.implementation.settings import source_dir, build_dir
 from mikula.implementation.rendering import render
 from mikula.implementation.render_common import create_page, load_templates, create_default_error_page, \
     create_redirect_page
@@ -15,8 +16,8 @@ import time
 
 def build(theme, clean, album_directory=os.getcwd()):
     start_time = time.perf_counter()
-    source = os.path.join(album_directory, "source")
-    output = os.path.join(album_directory, "build")
+    source = os.path.join(album_directory, source_dir)
+    output = os.path.join(album_directory, build_dir)
     if not os.path.isdir(source):
         print(f'Source directory "{source}" does not exist.')
         print("Use `mikula init` to generate a template for your gallery.")
