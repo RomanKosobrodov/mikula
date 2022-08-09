@@ -64,6 +64,8 @@ def parse_subdirectories(album, keys, index):
     relative, subdirectories, _, album_meta, album_md = album[current]
     for directory in subdirectories:
         key = os.path.normpath(os.path.join(current, directory))
+        if key not in album:  # Drafts are not rendered
+            continue
         _, _, _, meta, _ = album[key]
         title = meta.get("title", directory)
         order = meta.get("order", -1)

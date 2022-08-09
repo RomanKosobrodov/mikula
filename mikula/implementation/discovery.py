@@ -44,12 +44,18 @@ def node_parser(node, directory, album_index, cache, config_changed, sort_code, 
 
     excluded = None
 
+    ind = files.index("index.md")
+    if ind >= 0:
+        fn = os.path.join(source_dir, files[ind])
+        index_meta, index_content = render_markdown(fn, DEFAULT_PAGE_META)
+        if index_meta.get("draft", False):
+            return None
+        index_meta["order"] = index_meta.get("order", album_index)
+        album_index += 1
+
     for file in files:
         fn = os.path.join(source_dir, file)
-        if "index.md" in file.lower():
-            index_meta, index_content = render_markdown(fn, DEFAULT_PAGE_META)
-            index_meta["order"] = index_meta.get("order", album_index)
-            album_index += 1
+        if "index.md" == file:
             continue
         if is_image(fn):
             update_required, aspect, im_date, exif, im_file = should_convert(filename=fn,
@@ -118,7 +124,10 @@ def discover(directory, config, cache):
 
     num_processes = config.get("parallel_workers", None)
     with Pool(processes=num_processes) as pool:
-        for relative, node_parsed, node_excluded in pool.imap(runner, nodes):
+        for r in pool.imap(runner, nodes):
+            if r is None:   # Skip drafts
+                continue
+            relative, node_parsed, node_excluded = r
             parsed[relative] = node_parsed
             print(f'parsing "{relative}"')
             if node_excluded is not None:
