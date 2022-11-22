@@ -64,6 +64,8 @@ def parse_subdirectories(album, keys, index):
     relative, subdirectories, _, album_meta, album_md = album[current]
     for directory in subdirectories:
         key = os.path.normpath(os.path.join(current, directory))
+        if key not in album:  # Drafts are not rendered
+            continue
         _, _, _, meta, _ = album[key]
         title = meta.get("title", directory)
         order = meta.get("order", -1)
@@ -186,7 +188,7 @@ def render(album, page_list, output_directory, templates, config):
         album_page = render_album_page(album, keys, index, templates["album"], page_list, config)
         dst_directory = os.path.join(output_directory, keys[index])
         album_filename = os.path.join(dst_directory, "index.html")
-        with open(album_filename, 'w') as fid:
+        with open(album_filename, "w", encoding="utf-8") as fid:
             fid.write(album_page)
 
         relative, _, image_files, _, _ = album[keys[index]]
