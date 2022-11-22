@@ -44,8 +44,8 @@ def node_parser(node, directory, album_index, cache, config_changed, sort_code, 
 
     excluded = None
 
-    ind = files.index("index.md")
-    if ind >= 0:
+    if "index.md" in files:
+        ind = files.index("index.md")
         fn = os.path.join(source_dir, files[ind])
         index_meta, index_content = render_markdown(fn, DEFAULT_PAGE_META)
         if index_meta.get("draft", False):

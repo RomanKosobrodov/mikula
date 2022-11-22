@@ -188,7 +188,7 @@ def render(album, page_list, output_directory, templates, config):
         album_page = render_album_page(album, keys, index, templates["album"], page_list, config)
         dst_directory = os.path.join(output_directory, keys[index])
         album_filename = os.path.join(dst_directory, "index.html")
-        with open(album_filename, 'w') as fid:
+        with open(album_filename, "w", encoding="utf-8") as fid:
             fid.write(album_page)
 
         relative, _, image_files, _, _ = album[keys[index]]
