@@ -154,17 +154,18 @@ This page contains a collection of amusing feline pictures.
 
 The following metadata fields are recognised by Mikula:
 
-| Field             | Value         | Description                                                                   |
-| ----------------- | ------------- | ----------------------------------------------------------------------------- |
-| page_title        | string        | Page title displayed by the browser                                           |
-| title             | string        | Album or image title displayed on the parent page                             |
-| thumbnail         | file path     | Name of an image file to be used as an album thumbnail                        |
-| exclude_thumbnail | {true, false} | Set to `true` to exclude album thumbnail from the gallery. Default is `false`.|
-| place_before      | {true, false} | Set to place the text before the image(s). Default is `false`.                |
-| exif              | list          | Extract information from EXIF data. See below for a list of supported tags.   |
-| show_exif         | {true, false} | Set to true to show minimal EXIF data below the image.                        |
-| order             | number        | If defined, albums and images are sorted by order (low values come first)     |
-| hidden            | {true, false} | When `true` the page is rendered but not included in the navigation bar. This is useful for a "thank you" page displayed after a visitor submits a contact form. | 
+| Field             | Value         | Description                                                                                                                                                      |
+| ----------------- | ------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| page_title        | string        | Page title displayed by the browser                                                                                                                              |
+| title             | string        | Album or image title displayed on the parent page                                                                                                                |
+| thumbnail         | file path     | Name of an image file to be used as an album thumbnail                                                                                                           |
+| exclude_thumbnail | {true, false} | Set to `true` to exclude album thumbnail from the gallery. Default is `false`.                                                                                   |
+| place_before      | {true, false} | Set to place the text before the image(s). Default is `false`.                                                                                                   |
+| exif              | list          | Extract information from EXIF data. See below for a list of supported tags.                                                                                      |
+| show_exif         | {true, false} | Set to true to show minimal EXIF data below the image.                                                                                                           |
+| order             | number        | If defined, albums and images are sorted by order (low values come first)                                                                                        |
+| hidden            | {true, false} | When `true` the page is rendered but not included in the navigation bar. This is useful for a "thank you" page displayed after a visitor submits a contact form. |
+| draft             | {true, false} | When `true` the directory is skipped                                                                                                                             |
 
 You can also define your own fields and use them in the document.
 
