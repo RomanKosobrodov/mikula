@@ -235,10 +235,3 @@ command arguments. Run
 python -m mikula -h
 ```
 to get a list of all supported commands and arguments.
-
-## Upload to PYPI
-
-```bash
-python -m build --wheel --sdist
-twine upload dist/*
-```
