@@ -67,6 +67,9 @@ def parse_subdirectories(album, keys, index):
         if key not in album:  # Drafts are not rendered
             continue
         _, _, _, meta, _ = album[key]
+        hidden = meta.get("hidden", False)
+        if hidden:  # Do not index hidden albums
+            continue
         title = meta.get("title", directory)
         order = meta.get("order", -1)
         url = os.path.join(directory, "index.html")
