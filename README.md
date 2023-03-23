@@ -6,7 +6,7 @@ Mikula is written in Python and supports uploads to AWS S3.
 ## Motivation
 
 I take a lot of pictures both on film and digitally and need a simple way to publish them on the web. I used JAlbum for a number of years.
-With a little bit of tinkering it produced acceptable results but I always wanted more 
+With a bit of tinkering it produced acceptable results, but I always wanted more 
 flexibility in designing my own themes and albums. Jekyll provided an inspiration for creating Mikula - a static gallery 
 generator written in Python.
 

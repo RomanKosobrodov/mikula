@@ -35,7 +35,6 @@ def should_convert(filename, cache, config_changed, image_format):
 
 
 def node_parser(node, directory, album_index, cache, config_changed, sort_code, image_format):
-    print(f"node: {node}")
     source_dir, subdirs, files = node
     images = OrderedDict()
     index_content = ""
@@ -97,7 +96,6 @@ def node_parser(node, directory, album_index, cache, config_changed, sort_code, 
                 del images[fn]
     parsed = (path, subdirs, images, index_meta, index_content)
 
-    print(f"parsed:  {parsed}")
     return relative, parsed, excluded
 
 
