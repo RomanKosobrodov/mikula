@@ -316,6 +316,14 @@ body {
   background-color: white;
 }
 
+.blog-date p {
+  text-align: center;
+  margin: 0;
+  font-size: 1.0rem;
+  font-family: 'Cabin';
+  color: #6b6565;
+}
+
 .blog-container{
   width: 100%;
   height: var(--image-container-height);
@@ -348,8 +356,6 @@ body {
   font-family: 'Cabin';
   color: #6b6565;
 }
-
-
 
 /* Album Thumbnails */
 .thumbnail-list {
