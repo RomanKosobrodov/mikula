@@ -111,6 +111,8 @@ def convert_image(original, converted, directory, images_dst, thumbnails_dst,
     img = Image.open(file_path)
     img, exif_bytes = update_exif(img, config)
     image_format = config.get("image_format", "png")
+    if img.mode in ("RGBA", "P") and image_format.lower() == "jpeg":
+        img = img.convert("RGB")
     image_fn = None
     thumbnail_fn = None
     if images_dst is not None:
