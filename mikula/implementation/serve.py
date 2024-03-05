@@ -11,7 +11,7 @@ def serve(port):
         exit(1)
 
     print(f"Serving on 'http://localhost:{port}'")
-    print("Ctrl + C to exit", end="", flush=True)
+    print("Ctrl + C to exit\n", end="", flush=True)
 
     class Handler(http.server.SimpleHTTPRequestHandler):
         extensions_map = {
