@@ -8,7 +8,10 @@ def serve(port):
     if not os.path.isdir(gallery):
         print("The gallery has not been built yet.")
         print("Generate it first with `mikula build`")
-        return
+        exit(1)
+
+    print(f"Serving on 'http://localhost:{port}'")
+    print("Ctrl + C to exit", end="", flush=True)
 
     class Handler(http.server.SimpleHTTPRequestHandler):
         extensions_map = {
@@ -26,8 +29,6 @@ def serve(port):
             super().__init__(*args, directory=gallery, **kwargs)
 
     with socketserver.TCPServer(("", port), Handler) as httpd:
-        print(f"Serving on 'http://localhost:{port}'")
-        print("Ctrl + C to exit")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

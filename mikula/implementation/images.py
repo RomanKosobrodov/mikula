@@ -84,7 +84,7 @@ def rescale_image(img, config, is_thumbnail):
         width = image_size
         height = int(aspect * width)
 
-    return img.resize((width, height), Image.ANTIALIAS)
+    return img.resize((width, height), Image.LANCZOS)
 
 
 def update_exif(img, config):

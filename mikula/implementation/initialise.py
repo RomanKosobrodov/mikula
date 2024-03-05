@@ -16,6 +16,9 @@ def initialise(root=None):
     if root is None:
         root = os.path.join(os.getcwd())
     shutil.copytree(SKELETON_DIR, root, dirs_exist_ok=True)
+    build_dir = os.path.join(root, "build")
+    if not os.path.isdir(build_dir):
+        os.mkdir(build_dir)
     source_path = os.path.abspath(os.path.join(root, "source"))
     print("Gallery initialised.")
     print(f'Start adding your pictures and captions into "{source_path}"')
