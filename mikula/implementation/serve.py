@@ -28,8 +28,14 @@ def serve(port):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=gallery, **kwargs)
 
-    with socketserver.TCPServer(("", port), Handler) as httpd:
-        try:
+    try:
+        with socketserver.TCPServer(("", port), Handler) as httpd:
             httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("\ndone")
+    except KeyboardInterrupt:
+        print("\ndone")
+    except OSError:
+        print(f"Error opening a socket at port {port}. "
+              "This socket might be used by another application.\n"
+              "Try running the command again specifying a different port number, for example:\n"
+              "\tmikula serve --port 5010")
+        exit(2)
