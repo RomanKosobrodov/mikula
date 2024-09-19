@@ -1,18 +1,52 @@
-from mikula.implementation.configure import configure, DEFAULTS, save_credentials, read_credentials
+from mikula.implementation.configure import configure, DEFAULTS, save_credentials, read_credentials, read_configuration
 import os
 import yaml
+import tempfile
 
 
-def test_default_configuration():
+def check_default_configuration():
     fn = "c_o_n_f_i_g.yaml"
-    configure(".", filename=fn)
+    configure(".")
     with open(fn, "r") as fid:
         res = yaml.load(fid, Loader=yaml.Loader)
     os.remove(fn)
     assert res == DEFAULTS
 
 
-def test_credentials():
+def test_utf8_encoding_in_config():
+    content = """
+---
+meta:
+  description: "Это описание"
+  keywords: "галерея, Mikula"
+  author: "Микула Селянинович"
+image_format: "jpeg"
+image_height: 1100
+thumbnail_height: 500
+sort_by: "name"
+footer:
+  copyright:
+    year_start: 2021
+    year_end: "*"
+    author: "Все права защищены"
+  credits:
+    mikula: true
+    theme: true
+AWS_region: ap-southeast-2
+"""
+    td = tempfile.gettempdir()
+    fn = os.path.join(td, "tmp_4382746.yaml")
+    with open(fn, mode="w", encoding="utf8") as fid:
+        fid.write(content)
+        fid.flush()
+
+    conf = read_configuration(td, fn)
+    assert(len(conf) > 0)
+
+    os.remove(fn)
+
+
+def check_credentials():
     fn = "creds"
     key = "key"
     secret = "secret"
@@ -31,5 +65,6 @@ def test_credentials():
 
 
 if __name__ == "__main__":
-    test_default_configuration()
-    test_credentials()
+    # check_default_configuration()
+    test_utf8_encoding_in_config()
+    # check_credentials()

@@ -55,7 +55,7 @@ def read_configuration(directory=".", filename="configuration.yaml"):
     fn = os.path.join(directory, filename)
     config = DEFAULTS
     if os.path.isfile(fn):
-        with open(fn, "r") as fid:
+        with open(fn, "r", encoding="utf8") as fid:
             try:
                 user_defined = yaml.load(fid, Loader=yaml.Loader)
             except yaml.error.MarkedYAMLError as e:
