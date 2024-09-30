@@ -174,16 +174,17 @@ page_title: Garden - Sunflowers
 title: Sunflowers
 place_before: false
 exif:
+    - Make
     - Model
     - DateTime
     - ISOSpeedRatings
-    - ShutterSpeedValue
+    - ExposureTime
     - FNumber
 ---
 
 # {{title}}
 Picture of sunflowers taken on {{exif["DateTime"]}} in my garden with {{exif["Make"]}} {{exif["Model"]}}.
-ISO speed {{exif["ISOSpeedRatings"]}}, shutter speed {{exif["ShutterSpeedValue"]}} at f{{exif["FNumber"]}}.
+ISO speed {{exif["ISOSpeedRatings"]}}, shutter speed {{exif["ExposureTime"]}} at f{{exif["FNumber"]}}.
 ```
 
 the page rendered by Mikula will show the following text (styling removed for clarity):

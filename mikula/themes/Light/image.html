@@ -26,8 +26,8 @@
             {% if exif["DateTime"] %}
                 <p>Date: {{exif["DateTime"]}}</p>
             {% endif %}
-            {% if exif["ISOSpeedRatings"] and exif["ShutterSpeedValue"] and exif["FNumber"] %}
-                <p>{{exif["ISOSpeedRatings"]}} ISO, {{exif["ShutterSpeedValue"]}}s, {{exif["FNumber"]}}</p>
+            {% if exif["ISOSpeedRatings"] and exif["ExposureTime"] and exif["FNumber"] %}
+                <p>{{exif["ISOSpeedRatings"]}} ISO, {{exif["ExposureTime"]}}s, f{{exif["FNumber"]}}</p>
             {% endif %}
         </div>
     {% endif %}
