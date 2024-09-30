@@ -9,7 +9,7 @@ REQUIRED_TEMPLATES = ("album.html", "error.html", "image.html", "pages.html")
 def test_customize():
     with tempfile.TemporaryDirectory() as tmp_dir:
         theme = "vibrant"
-        prototype = "default"
+        prototype = "Light"
         customize(theme=theme, prototype=prototype, destination=tmp_dir)
         path = os.path.join(tmp_dir, theme)
         assert os.path.isdir(path)

@@ -39,7 +39,7 @@ def annotate(source):
                 abs_name, _ = os.path.splitext(file)
                 markdown_fn = os.path.join(parent, os.path.basename(abs_name) + ".md")
                 if not os.path.isfile(markdown_fn):
-                    with open(markdown_fn, "w") as fid:
+                    with open(markdown_fn, "w", encoding="utf-8") as fid:
                         fid.write(annotation)
                         fid.write(f"order: {order}\n")
                         fid.write(f"title: {file}\n")

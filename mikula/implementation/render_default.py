@@ -206,5 +206,5 @@ def render(album, page_list, output_directory, templates, config):
                                                      relative_path=relative_path,
                                                      page_list=page_list)
             fn = os.path.join(dst_directory, filename)
-            with open(fn, "w") as fid:
+            with open(fn, "w", encoding="utf-8") as fid:
                 fid.write(image_page)

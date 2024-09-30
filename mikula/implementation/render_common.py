@@ -26,7 +26,7 @@ def create_page(page, page_list, destination_directory, filename, template, conf
                            config_=config,
                            **meta)
     fn = os.path.join(destination_directory, filename)
-    with open(fn, "w") as fid:
+    with open(fn, "w", encoding="utf-8") as fid:
         fid.write(html)
 
 
@@ -48,7 +48,7 @@ def create_redirect_page(meta, destination):
             document = "<html><head>"
             document += f'<meta http-equiv="refresh" content="0; URL={target}" />\n'
             document += "</head><body></body></html>"
-            with open(destination, "w") as dst:
+            with open(destination, "w", encoding="utf-8") as dst:
                 dst.write(document)
 
 

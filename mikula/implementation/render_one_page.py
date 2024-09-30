@@ -54,7 +54,7 @@ def render(album, error_page, pages, output_directory, theme, config):
         album_page = render_album_page(album, keys, index, album_template, page_list)
         dst_directory = os.path.join(output_directory, keys[index])
         album_filename = os.path.join(dst_directory, "index.html")
-        with open(album_filename, 'w') as fid:
+        with open(album_filename, 'w', encoding="utf-8") as fid:
             fid.write(album_page)
 
     return page_list

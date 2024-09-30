@@ -26,12 +26,13 @@ META = {'title': 'test content',
 
 
 def test_render_hypertext():
-    user_file = tempfile.NamedTemporaryFile(suffix='.html', delete=False)
-    with open(user_file.name, "w") as f:
-        f.write(CONTENT)
+    with tempfile.TemporaryDirectory() as td:
+        fn = os.path.join(td, "hypertext.html")
+        with open(fn, "w") as f:
+            f.write(CONTENT)
 
-    meta, html = render_hypertext(user_file.name)
-    os.remove(user_file.name)
+        meta, html = render_hypertext(fn)
+        os.remove(fn)
 
     assert html.strip() == RENDERED.strip()
     assert meta == META

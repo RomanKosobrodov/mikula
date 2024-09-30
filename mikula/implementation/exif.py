@@ -1,4 +1,40 @@
 import math
+from PIL.ExifTags import IFD, TAGS, GPSTAGS
+
+
+def get_exif(image):
+    exif = image.getexif()
+    result = dict()
+    for k, v in exif.items():
+        result[TAGS[k]] = v
+
+    for ifd_id in IFD:
+        try:
+            ifd = exif.get_ifd(ifd_id)
+
+            if ifd_id == IFD.GPSInfo:
+                tags = GPSTAGS
+            else:
+                tags = TAGS
+
+            for k, v in ifd.items():
+                tag = tags.get(k, k)
+                if tag == "ExposureTime":
+                    if v.numerator == 1:
+                        result[tag] = f"1/{v.denominator}"
+                    else:
+                        result[tag] = v
+                    continue
+                if tag == "FNumber":
+                    if v.denominator == 1:
+                        result[tag] = v.numerator
+                    else:
+                        result[tag] = v
+                    continue
+                result[tag] = v
+        except KeyError:
+            continue
+    return result
 
 
 def nominal_f_number(n, m):

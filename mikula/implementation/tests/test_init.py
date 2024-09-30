@@ -6,9 +6,9 @@ import os
 def test_init():
     with tempfile.TemporaryDirectory() as tmp_dir:
         initialise(root=tmp_dir)
-        assert os.path.isdir(os.path.join(tmp_dir, "source", "__assets__"))
-        assert os.path.isdir(os.path.join(tmp_dir, "source", "__pages__"))
-        assert os.path.isfile(os.path.join(tmp_dir, "source", "index.md"))
+        assert os.path.isdir(os.path.join(tmp_dir, "source", "_assets_"))
+        assert os.path.isdir(os.path.join(tmp_dir, "source", "gallery"))
+        assert os.path.isfile(os.path.join(tmp_dir, "source", "home.md"))
         assert os.path.isdir(os.path.join(tmp_dir, "build"))
 
 

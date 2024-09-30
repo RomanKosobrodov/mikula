@@ -216,5 +216,5 @@ def render_blog(blog_directory, page_list, output_directory, templates, config, 
                                     config_=config,
                                     **meta)
         fn = os.path.join(output_directory, "index.html")
-        with open(fn, "w") as fid:
+        with open(fn, "w", encoding="utf-8") as fid:
             fid.write(html)

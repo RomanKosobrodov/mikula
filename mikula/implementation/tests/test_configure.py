@@ -36,7 +36,7 @@ AWS_region: ap-southeast-2
 """
     td = tempfile.gettempdir()
     fn = os.path.join(td, "tmp_4382746.yaml")
-    with open(fn, mode="w", encoding="utf8") as fid:
+    with open(fn, mode="w", encoding="utf-8") as fid:
         fid.write(content)
         fid.flush()
 

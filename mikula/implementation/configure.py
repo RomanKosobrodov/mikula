@@ -24,7 +24,7 @@ AWS_REGIONS = ("us-east-2", "us-east-1", "us-west-1", "us-west-2",
 
 
 def save_credentials(filename, credentials):
-    with open(filename, "w") as fid:
+    with open(filename, "w", encoding="utf-8") as fid:
         fid.write("[default]\n")
         for key, value in credentials.items():
             fid.write(f"{key}={value}\n")
@@ -55,7 +55,7 @@ def read_configuration(directory=".", filename="configuration.yaml"):
     fn = os.path.join(directory, filename)
     config = DEFAULTS
     if os.path.isfile(fn):
-        with open(fn, "r", encoding="utf8") as fid:
+        with open(fn, "r", encoding="utf-8") as fid:
             try:
                 user_defined = yaml.load(fid, Loader=yaml.Loader)
             except yaml.error.MarkedYAMLError as e:
@@ -88,7 +88,7 @@ def read_credentials(filename="credentials"):
         return None
 
     credentials = dict()
-    with open(credentials_fn, "r") as fid:
+    with open(credentials_fn, "r", encoding="utf-8") as fid:
         for line in fid.readlines():
             if "=" in line:
                 k, v = parse_credentials(line)

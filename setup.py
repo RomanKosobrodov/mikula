@@ -53,10 +53,10 @@ setuptools.setup(
     install_requires=[
         "boto3>=1.34.55",
         "Jinja2>=3.1.3",
-        "Markdown>=3.5.2",
-        "Pillow>=6.2.2",
+        "Markdown>=3.7",
+        "pillow>=10.4.0",
         "piexif>=1.1.3",
-        "PyYAML>=5.4",
+        "PyYAML>=6.0",
         "sqlitedict>=2.1.0"
     ]
 )

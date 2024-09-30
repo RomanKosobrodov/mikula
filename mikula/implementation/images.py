@@ -3,7 +3,7 @@ import datetime
 from multiprocessing import Pool
 from PIL import Image, ExifTags
 import piexif
-from mikula.implementation.exif import nominal_shutter_speed, nominal_f_number, nominal_aperture
+from mikula.implementation.exif import get_exif
 from mikula.implementation.settings import images_dir, thumbnails_dir
 
 EXIF_ORIENTATION = 0x0112
@@ -35,30 +35,29 @@ def is_image(filename):
         return False
     return True
 
-
 def get_image_info(filename):
     timestamp = os.path.getmtime(filename)
     filedate = datetime.datetime.fromtimestamp(timestamp)
     date = filedate.strftime("%Y:%m:%d %H:%M:%S")
     try:
         img = Image.open(filename)
-        exif = dict(img.getexif().items())  # convert to dict to avoid serialisation problems in multiprocessing
+        exif = get_exif(img)
         width, height = img.size
         if exif is not None:
-            if EXIF_ORIENTATION in exif.keys():
-                code = exif[EXIF_ORIENTATION]
+            if "Orientation" in exif.keys():
+                code = exif["Orientation"]
                 angle = ORIENTATION.get(code, None)
                 if angle == Image.ROTATE_270 or angle == Image.ROTATE_90:
                     width, height = height, width
-            if EXIF_DATE_TIME in exif.keys():
-                date = exif[EXIF_DATE_TIME]
-            if EXIF_USER_COMMENT in exif.keys():
+            if "DateTime" in exif.keys():
+                date = exif["DateTime"]
+            if "UserComment" in exif.keys():
                 # remove user comment if starts with zeros (empty)
-                if exif[EXIF_USER_COMMENT][:ALL_ZEROS_LENGTH] == ALL_ZEROS:
-                    del exif[EXIF_USER_COMMENT]
+                if exif["UserComment"][:ALL_ZEROS_LENGTH] == ALL_ZEROS:
+                    del exif["UserComment"]
             # remove maker note (useless)
-            if EXIF_MAKER_NOTE in exif.keys():
-                del exif[EXIF_MAKER_NOTE]
+            if "MakerNote" in exif.keys():
+                del exif["MakerNote"]
         if width > 0:
             aspect = height / width
         else:
@@ -128,28 +127,6 @@ def convert_image(original, converted, directory, images_dst, thumbnails_dst,
 
 
 def update_meta_with_exif(meta, exif, album_meta):
-    def get_exif_values(tags):
-        output = dict()
-        for tag in tags:
-            if tag in TAG_CODE.keys():
-                if tag == "ShutterSpeedValue":
-                    value = exif.get(TAG_CODE[tag], None)
-                    if value is not None:
-                        output[tag] = nominal_shutter_speed(*value)
-                    continue
-                if tag == "FNumber":
-                    value = exif.get(TAG_CODE[tag], None)
-                    if value is not None:
-                        output[tag] = nominal_f_number(*value)
-                    continue
-                if tag == "ApertureValue":
-                    value = exif.get(TAG_CODE[tag], None)
-                    if value is not None:
-                        output[tag] = nominal_aperture(*value)
-                    continue
-                output[tag] = exif.get(TAG_CODE[tag], None)
-        return output
-
     if exif is None:
         if "exif" in meta:
             del meta["exif"]
@@ -159,7 +136,13 @@ def update_meta_with_exif(meta, exif, album_meta):
         exif_tags = meta["exif"]
     else:
         exif_tags = album_meta.get("exif", tuple())
-    meta["exif"] = get_exif_values(exif_tags)
+
+    meta["exif"] = dict()
+    for tag in exif_tags:
+        if tag in exif.keys():
+            meta["exif"][tag] = exif[tag]
+
+    return meta
 
 
 def converter(args):
