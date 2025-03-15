@@ -6,7 +6,8 @@ def get_exif(image):
     exif = image.getexif()
     result = dict()
     for k, v in exif.items():
-        result[TAGS[k]] = v
+        t = TAGS.get(k, f"{k:04X}")
+        result[t] = v
 
     for ifd_id in IFD:
         try:

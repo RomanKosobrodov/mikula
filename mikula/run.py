@@ -1,6 +1,7 @@
 from mikula.implementation.cli import create_parser
 from mikula import __version__
 
+
 if __name__ == "__main__":
     parser = create_parser()
     args = parser.parse_args()

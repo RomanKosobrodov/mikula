@@ -35,6 +35,7 @@ def is_image(filename):
         return False
     return True
 
+
 def get_image_info(filename):
     timestamp = os.path.getmtime(filename)
     filedate = datetime.datetime.fromtimestamp(timestamp)
@@ -112,6 +113,10 @@ def convert_image(original, converted, directory, images_dst, thumbnails_dst,
     image_format = config.get("image_format", "png")
     if img.mode in ("RGBA", "P") and image_format.lower() == "jpeg":
         img = img.convert("RGB")
+    else:
+        if "I" in img.mode:
+            img.putdata(img.getdata(), scale=255.0 / 65535.0, offset=0.0)
+            img = img.convert("L")
     image_fn = None
     thumbnail_fn = None
     if images_dst is not None:
@@ -162,8 +167,10 @@ def process_images(source_directory, parsed, excluded, destination, config, cach
         relative, subdirs, images, index_meta, index_content = content
         if directory in excluded.keys():
             excluded_original, excluded_converted = excluded[directory]
-            convert_image(excluded_original, excluded_converted, directory, images_dst, thumbnails_dst,
-                          source_directory, config)
+            original_fn, image_fn, thumbnail_fn = convert_image(excluded_original, excluded_converted, directory,
+                                                                images_dst, thumbnails_dst,
+                                                                source_directory, config)
+            cache.update(original_fn, image_fn, thumbnail_fn)
         for original, record in images.items():
             converted, meta, _, _, exif, update_required = record
             if update_required:

@@ -31,6 +31,7 @@ def should_convert(filename, cache, config_changed, image_format):
             image_file = thumbnail_file
         image_file = os.path.basename(image_file)
         update_required = False
+
     return update_required, aspect, image_date, exif, image_file
 
 
@@ -43,7 +44,6 @@ def node_parser(node, directory, album_index, cache, config_changed, sort_code, 
     file_index = len(files)
 
     excluded = None
-
     if "index.md" in files:
         ind = files.index("index.md")
         fn = os.path.join(source_dir, files[ind])
@@ -62,7 +62,6 @@ def node_parser(node, directory, album_index, cache, config_changed, sort_code, 
                                                                              cache=cache,
                                                                              config_changed=config_changed,
                                                                              image_format=image_format)
-
             basename, _ = os.path.splitext(file)
             markdown_fn = os.path.join(source_dir, f"{basename}.md")
             if os.path.isfile(markdown_fn):
@@ -125,7 +124,7 @@ def discover(directory, config, cache):
     num_processes = config.get("parallel_workers", None)
     with Pool(processes=num_processes) as pool:
         for r in pool.imap(runner, nodes):
-            if r is None:   # Skip drafts
+            if r is None:  # Skip drafts
                 continue
             relative, node_parsed, node_excluded = r
             parsed[relative] = node_parsed

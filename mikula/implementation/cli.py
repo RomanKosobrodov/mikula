@@ -81,4 +81,3 @@ def create_parser():
     customize_parser.set_defaults(function=customize)
 
     return parser
-
