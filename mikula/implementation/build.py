@@ -65,6 +65,7 @@ def build(theme, clean, album_directory=os.getcwd()):
             blog_source = os.path.abspath(os.path.join(source, meta["source"]))
             blog_destination = os.path.join(output, directory_basename(blog_source))
             render_blog(blog_directory=blog_source,
+                        blog_metadata=meta,
                         page_list=page_list,
                         output_directory=blog_destination,
                         templates=templates,

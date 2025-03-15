@@ -78,6 +78,7 @@ def process_post_resource(post_source, link_source, output_directory):
     shutil.copyfile(abs_path, destination_fn)
     return destination_fn
 
+
 def process_post_image(post_source, image_path, is_thumbnail, output_directory,
                        config, config_changed, image_format, cache):
     abs_path = locate_referenced_file(post_source, image_path)
@@ -128,8 +129,8 @@ def process_post(content_filename, document, output_directory, rendered_url, con
 
     for link_text, link_file in find_local_resources(converted):
         destination_fn = process_post_resource(post_source=content_filename,
-                                            link_source=link_file,
-                                            output_directory=output_directory)
+                                               link_source=link_file,
+                                               output_directory=output_directory)
         if destination_fn is not None:
             relative = os.path.relpath(destination_fn, os.path.join(output_directory, rendered_url))
             if os.path.sep == "\\":
@@ -143,6 +144,8 @@ def process_post(content_filename, document, output_directory, rendered_url, con
 def render_post(post, page_list, output_directory, filename, template, config, cache):
     source_fn, meta, document = post
     date = meta["date"]
+    if "page_title" not in meta.keys() and "title" in meta.keys():
+        meta["page_title"] = meta["title"]
     directory = os.path.join(output_directory, f"{date.year}", f"{date.month:02d}", f"{date.day:02d}")
     os.makedirs(directory, exist_ok=True)
     fn = os.path.join(directory, filename)
@@ -168,7 +171,7 @@ def render_post(post, page_list, output_directory, filename, template, config, c
     return url
 
 
-def render_blog(blog_directory, page_list, output_directory, templates, config, cache):
+def render_blog(blog_directory, blog_metadata, page_list, output_directory, templates, config, cache):
     post_template = templates["post"]
     blog_posts = list()
 
@@ -214,7 +217,7 @@ def render_blog(blog_directory, page_list, output_directory, templates, config, 
                                     posts_=blog_posts,
                                     thumbnail_padding_=padding,
                                     config_=config,
-                                    **meta)
+                                    **blog_metadata)
         fn = os.path.join(output_directory, "index.html")
         with open(fn, "w", encoding="utf-8") as fid:
             fid.write(html)
